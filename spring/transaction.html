@@ -16,23 +16,23 @@
   
   <meta name="theme-color" content="#2f4154">
   <meta name="author" content="duwei">
-  <meta name="keywords" content="java,https">
+  <meta name="keywords" content="">
   
-    <meta name="description" content="Java忽略https证书验证">
+    <meta name="description" content="Spring事务基本概念">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java忽略https证书验证">
-<meta property="og:url" content="https://probiecoder.cn/2024/05/07/2020-03-30-Java%E5%BF%BD%E7%95%A5https%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81/index.html">
+<meta property="og:title" content="Spring事务基本概念">
+<meta property="og:url" content="https://probiecoder.cn/spring/transaction.html">
 <meta property="og:site_name" content="菜鸟博客">
-<meta property="og:description" content="Java忽略https证书验证">
+<meta property="og:description" content="Spring事务基本概念">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-05-07T05:27:11.235Z">
-<meta property="article:modified_time" content="2024-05-07T05:27:11.235Z">
+<meta property="article:published_time" content="2024-05-08T06:02:29.000Z">
+<meta property="article:modified_time" content="2024-05-08T06:32:33.322Z">
 <meta property="article:author" content="duwei">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Java忽略https证书验证 - 菜鸟博客</title>
+  <title>Spring事务基本概念 - 菜鸟博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -186,7 +186,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java忽略https证书验证"></span>
+            <span id="subtitle" data-typed-text="Spring事务基本概念"></span>
           
         </div>
 
@@ -197,8 +197,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-05-07 13:27" pubdate>
-          2024年5月7日 下午
+        <time datetime="2024-05-08 14:02" pubdate>
+          2024年5月8日 下午
         </time>
       </span>
     
@@ -209,7 +209,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          108 字
+          442 字
         
       </span>
     
@@ -220,7 +220,7 @@
         
         
         
-          1 分钟
+          4 分钟
         
       </span>
     
@@ -257,19 +257,149 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java忽略https证书验证</h1>
+            <h1 id="seo-header">Spring事务基本概念</h1>
             
             
               <div class="markdown-body">
                 
-                <p>Java忽略https证书验证</p>
-<p>   项目开发过程中，尤其内部项目可能会用到自签名证书，这个时候就需要忽略对证书的验证。</p>
-<p>版本环境：  </p>
-<blockquote>
-<p>jdk 1.8<br>httpclient-4.5.5</p>
-</blockquote>
-<p>示例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> HttpComponentsClientHttpRequestFactory httpRequesetFactory;<br><br><span class="hljs-keyword">static</span> &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-type">SSLContext</span> <span class="hljs-variable">sslContext</span> <span class="hljs-operator">=</span> SSLContextBuilder.creaet()<br>                        .loadTrustMaterial(<span class="hljs-keyword">new</span> <span class="hljs-title class_">TrustAllStrategy</span>());<br>                        .build();<br><br>        <span class="hljs-type">HostnameVerifier</span> <span class="hljs-variable">allowAllHosts</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NoopHostnameVerifier</span>();<br>        <span class="hljs-type">SSLConnectionSocketFactory</span> <span class="hljs-variable">factory</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SSLConnectionSocketFactory</span>(sslContext, allowAllHosts);<br><br>        <span class="hljs-type">CloseableHttpClient</span> <span class="hljs-variable">httpClient</span> <span class="hljs-operator">=</span> HttpClients.custom()<br>                .setSSLSocketFactory(factory)<br>                .setMacConnTotal(<span class="hljs-number">1000</span>)<br>                .setMaxConnPerRoute(<span class="hljs-number">200</span>)  <span class="hljs-comment">// 单个路由地址请求并发数</span><br>                .build();<br><br>        httpRequesetFactory = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpComponentsClientHttpRequestFactory</span>(httpClient);<br>    &#125; <span class="hljs-keyword">catch</span> (Exeception e) &#123;<br>        log.error(e.getMessage, e);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+                <p>事务管理基本概念</p>
+<span id="more"></span>
+
+
+<h4 id="事务传播性"><a href="#事务传播性" class="headerlink" title="事务传播性"></a>事务传播性</h4><table>
+<thead>
+<tr>
+<th>传播性</th>
+<th>值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PROPAGATION_REQUIRED</code></td>
+<td>0</td>
+<td>当前有事务就用当前事务，没有事务就启动一个新事务</td>
+</tr>
+<tr>
+<td><code>PROPAGATION_SUPPORTSP</code></td>
+<td>1</td>
+<td>事务不是必须的，可以有事务，也可以没有</td>
+</tr>
+<tr>
+<td><code>PROPAGATION_MANDATORY</code></td>
+<td>2</td>
+<td>一定要存在一个事务，不然就报错</td>
+</tr>
+<tr>
+<td><code>PROPAGATION_REQUIRES_NEW</code></td>
+<td>3</td>
+<td>新启动一个事务，如果当前存在一个事务就将其挂起</td>
+</tr>
+<tr>
+<td><code>PROPAGATION_NOT_SUPPORTED</code></td>
+<td>4</td>
+<td>不支持事务，以非事务的方式运行</td>
+</tr>
+<tr>
+<td><code>PROPAGATION_NEVER</code></td>
+<td>5</td>
+<td>不支持事务，如果当前存在一个事务则抛异常</td>
+</tr>
+<tr>
+<td><code>PROPAGATION_NESTED</code></td>
+<td>6</td>
+<td>如果当前存在一个事务，则在该事务内在启动一个事务</td>
+</tr>
+</tbody></table>
+<h4 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h4><table>
+<thead>
+<tr>
+<th>隔离性</th>
+<th>描述</th>
+<th>取值</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ISOLATION_READ_UNCOMMITTED</code></td>
+<td>读未提交</td>
+<td>1</td>
+<td>存在</td>
+<td>存在</td>
+<td>存在</td>
+</tr>
+<tr>
+<td><code>ISOLATION_READ_COMMITTED</code></td>
+<td>读已提交</td>
+<td>2</td>
+<td>不存在</td>
+<td>存在</td>
+<td>存在</td>
+</tr>
+<tr>
+<td><code>ISOLATION_REPEATABLE_READ</code></td>
+<td>可重复读</td>
+<td>3</td>
+<td>不存在</td>
+<td>不存在</td>
+<td>存在</td>
+</tr>
+<tr>
+<td><code>ISOLATION_SERIALIZABLE</code></td>
+<td>串行读</td>
+<td>4</td>
+<td>不存在</td>
+<td>不存在</td>
+<td>不存在</td>
+</tr>
+</tbody></table>
+<h4 id="使用-Transaction-注解声明事务"><a href="#使用-Transaction-注解声明事务" class="headerlink" title="使用 @Transaction 注解声明事务"></a>使用 @Transaction 注解声明事务</h4><table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>属性描述</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>transactionManager</code></td>
+<td>指定事务管理器</td>
+<td>默认查找<code>transactionManager</code>的事务管理器</td>
+</tr>
+<tr>
+<td><code>propagation</code></td>
+<td>指定事务的传播性</td>
+<td><code>Propagation.REQUIRED</code></td>
+</tr>
+<tr>
+<td><code>isolation</code></td>
+<td>指定事务的隔离级别</td>
+<td><code>Isolation.DEFAULT</code>取决于数据库本身的事务级别</td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td>指定事务超时事件</td>
+<td>-1，由具体的底层实现来设置</td>
+</tr>
+<tr>
+<td><code>readonly</code></td>
+<td>是否为只读事务</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>rollbackFor/rollbackForClassName</code></td>
+<td>指定需要回滚事务的异常类型</td>
+<td>无</td>
+</tr>
+<tr>
+<td><code>noRollbackFor/noRollbackForClassName</code></td>
+<td>指定无需回滚事务的异常类型</td>
+<td>无</td>
+</tr>
+</tbody></table>
+<p><strong>注意事项：</strong><code>Spring</code>的声明式事务，其本质是对目标类和方法进行了<code>AOP</code>拦截，并在方法的执行前后增加了事务相关的操作，比如启动事务、提交事务和回滚事务。必须调用增强后的代理类中的方法，而非原本的对象，这样才能拥有事务。</p>
+
                 
               </div>
             
@@ -287,7 +417,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/Java/" class="category-chain-item">Java</a>
+  <a href="/categories/Spring/" class="category-chain-item">Spring</a>
   
   
 
@@ -307,8 +437,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java忽略https证书验证</div>
-      <div>https://probiecoder.cn/2024/05/07/2020-03-30-Java忽略https证书验证/</div>
+      <div>Spring事务基本概念</div>
+      <div>https://probiecoder.cn/spring/transaction.html</div>
     </div>
     <div class="license-meta">
       
@@ -320,7 +450,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年5月7日</div>
+          <div>2024年5月8日</div>
         </div>
       
       
@@ -352,9 +482,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/05/07/2020-03-07-%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/" title="Jmeter简单使用介绍">
+                      <a href="/spring/aspectj.html" title="使用AspectJ配置切面">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Jmeter简单使用介绍</span>
+                        <span class="hidden-mobile">使用AspectJ配置切面</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -362,8 +492,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/05/07/2021-12-06-Http%E6%8E%A5%E5%8F%A3%E5%8F%82%E6%95%B0%E4%B8%8B%E5%88%92%E7%BA%BF%E8%BD%AC%E4%B8%BA%E9%A9%BC%E5%B3%B0%E5%BC%8F/" title="Http接口参数下划线转为驼峰式">
-                        <span class="hidden-mobile">Http接口参数下划线转为驼峰式</span>
+                      <a href="/java/jdbc.html" title="JDBC常用操作">
+                        <span class="hidden-mobile">JDBC常用操作</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
