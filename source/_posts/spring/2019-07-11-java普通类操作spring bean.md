@@ -3,7 +3,7 @@ layout: post
 title: Java普通类操作Spring Bean
 categories: [Java]
 description: Java普通类操作Spring Bean
-keywords: java,spring,普通类
+permalink: spring/operation_bean.html
 ---
 Java普通类操作Spring Bean
 

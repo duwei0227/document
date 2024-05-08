@@ -3,7 +3,8 @@ layout: post
 title: 解决Chrome浏览器默认https访问
 categories: [其他]
 description: 解决Chrome浏览器默认https访问
-keywords: Chrome
+permalink: other/chrome.html
+tags: Chrome
 ---
 
 

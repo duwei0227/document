@@ -3,7 +3,8 @@ layout: post
 title: 自定义处理RestTemplate非200响应
 categories: [Java]
 description: 自定义处理RestTemplate非200响应
-keywords: Java, RestTemplate
+permalink: spring/resttemplate_statuscode.html
+tags: RestTemplate
 ---
 
 自定义处理RestTemplate非200响应

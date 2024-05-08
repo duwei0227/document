@@ -3,7 +3,8 @@ layout: post
 title: 单例模式的RestTemplate
 categories: [Java]
 description: 单例模式的RestTemplate
-keywords: Java, RestTemplate, 单例, Singleton
+permalink: spring/singleton_resttemplate.html
+tags: RestTemplate
 ---
 单例模式的RestTemplate
 

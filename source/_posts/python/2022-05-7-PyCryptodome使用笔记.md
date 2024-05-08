@@ -3,7 +3,8 @@ layout: post
 title: PyCryptodome使用笔记
 categories: [Python]
 description: PyCryptodome使用笔记
-keywords: Python,PyCryptodome
+permalink: python/pycryptodome.html
+tags: PyCryptodome
 ---
 ### 一、安装
 

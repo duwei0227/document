@@ -3,6 +3,7 @@ layout: post
 title: Python获取本机IP地址和Mac地址
 categories: [Python]
 description: Python获取本机IP地址和Mac地址
+permalink: python/ipaddress.html
 keywords: Python, IP, MAC
 ---
 

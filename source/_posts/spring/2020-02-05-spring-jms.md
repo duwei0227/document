@@ -3,7 +3,8 @@ layout: post
 title: Spring Boot JMS
 categories: [JMS]
 description: Spring Boot JMS
-keywords: Spring Boot, JMS, ActiveMQ
+permalink: spring/jms.html
+tags: jms
 ---
 
 Spring Boot JMS
