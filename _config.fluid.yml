@@ -10,7 +10,7 @@ keywords:
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://blog.probiecoder.xyz
+url: https://probiecoder.cn
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -100,7 +100,7 @@ theme: "fluid"
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: git@github.com:duwei0227/notebook.git
+  repo: git@github.com:duwei0227/document.git
   branch: gh-pages
 navbar:
   blog_title: 菜鸟之家
@@ -156,4 +156,4 @@ fun_features:
 # all_minifier: true
 
 footer:
-  content: "<i class=\"iconfont icon-love\"></i> 2021"
+  content: "<i class=\"iconfont icon-love\"></i> 2024"
