@@ -115,17 +115,20 @@ dark_mode:
   enable: true
   default: auto
 index:
-  post_url_target: _self
+  auto_excerpt:
+    enable: true
+  post_url_target: _blank
   banner_img: /img/bg/home.webp
   slogan:
     enable: false
     text: 这是一条 Slogan
     api:
       enable: true
-      url: "https://api.eatrice.top/reading/"
+      # url: "https://api.eatrice.top/reading/"
+      url: "https://v1.hitokoto.cn/"
       method: "GET"
       headers: {}
-      keys: ["Content"]
+      keys: ["hitokoto"]
 
 category:
   banner_img: /img/bg/category.webp

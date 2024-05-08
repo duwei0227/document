@@ -3,7 +3,8 @@ layout: post
 title: 使用Python操作MySql
 categories: [Python]
 description: 使用Python操作MySql
-keywords: python, mysql, pymysql
+tags: python, mysql, pymysql
+permalink: python/pymysql.html
 ---
 使用Python操作MySql
 
