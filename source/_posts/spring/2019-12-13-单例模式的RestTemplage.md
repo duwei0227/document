@@ -6,7 +6,6 @@ description: 单例模式的RestTemplate
 permalink: spring/singleton_resttemplate.html
 tags: RestTemplate
 ---
-单例模式的RestTemplate
 
 在`Spring Boot` 升级到 `2.0` 以后，无法使用 `@Autowired` 直接注入 `RestTemplate` , 需要通过 `RestTemplateBuilder` 产生。基于此实现了一个单例模式的工具类，用于获取 `RestTemplate`，同时学习单例模式的写法。   
 

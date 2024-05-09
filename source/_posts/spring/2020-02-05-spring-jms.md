@@ -7,8 +7,6 @@ permalink: spring/jms.html
 tags: jms
 ---
 
-Spring Boot JMS
-
    使用spring-jms实现简单异步消息队列，用于异步通知以及异步事务处理。
 项目：
 * spring boot 2.2.2

@@ -7,11 +7,6 @@ permalink: spring/transaction.html
 date: 2024-05-08 14:02:29
 tags:
 ---
-事务管理基本概念
-
-
-<!--more-->
-
 
 #### 事务传播性
 

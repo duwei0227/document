@@ -2,10 +2,8 @@
 layout: post
 title: 【MyBatis专题】专题五：问题答疑
 categories: [mybatis]
-description: 【MyBatis专题】专题五：问题答疑
 permalink: mybatis/problems.html
 date: 2024-05-08 13:48:05
-tags:
 ---
 本节针对日常使用`MyBatis`时遇到的相关问题进行记录，便于后续其他项目遇到可以及时解决问题。
 

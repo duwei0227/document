@@ -10,9 +10,6 @@ tags: Event
 ApplicationContext 提供了一套事件机制，在容器发生变动时我们可以通过 ApplicationEvent 的子类通知到 ApplicationListener 接口的实现类，做对应的处理。例如，ApplicationContext 在启动、停止、关闭和刷新 20 时，分别会发出 ContextStartedEvent、ContextStoppedEvent、ContextClosedEvent 和 ContextRefreshedEvent 事件，这些事件就让我们有机会感知当前容器的状态。
 
 
-<!--more-->
-
-
 如下两种方式可以进行自定义事件的发布和监听。
 
 

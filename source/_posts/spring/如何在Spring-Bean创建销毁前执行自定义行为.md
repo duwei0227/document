@@ -10,9 +10,6 @@ tags: Bean
 `Bean`创建后和`Bean`销毁前执行自定义行为的三种方式。
 
 
-<!--more-->
-
-
 ### 一、实现 InitializingBean 和 DisposableBean 接口
 
 `InitializingBean`在`Bean`创建完成后调用；`DisposableBean`在`Bean`销毁前调用

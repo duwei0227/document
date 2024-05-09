@@ -5,13 +5,7 @@ categories: [Java]
 description: JDBC常用操作
 permalink: java/jdbc.html
 date: 2024-05-08 14:02:10
-tags:
 ---
-本文介绍JDBC相关操作
-
-
-<!-- more -->
-
 
 ### 一、查询条件中使用IN
 可以使用`JDBC`提供的`setArray`方法设置（此处由于无`Oracle`数据库暂未验证）

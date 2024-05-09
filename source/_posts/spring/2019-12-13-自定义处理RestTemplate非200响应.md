@@ -7,8 +7,6 @@ permalink: spring/resttemplate_statuscode.html
 tags: RestTemplate
 ---
 
-自定义处理RestTemplate非200响应
-
 `RestTemplate`对非200错误的响应默认做了处理，会丢失很多信息。尤其接口方在抛出错误的时候，将错误信息放在响应体的中；
 这个时候如果不对响应做自定义处理是无法拿到响应结果的。  
 

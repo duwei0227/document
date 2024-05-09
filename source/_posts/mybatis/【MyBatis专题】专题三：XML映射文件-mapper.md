@@ -2,10 +2,8 @@
 layout: post
 title: 【MyBatis专题】专题三：XML映射文件(mapper)
 categories: [mybatis]
-description: 【MyBatis专题】专题三：XML映射文件(mapper)
 permalink: mybatis/mapper.html
 date: 2024-05-08 13:55:53
-tags:
 ---
 本节介绍`MyBatis`映射文件的配置使用，映射文件即`Mapper`文件。
 

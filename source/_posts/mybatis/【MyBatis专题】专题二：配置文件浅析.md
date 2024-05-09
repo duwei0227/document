@@ -2,16 +2,12 @@
 layout: post
 title: 【MyBatis专题】专题二：配置文件浅析
 categories: [mybatis]
-description: 【MyBatis专题】专题二：配置文件浅析
 permalink: mybatis/setting.html
 date: 2024-05-08 13:56:29
-tags:
 ---
 本节介绍`MyBatis`中一个很重要的配置文件，此配置文件的内容会影响`MyBatis`行为的设置和属性信息。
 
-
 <!--more-->
-
 
 顶层结构配置如下：
 

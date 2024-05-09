@@ -8,7 +8,6 @@ tags: ElementTree
 ---
 
 
-
   本篇使用`xml.etree.ElementTree`模块进行xml文件的解析和创建。`ET`有两个主要的类用于xml的解析和构建-`ElementTree`将整个XML文档作为一棵树，`Element`代表树中的一个节点。
 
 

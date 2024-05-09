@@ -6,7 +6,6 @@ description: 使用Python操作MySql
 tags: python, mysql, pymysql
 permalink: python/pymysql.html
 ---
-使用Python操作MySql
 
 ### 一、准备
 * python `3.7.4 docker`

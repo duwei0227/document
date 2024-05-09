@@ -5,7 +5,6 @@ categories: [Java]
 description: Java普通类操作Spring Bean
 permalink: spring/operation_bean.html
 ---
-Java普通类操作Spring Bean
 
 基于spring boot 1.5.6版本  
 synchronized 防止实例同时访问修改
