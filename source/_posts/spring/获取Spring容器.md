@@ -5,7 +5,6 @@ categories: [Spring]
 description: 获取Spring容器
 permalink: spring/container.html
 date: 2024-05-08 14:03:05
-tags:
 ---
 在普通`Bean`中获取`Spring`容器，可以通过实现 `Aware`接口或者直接注入，方式如下。
 
