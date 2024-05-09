@@ -3,7 +3,7 @@ layout: post
 title: Spring自定义事件
 categories: [Spring]
 description: Spring自定义事件
-permalink: sprint/event.html
+permalink: spring/event.html
 date: 2024-05-08 14:02:54
 tags: Event
 ---
