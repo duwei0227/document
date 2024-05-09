@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 【MyBatis专题】专题四：动态SQL
-categories: [mybatis]
+categories: [Mybatis]
 permalink: mybatis/dynamic.html
 date: 2024-05-08 13:55:10
 ---

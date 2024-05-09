@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 【MyBatis专题】专题三：XML映射文件(mapper)
-categories: [mybatis]
+categories: [Mybatis]
 permalink: mybatis/mapper.html
 date: 2024-05-08 13:55:53
 ---

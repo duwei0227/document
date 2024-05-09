@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 【MyBatis专题】专题二：配置文件浅析
-categories: [mybatis]
+categories: [Mybatis]
 permalink: mybatis/setting.html
 date: 2024-05-08 13:56:29
 ---

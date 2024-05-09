@@ -4,7 +4,7 @@ title: Spring Boot JMS
 categories: [JMS]
 description: Spring Boot JMS
 permalink: spring/jms.html
-tags: jms
+tags: Jms
 ---
 
    使用spring-jms实现简单异步消息队列，用于异步通知以及异步事务处理。

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 【MyBatis专题】专题五：问题答疑
-categories: [mybatis]
+categories: [Mybatis]
 permalink: mybatis/problems.html
 date: 2024-05-08 13:48:05
 ---

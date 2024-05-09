@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 【MyBatis专题】专题一：入门
-categories: [mybatis]
+categories: [Mybatis]
 permalink: mybatis/introduce.html
 date: 2024-05-08 13:57:09
 ---
