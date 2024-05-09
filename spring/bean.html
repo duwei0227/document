@@ -22,18 +22,18 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何在Spring Bean创建销毁前执行自定义行为">
 <meta property="og:url" content="https://probiecoder.cn/spring/bean.html">
-<meta property="og:site_name" content="菜鸟博客">
+<meta property="og:site_name" content="码农老杜的博客">
 <meta property="og:description" content="如何在Spring Bean创建销毁前执行自定义行为">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-05-08T06:03:26.000Z">
-<meta property="article:modified_time" content="2024-05-08T06:34:35.521Z">
+<meta property="article:modified_time" content="2024-05-09T05:16:08.730Z">
 <meta property="article:author" content="duwei">
 <meta property="article:tag" content="Bean">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>如何在Spring Bean创建销毁前执行自定义行为 - 菜鸟博客</title>
+  <title>如何在Spring Bean创建销毁前执行自定义行为 - 码农老杜的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -97,7 +97,7 @@
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
-      <strong>菜鸟之家</strong>
+      <strong>码农老杜的博客</strong>
     </a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
@@ -264,9 +264,6 @@
               <div class="markdown-body">
                 
                 <p><code>Bean</code>创建后和<code>Bean</code>销毁前执行自定义行为的三种方式。</p>
-<span id="more"></span>
-
-
 <h3 id="一、实现-InitializingBean-和-DisposableBean-接口"><a href="#一、实现-InitializingBean-和-DisposableBean-接口" class="headerlink" title="一、实现 InitializingBean 和 DisposableBean 接口"></a>一、实现 InitializingBean 和 DisposableBean 接口</h3><p><code>InitializingBean</code>在<code>Bean</code>创建完成后调用；<code>DisposableBean</code>在<code>Bean</code>销毁前调用</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Hello</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InitializingBean</span>, DisposableBean &#123;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">destroy</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        System.out.println(<span class="hljs-string">&quot;destroy bean&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        System.out.println(<span class="hljs-string">&quot;bean init&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
@@ -483,7 +480,7 @@
     <div class="footer-inner">
   
     <div class="footer-content">
-      <i class="iconfont icon-love"></i> 2024
+      @probiecoder 2024
     </div>
   
   
