@@ -1,3 +1,11 @@
+---
+layout: post
+title: Camunda自定义历史日志级别
+categories: [Camunda]
+permalink: camunda/custom-history-level.html
+date: 2024-05-10 14:56:29
+---
+
 `Camunda 7`支持的日志级别为：`None`、`Activity`、`Audit`、`Full`，记录的信息逐级增加，`None`和`Activity`不会记录流传变量，**可以显著提升引擎性能**，如果在项目中有诉求需要对历史日志自定义记录，也可以通过实现`HistoryLevel`接口或者继承已有的历史日志类进行能力扩展。
 
 
