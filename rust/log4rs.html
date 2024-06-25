@@ -18,21 +18,22 @@
   <meta name="author" content="duwei">
   <meta name="keywords" content="">
   
-    <meta name="description" content="使用Docker创建MySQL无法输入中文">
+    <meta name="description" content="介绍如何使用log4rs进行日志输出管理。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用Docker创建MySQL无法输入中文">
-<meta property="og:url" content="https://probiecoder.cn/docker/mysql_chinese.html">
+<meta property="og:title" content="Rust使用log4rs进行日志输出管理">
+<meta property="og:url" content="https://probiecoder.cn/rust/log4rs.html">
 <meta property="og:site_name" content="码农老杜的博客">
-<meta property="og:description" content="使用Docker创建MySQL无法输入中文">
+<meta property="og:description" content="介绍如何使用log4rs进行日志输出管理。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-05-08T06:03:59.000Z">
-<meta property="article:modified_time" content="2024-05-09T05:17:39.002Z">
+<meta property="article:published_time" content="2024-06-25T05:19:24.982Z">
+<meta property="article:modified_time" content="2024-06-25T06:02:13.189Z">
 <meta property="article:author" content="duwei">
+<meta property="article:tag" content="log">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>使用Docker创建MySQL无法输入中文 - 码农老杜的博客</title>
+  <title>Rust使用log4rs进行日志输出管理 - 码农老杜的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -186,7 +187,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="使用Docker创建MySQL无法输入中文"></span>
+            <span id="subtitle" data-typed-text="Rust使用log4rs进行日志输出管理"></span>
           
         </div>
 
@@ -197,8 +198,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-05-08 14:03" pubdate>
-          2024年5月8日 下午
+        <time datetime="2024-06-25 13:19" pubdate>
+          2024年6月25日 下午
         </time>
       </span>
     
@@ -209,7 +210,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          472 字
+          791 字
         
       </span>
     
@@ -220,7 +221,7 @@
         
         
         
-          4 分钟
+          7 分钟
         
       </span>
     
@@ -257,41 +258,108 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">使用Docker创建MySQL无法输入中文</h1>
+            <h1 id="seo-header">Rust使用log4rs进行日志输出管理</h1>
             
             
               <div class="markdown-body">
                 
-                <p>在使用<code>docker</code>创建的<code>MySQL</code>容器中，使用终端连接数据后，无法输入中文或者中文查询结果为问号，本文介绍两种方式处理中文问题，方法一在重新进入容器后会失效，需要手工再次执行<code>source /etc/profile</code>，方法二永久生效。</p>
-<h3 id="方法一、在容器内修改系统字符编码"><a href="#方法一、在容器内修改系统字符编码" class="headerlink" title="方法一、在容器内修改系统字符编码"></a>方法一、在容器内修改系统字符编码</h3><p><strong>进入容器后修改系统字符编码，在退出容器后，配置不在生效，需要重新进行 <code>source /etc/profile</code></strong></p>
-<p>1、进入mysql容器</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker exec -it mysql bash<br></code></pre></td></tr></table></figure>
+                <p>介绍如何使用<code>log4rs</code>进行日志输出管理。</p>
+<span id="more"></span>
+
+
+<h4 id="一、依赖引入"><a href="#一、依赖引入" class="headerlink" title="一、依赖引入"></a>一、依赖引入</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cargo add log  -- 类比于Java中的slf4j，一个日志切面<br></code></pre></td></tr></table></figure>
+
+<p>日志输出实际的框架：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cargo add log4rs<br></code></pre></td></tr></table></figure>
+
+<p>常见的需要启用的<code>feature</code>特性</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-attr">[<span class="hljs-string">&quot;console_appender&quot;</span>, <span class="hljs-string">&quot;rolling_file_appender&quot;</span>, <span class="hljs-string">&quot;size_trigger&quot;</span>, <span class="hljs-string">&quot;time_trigger&quot;</span>, <span class="hljs-string">&quot;pattern_encoder&quot;</span>, <span class="hljs-string">&quot;gzip&quot;</span>]</span> <br></code></pre></td></tr></table></figure>
 
 
 
-<p>2、查看系统字符编码</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell">bash-4.4# locale<br>LANG=<br>LC_CTYPE=&quot;POSIX&quot;<br>LC_NUMERIC=&quot;POSIX&quot;<br>LC_TIME=&quot;POSIX&quot;<br>LC_COLLATE=&quot;POSIX&quot;<br>LC_MONETARY=&quot;POSIX&quot;<br>LC_MESSAGES=&quot;POSIX&quot;<br>LC_PAPER=&quot;POSIX&quot;<br>LC_NAME=&quot;POSIX&quot;<br>LC_ADDRESS=&quot;POSIX&quot;<br>LC_TELEPHONE=&quot;POSIX&quot;<br>LC_MEASUREMENT=&quot;POSIX&quot;<br>LC_IDENTIFICATION=&quot;POSIX&quot;<br>LC_ALL=<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>console_appender</code> 日志输出到控制台</li>
+<li><code>rolling_file_appender</code> 日志输出到文件，文件支持滚动策略</li>
+<li><code>size_trigger</code> 按照文件大小实现滚动</li>
+<li><code>time_trigger</code> 按照日期实现滚动</li>
+<li><code>pattern_encoder</code> 日志内容输出格式</li>
+<li><code>gzip</code> 压缩特性</li>
+</ul>
+<h4 id="二、Pattern"><a href="#二、Pattern" class="headerlink" title="二、Pattern"></a>二、Pattern</h4><p>示例：</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="hljs-template-variable">&#123;d(%Y-%m-%dT%H:%M:%S)&#125;</span><span class="language-xml"> </span><span class="hljs-template-variable">&#123;h(&#123;l&#125;</span><span class="language-xml">):&lt;5.5&#125; </span><span class="hljs-template-variable">&#123;M&#125;</span><span class="language-xml"> </span><span class="hljs-template-variable">&#123;f&#125;</span><span class="language-xml"> </span><span class="hljs-template-variable">&#123;L&#125;</span><span class="language-xml"> ---&gt; </span><span class="hljs-template-variable">&#123;m&#125;</span><span class="hljs-template-variable">&#123;n&#125;</span><br></code></pre></td></tr></table></figure>
 
-<p>当前字符集为 <code>POSIX</code>，不支持中文，需要修改系统字符集支持中文输入</p>
-<p>3、查看系统支持字符集</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">bash-4.4# locale -a<br>C<br>C.utf8<br>POSIX<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>d</code> 日期，当前时间，默认情况按照<code>ISO 8601</code>格式输出，时区默认区系统，可以指定UTC<ul>
+<li><code>Y</code>：年</li>
+<li><code>m</code>：月</li>
+<li><code>d</code>：天</li>
+<li><code>H</code>：时</li>
+<li><code>M</code>：分</li>
+<li><code>S</code>：秒</li>
+</ul>
+</li>
+<li><code>h</code>：内容高亮<code>red:error warning blue:info</code></li>
+<li><code>l</code>：<code>level</code> 日志级别 <code>trace</code> <code>debug</code> <code>info</code> <code>warn</code> <code>error</code></li>
+<li><code>M</code>：模块名，日志消息来源模块，<code>???</code>未提供</li>
+<li><code>f</code>：<code>file</code>，日志消息来源文件，<code>???</code>未提供</li>
+<li><code>L</code>：<code>line</code>，日志消息来源行，<code>???</code>未提供</li>
+<li><code>m</code>：<code>message</code> 消息</li>
+<li><code>n</code>：换行</li>
+</ul>
+<p>完整的<code>Pattern</code>配置可以查看如下文档</p>
+<p><a target="_blank" rel="noopener" href="https://docs.rs/log4rs/latest/log4rs/encode/pattern/index.html#formatters">https://docs.rs/log4rs/latest/log4rs/encode/pattern/index.html#formatters</a></p>
+<h4 id="三、Appender"><a href="#三、Appender" class="headerlink" title="三、Appender"></a>三、Appender</h4><p>日志文件输出位置，支持控制台<code>Console</code>以及文件</p>
+<h5 id="1、console"><a href="#1、console" class="headerlink" title="1、console"></a>1、console</h5><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">console_name:</span><br>	<span class="hljs-attr">kind:</span> <span class="hljs-string">console</span><br>	<span class="hljs-attr">target:</span> <span class="hljs-string">stdout</span><br>	<span class="hljs-attr">encoder:</span><br>		<span class="hljs-attr">pattern:</span> <span class="hljs-string">xxx</span><br></code></pre></td></tr></table></figure>
 
-<p>字符集列表中 <code>C.utf8</code>支持中文，设置系统字符集为 <code>C.utf8</code></p>
-<p>4、修改系统字符集</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">echo &quot;export LANG=C.utf8&quot; &gt;&gt; /etc/profile &amp;&amp; source /etc/profile<br></code></pre></td></tr></table></figure>
+
+
+<ul>
+<li><code>kind</code>：指定日志输出目标为 <code>console</code>，需要开启<code>console_appender</code>特征</li>
+<li><code>target</code>：支持 <code>stdout</code> 和 <code>stderr</code>，默认为 <code>stdout</code></li>
+<li><code>encoder</code>：输出格式</li>
+</ul>
+<h5 id="2、Rolling-file"><a href="#2、Rolling-file" class="headerlink" title="2、Rolling file"></a>2、Rolling file</h5><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">rolling_file_name:</span><br>    <span class="hljs-attr">kind:</span> <span class="hljs-string">rolling_file</span><br>    <span class="hljs-attr">path:</span> <span class="hljs-string">&quot;log/requests.log&quot;</span><br>    <span class="hljs-attr">encoder:</span><br>      <span class="hljs-attr">pattern:</span> <span class="hljs-string">&quot;&#123;d(%Y-%m-%dT%H:%M:%S)&#125; &#123;h(&#123;l&#125;):&lt;5.5&#125; &#123;M&#125; &#123;f&#125; &#123;L&#125; ---&gt; &#123;m&#125;&#123;n&#125;&quot;</span><br>    <span class="hljs-attr">policy:</span><br>      <span class="hljs-attr">trigger:</span><br>          <span class="hljs-comment"># 按照时间滚动</span><br>          <span class="hljs-attr">kind:</span> <span class="hljs-string">time</span><br>          <span class="hljs-attr">interval:</span> <span class="hljs-number">1</span> <span class="hljs-string">second</span> <span class="hljs-comment"># second minute hour day week month year</span><br>          <span class="hljs-comment"># 按照大小限制</span><br>          <span class="hljs-comment"># kind: size</span><br>          <span class="hljs-comment"># limit: 1mb  # b kb mb gb tb</span><br>      <span class="hljs-attr">roller:</span><br>          <span class="hljs-attr">kind:</span> <span class="hljs-string">fixed_window</span><br>          <span class="hljs-attr">pattern:</span> <span class="hljs-string">&quot;log/old-rolling_file-&#123;&#125;.gz&quot;</span>  <span class="hljs-comment"># 重命名文件,必须包含 &#123;&#125;，用于索引占位 如果文件名后缀以 .gz 结尾并启用 gzip 特性，归档文件会被压缩</span><br>          <span class="hljs-attr">base:</span> <span class="hljs-number">0</span><br>          <span class="hljs-attr">count:</span> <span class="hljs-number">2</span>  <span class="hljs-comment"># 文件总数</span><br></code></pre></td></tr></table></figure>
 
 
 
-<p>5、再次进行数据操作，中文操作无问题</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sql">mysql<span class="hljs-operator">&gt;</span> <span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> student;<br><span class="hljs-operator">+</span><span class="hljs-comment">----+-----------+-----+-----+---------------------+</span><br><span class="hljs-operator">|</span> id <span class="hljs-operator">|</span> name      <span class="hljs-operator">|</span> age <span class="hljs-operator">|</span> sex <span class="hljs-operator">|</span> creation_date       <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">----+-----------+-----+-----+---------------------+</span><br><span class="hljs-operator">|</span>  <span class="hljs-number">1</span> <span class="hljs-operator">|</span> 张三      <span class="hljs-operator">|</span>   <span class="hljs-number">6</span> <span class="hljs-operator">|</span> M   <span class="hljs-operator">|</span> <span class="hljs-number">2023</span><span class="hljs-number">-10</span><span class="hljs-number">-12</span> <span class="hljs-number">10</span>:<span class="hljs-number">10</span>:<span class="hljs-number">10</span> <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>  <span class="hljs-number">2</span> <span class="hljs-operator">|</span> 李四      <span class="hljs-operator">|</span>   <span class="hljs-number">7</span> <span class="hljs-operator">|</span> M   <span class="hljs-operator">|</span> <span class="hljs-number">2023</span><span class="hljs-number">-10</span><span class="hljs-number">-12</span> <span class="hljs-number">11</span>:<span class="hljs-number">10</span>:<span class="hljs-number">10</span> <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>  <span class="hljs-number">3</span> <span class="hljs-operator">|</span> 王麻子    <span class="hljs-operator">|</span>   <span class="hljs-number">8</span> <span class="hljs-operator">|</span> F   <span class="hljs-operator">|</span> <span class="hljs-number">2023</span><span class="hljs-number">-10</span><span class="hljs-number">-12</span> <span class="hljs-number">12</span>:<span class="hljs-number">10</span>:<span class="hljs-number">10</span> <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">----+-----------+-----+-----+---------------------+</span><br><span class="hljs-number">3</span> <span class="hljs-keyword">rows</span> <span class="hljs-keyword">in</span> <span class="hljs-keyword">set</span> (<span class="hljs-number">0.01</span> sec)<br><br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>kind</code>：指定日志输出目标为<code>rolling file</code>，需要开启<code>rolling_file_appender</code>特征</li>
+<li><code>path</code>：指定当前活动日志文件路径，文件名称</li>
+<li><code>encoder</code>：指定输出消息格式</li>
+<li><code>policy</code>：滚动策略</li>
+<li><code>trigger</code>：触发器<ul>
+<li><code>kind</code>：类型，支持 <code>time</code> 和 <code>size</code></li>
+<li><code>interval</code>：当<code>kind</code>为<code>time</code>时生效，时间周期，支持 <code>second minute hour day week month year</code></li>
+<li><code>limit</code>：当<code>kind</code>为<code>size</code>时生效，按照文件大小上限滚动，支持 <code>b kb mb gb tb</code></li>
+</ul>
+</li>
+<li><code>roller</code>：日志归档滚动策略<ul>
+<li><code>kind</code>：支持 <code>fixed_window</code>固定文件数量和<code>delete</code>，<code>delete</code>时不需要指定其他格式</li>
+<li><code>pattern</code>：日志文件归档转储时文件名格式，其中 <code>&#123;&#125;</code>为必须用于指定文件索引数，如果文件名以<code>.gz</code>结尾且启用 <code>gzip</code>特征，转储时会对文件进行压缩</li>
+<li><code>base</code>：归档文件开始索引</li>
+<li><code>count</code>：归档文件总数，超过上限后，会不断滚动覆盖索引为最小的文件</li>
+</ul>
+</li>
+</ul>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/estk/log4rs/blob/main/docs/Configuration.md#appender-config">https://github.com/estk/log4rs/blob/main/docs/Configuration.md#appender-config</a></p>
+<h4 id="Logger"><a href="#Logger" class="headerlink" title="Logger"></a>Logger</h4><p>用于指定不同模块日志级别以及日志输出目标</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">root:</span><br>  <span class="hljs-attr">level:</span> <span class="hljs-string">info</span><br>  <span class="hljs-attr">appenders:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">stdout</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">requests</span><br></code></pre></td></tr></table></figure>
 
 
 
-<h4 id="方法二：创建容器时指定系统字符变量"><a href="#方法二：创建容器时指定系统字符变量" class="headerlink" title="方法二：创建容器时指定系统字符变量"></a>方法二：创建容器时指定系统字符变量</h4><p>在使用<code>run</code>穿件容器服务是，通过<code>-e LANG=C.utf8</code>指定系统变量，<strong>此种方法在退出容器重新进入一直生效</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run -itd -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e LANG=C.utf8 --name mysql1 mysql<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>root</code>：固定，默认处理方式</li>
+<li><code>level</code>：日志级别</li>
+<li><code>appenders</code>：输出目标，支持配置多个</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">loggers:</span><br>  <span class="hljs-attr">app::requests:</span><br>    <span class="hljs-attr">level:</span> <span class="hljs-string">info</span><br>    <span class="hljs-attr">appenders:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">requests</span><br>    <span class="hljs-attr">additive:</span> <span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell">bash-4.4# locale<br>LANG=C.utf8<br>LC_CTYPE=&quot;C.utf8&quot;<br>LC_NUMERIC=&quot;C.utf8&quot;<br>LC_TIME=&quot;C.utf8&quot;<br>LC_COLLATE=&quot;C.utf8&quot;<br>LC_MONETARY=&quot;C.utf8&quot;<br>LC_MESSAGES=&quot;C.utf8&quot;<br>LC_PAPER=&quot;C.utf8&quot;<br>LC_NAME=&quot;C.utf8&quot;<br>LC_ADDRESS=&quot;C.utf8&quot;<br>LC_TELEPHONE=&quot;C.utf8&quot;<br>LC_MEASUREMENT=&quot;C.utf8&quot;<br>LC_IDENTIFICATION=&quot;C.utf8&quot;<br>LC_ALL=<br></code></pre></td></tr></table></figure>
-
+<ul>
+<li><code>loggers</code>：对于特定路径日志级别或者输出目标自定义</li>
+<li><code>app::requests</code>：路径</li>
+<li><code>additive</code>：<code>true</code>或<code>false</code> 是否将日至消息追加到上级 <code>appenders</code>中</li>
+</ul>
 
                 
               </div>
@@ -310,7 +378,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/Docker/" class="category-chain-item">Docker</a>
+  <a href="/categories/Rust/" class="category-chain-item">Rust</a>
   
   
 
@@ -322,6 +390,13 @@
     </div>
   
   
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/log/" class="print-no-link">#log</a>
+      
+    </div>
+  
 </div>
 
 
@@ -330,8 +405,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>使用Docker创建MySQL无法输入中文</div>
-      <div>https://probiecoder.cn/docker/mysql_chinese.html</div>
+      <div>Rust使用log4rs进行日志输出管理</div>
+      <div>https://probiecoder.cn/rust/log4rs.html</div>
     </div>
     <div class="license-meta">
       
@@ -343,7 +418,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年5月8日</div>
+          <div>2024年6月25日</div>
         </div>
       
       
@@ -375,18 +450,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/other/learn_websites.html" title="学习网站">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">学习网站</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/spring/bean.html" title="如何在Spring Bean创建销毁前执行自定义行为">
-                        <span class="hidden-mobile">如何在Spring Bean创建销毁前执行自定义行为</span>
+                      <a href="/camunda/custom-history-level.html" title="Camunda自定义历史日志级别">
+                        <span class="hidden-mobile">Camunda自定义历史日志级别</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
