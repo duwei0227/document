@@ -140,7 +140,7 @@ https://github.com/estk/log4rs/blob/main/docs/Configuration.md#appender-config
 
 
 
-#### Logger
+#### 四、Logger
 
 用于指定不同模块日志级别以及日志输出目标
 
@@ -172,3 +172,66 @@ loggers:
 * `loggers`：对于特定路径日志级别或者输出目标自定义
 * `app::requests`：路径
 * `additive`：`true`或`false` 是否将日至消息追加到上级 `appenders`中
+
+
+
+#### 五、示例
+
+```rust
+log4rs::init_file("log4rs.yml", Default::default()).unwrap();
+```
+
+
+
+```yam
+# Scan this file for changes every 30 seconds
+refresh_rate: 30 seconds
+
+appenders:
+  # An appender named "stdout" that writes to stdout
+  stdout:
+    kind: console
+    encoder:
+      pattern: "{d(%Y-%m-%dT%H:%M:%S)} {h({l}):<5.5} {M} {f} {L} ---> {m}{n}"
+
+  # An appender named "requests" that writes to a file with a custom pattern encoder
+  requests:
+    kind: rolling_file
+    path: "log/requests.log"
+    encoder:
+      pattern: "{d(%Y-%m-%dT%H:%M:%S)} {h({l}):<5.5} {M} {f} {L} ---> {m}{n}"
+    policy:
+      trigger:
+          # 按照时间滚动
+          # kind: time
+          # interval: 1 second # second minute hour day week month year
+          # 按照大小限制
+          kind: size
+          limit: 1kb  # b kb mb gb tb
+      roller:
+          kind: fixed_window
+          pattern: "log/old-rolling_file-{}.gz"  # 重命名文件,必须包含 {}，用于索引占位 如果文件名后缀以 .gz 结尾并启用 gzip 特性，归档文件会被压缩
+          base: 0
+          count: 5  # 文件总数
+
+# Set the default logging level to "warn" and attach the "stdout" appender to the root
+root:
+  level: info
+  appenders:
+    - stdout
+    - requests
+
+loggers:
+  # Raise the maximum log level for events sent to the "app::backend::db" logger to "info"
+  app::backend::db:
+    level: info
+
+  # Route log events sent to the "app::requests" logger to the "requests" appender,
+  # and *not* the normal appenders installed at the root
+  app::requests:
+    level: info
+    appenders:
+      - requests
+    additive: false
+```
+
