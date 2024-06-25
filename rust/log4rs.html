@@ -26,7 +26,7 @@
 <meta property="og:description" content="介绍如何使用log4rs进行日志输出管理。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-06-25T05:19:24.982Z">
-<meta property="article:modified_time" content="2024-06-25T06:02:13.189Z">
+<meta property="article:modified_time" content="2024-06-25T06:50:09.728Z">
 <meta property="article:author" content="duwei">
 <meta property="article:tag" content="log">
 <meta name="twitter:card" content="summary_large_image">
@@ -210,7 +210,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          791 字
+          1k 字
         
       </span>
     
@@ -221,7 +221,7 @@
         
         
         
-          7 分钟
+          9 分钟
         
       </span>
     
@@ -343,7 +343,7 @@
 </ul>
 <p>参考：</p>
 <p><a target="_blank" rel="noopener" href="https://github.com/estk/log4rs/blob/main/docs/Configuration.md#appender-config">https://github.com/estk/log4rs/blob/main/docs/Configuration.md#appender-config</a></p>
-<h4 id="Logger"><a href="#Logger" class="headerlink" title="Logger"></a>Logger</h4><p>用于指定不同模块日志级别以及日志输出目标</p>
+<h4 id="四、Logger"><a href="#四、Logger" class="headerlink" title="四、Logger"></a>四、Logger</h4><p>用于指定不同模块日志级别以及日志输出目标</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">root:</span><br>  <span class="hljs-attr">level:</span> <span class="hljs-string">info</span><br>  <span class="hljs-attr">appenders:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">stdout</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">requests</span><br></code></pre></td></tr></table></figure>
 
 
@@ -360,6 +360,12 @@
 <li><code>app::requests</code>：路径</li>
 <li><code>additive</code>：<code>true</code>或<code>false</code> 是否将日至消息追加到上级 <code>appenders</code>中</li>
 </ul>
+<h4 id="五、示例"><a href="#五、示例" class="headerlink" title="五、示例"></a>五、示例</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs rust">log4rs::<span class="hljs-title function_ invoke__">init_file</span>(<span class="hljs-string">&quot;log4rs.yml&quot;</span>, <span class="hljs-built_in">Default</span>::<span class="hljs-title function_ invoke__">default</span>()).<span class="hljs-title function_ invoke__">unwrap</span>();<br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs yam"># Scan this file for changes every 30 seconds<br>refresh_rate: 30 seconds<br><br>appenders:<br>  # An appender named &quot;stdout&quot; that writes to stdout<br>  stdout:<br>    kind: console<br>    encoder:<br>      pattern: &quot;&#123;d(%Y-%m-%dT%H:%M:%S)&#125; &#123;h(&#123;l&#125;):&lt;5.5&#125; &#123;M&#125; &#123;f&#125; &#123;L&#125; ---&gt; &#123;m&#125;&#123;n&#125;&quot;<br><br>  # An appender named &quot;requests&quot; that writes to a file with a custom pattern encoder<br>  requests:<br>    kind: rolling_file<br>    path: &quot;log/requests.log&quot;<br>    encoder:<br>      pattern: &quot;&#123;d(%Y-%m-%dT%H:%M:%S)&#125; &#123;h(&#123;l&#125;):&lt;5.5&#125; &#123;M&#125; &#123;f&#125; &#123;L&#125; ---&gt; &#123;m&#125;&#123;n&#125;&quot;<br>    policy:<br>      trigger:<br>          # 按照时间滚动<br>          # kind: time<br>          # interval: 1 second # second minute hour day week month year<br>          # 按照大小限制<br>          kind: size<br>          limit: 1kb  # b kb mb gb tb<br>      roller:<br>          kind: fixed_window<br>          pattern: &quot;log/old-rolling_file-&#123;&#125;.gz&quot;  # 重命名文件,必须包含 &#123;&#125;，用于索引占位 如果文件名后缀以 .gz 结尾并启用 gzip 特性，归档文件会被压缩<br>          base: 0<br>          count: 5  # 文件总数<br><br># Set the default logging level to &quot;warn&quot; and attach the &quot;stdout&quot; appender to the root<br>root:<br>  level: info<br>  appenders:<br>    - stdout<br>    - requests<br><br>loggers:<br>  # Raise the maximum log level for events sent to the &quot;app::backend::db&quot; logger to &quot;info&quot;<br>  app::backend::db:<br>    level: info<br><br>  # Route log events sent to the &quot;app::requests&quot; logger to the &quot;requests&quot; appender,<br>  # and *not* the normal appenders installed at the root<br>  app::requests:<br>    level: info<br>    appenders:<br>      - requests<br>    additive: false<br></code></pre></td></tr></table></figure>
+
 
                 
               </div>
