@@ -1,8 +1,8 @@
 ---
 layout: post
-title: 配置化运算表达式转为Groovy可执行语法
+title: 配置运算表达式通过BigDecimal包裹
 categories: [Java]
-description: 配置化运算表达式转为Groovy可执行语法
+description: 配置运算表达式通过BigDecimal包裹
 permalink: java/groovy-script.html
 tags: Groovy,算术运算
 ---
