@@ -2,7 +2,6 @@
 layout: post
 title: Python使用ElementTree操作XML
 categories: [Python]
-description: Python使用ElementTree操作XML
 permalink: python/elementtree.html
 tags: ElementTree
 ---

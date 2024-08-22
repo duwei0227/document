@@ -2,7 +2,6 @@
 layout: post
 title: 获取Spring容器
 categories: [Spring]
-description: 获取Spring容器
 permalink: spring/container.html
 date: 2024-05-08 14:03:05
 ---

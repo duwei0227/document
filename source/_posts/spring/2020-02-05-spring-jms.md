@@ -2,7 +2,6 @@
 layout: post
 title: Spring Boot JMS
 categories: [JMS]
-description: Spring Boot JMS
 permalink: spring/jms.html
 tags: Jms
 ---

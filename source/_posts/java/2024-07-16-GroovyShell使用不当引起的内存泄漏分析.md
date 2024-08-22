@@ -2,7 +2,6 @@
 layout: post
 title: GroovyShell使用不当引起的内存泄漏分析
 categories: [Java]
-description: GroovyShell使用不当引起的内存泄漏分析
 permalink: java/groovy-shell.html
 tags: Groovy
 ---

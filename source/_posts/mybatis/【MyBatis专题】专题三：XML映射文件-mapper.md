@@ -5,10 +5,6 @@ categories: [Mybatis]
 permalink: mybatis/mapper.html
 date: 2024-05-08 13:55:53
 ---
-本节介绍`MyBatis`映射文件的配置使用，映射文件即`Mapper`文件。
-
-
-<!--more-->
 
 
 一个空的`Mapper`文件结构如下，需要指定命名空间，且命名空间需要**唯一**，命名空间会和`Java`接口绑定，一般会添加注解`@Mapper`

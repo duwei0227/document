@@ -5,9 +5,7 @@ categories: [MySQL]
 permalink: mysql/errors.html
 date: 2024-05-08 14:00:45
 ---
-本文介绍日常使用`MySQL`数据库过程中遇到的问题，以及问题原因和解决方案汇总。
 
-<!--more-->
 
 ### 一、ERROR 1118 (42000): Row size too large
 

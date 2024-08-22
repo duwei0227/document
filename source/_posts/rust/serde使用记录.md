@@ -4,7 +4,6 @@ title: Rust使用serde进行序列化
 categories: [Rust]
 tags: serde
 permalink: rust/serde.html
-description: Rust使用serde进行序列化
 ---
 
 

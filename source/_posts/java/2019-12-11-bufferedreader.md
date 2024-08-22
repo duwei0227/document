@@ -2,7 +2,6 @@
 layout: post
 title: BufferedReader使用记录
 categories: [Java]
-description: BufferedReader使用记录
 permalink: java/bufferedreader.html
 ---
 

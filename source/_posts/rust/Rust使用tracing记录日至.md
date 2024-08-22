@@ -4,7 +4,6 @@ title: Rust使用tracing记录日志
 categories: [Rust]
 tags: serde
 permalink: rust/tracing.html
-description: Rust使用tracing记录日志
 ---
 
 

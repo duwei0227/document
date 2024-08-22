@@ -5,9 +5,7 @@ categories: [Mybatis]
 permalink: mybatis/setting.html
 date: 2024-05-08 13:56:29
 ---
-本节介绍`MyBatis`中一个很重要的配置文件，此配置文件的内容会影响`MyBatis`行为的设置和属性信息。
 
-<!--more-->
 
 顶层结构配置如下：
 

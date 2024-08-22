@@ -2,7 +2,6 @@
 layout: post
 title: 单例模式的RestTemplate
 categories: [Java]
-description: 单例模式的RestTemplate
 permalink: spring/singleton_resttemplate.html
 tags: RestTemplate
 ---

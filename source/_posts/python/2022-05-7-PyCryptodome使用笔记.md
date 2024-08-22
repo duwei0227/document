@@ -2,7 +2,6 @@
 layout: post
 title: PyCryptodome使用笔记
 categories: [Python]
-description: PyCryptodome使用笔记
 permalink: python/pycryptodome.html
 tags: PyCryptodome
 ---

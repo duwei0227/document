@@ -3,7 +3,6 @@ layout: post
 title: Docker使用错误汇总
 categories: [Docker]
 permalink: docker/errors.html
-description: Docker使用错误汇总
 ---
 
 

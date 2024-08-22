@@ -2,7 +2,6 @@
 layout: post
 title: 使用AspectJ配置切面
 categories: [Spring]
-description: 使用AspectJ配置切面
 permalink: spring/aspectj.html
 date: 2024-05-08 14:02:42
 tags: AspectJ

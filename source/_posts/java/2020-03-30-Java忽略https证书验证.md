@@ -2,7 +2,6 @@
 layout: post
 title: Java忽略https证书验证
 categories: [Java]
-description: Java忽略https证书验证
 ---
 Java忽略https证书验证
 

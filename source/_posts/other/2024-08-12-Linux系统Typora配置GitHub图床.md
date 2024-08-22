@@ -2,7 +2,6 @@
 layout: post
 title: Linux系统Typora配置GitHub图床
 categories: [其他]
-description: Linux系统Typora配置GitHub图床
 permalink: other/picbed.html
 tags: PicBed
 ---

@@ -5,10 +5,7 @@ categories: [Mybatis]
 permalink: mybatis/problems.html
 date: 2024-05-08 13:48:05
 ---
-本节针对日常使用`MyBatis`时遇到的相关问题进行记录，便于后续其他项目遇到可以及时解决问题。
 
-
-<!--more-->
 
 ### 问题一：MyBatis日志配置
 

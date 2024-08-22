@@ -5,9 +5,6 @@ categories: [Mybatis]
 permalink: mybatis/introduce.html
 date: 2024-05-08 13:57:09
 ---
-本篇介绍`MyBatis`入门所需知识，包括`Maven`依赖，`Mapper`文件的执行等基础知识。
-
-<!--more-->
 
 
 ### 一、引入MyBatis依赖

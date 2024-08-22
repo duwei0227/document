@@ -2,7 +2,6 @@
 layout: post
 title: Java普通类操作Spring Bean
 categories: [Java]
-description: Java普通类操作Spring Bean
 permalink: spring/operation_bean.html
 ---
 

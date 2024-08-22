@@ -6,10 +6,6 @@ tags: log
 permalink: rust/log4rs.html
 ---
 
-介绍如何使用`log4rs`进行日志输出管理。
-
-<!-- more -->
-
 
 #### 一、依赖引入
 

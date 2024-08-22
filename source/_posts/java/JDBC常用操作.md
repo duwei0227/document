@@ -2,7 +2,6 @@
 layout: post
 title: JDBC常用操作
 categories: [Java]
-description: JDBC常用操作
 permalink: java/jdbc.html
 date: 2024-05-08 14:02:10
 ---

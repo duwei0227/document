@@ -2,7 +2,6 @@
 layout: post
 title: 如何在Spring Bean创建销毁前执行自定义行为
 categories: [Spring]
-description: 如何在Spring Bean创建销毁前执行自定义行为
 permalink: spring/bean.html
 date: 2024-05-08 14:03:26
 tags: Bean

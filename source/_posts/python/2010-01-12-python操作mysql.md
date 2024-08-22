@@ -2,7 +2,6 @@
 layout: post
 title: 使用Python操作MySql
 categories: [Python]
-description: 使用Python操作MySql
 tags: Pymysql
 permalink: python/pymysql.html
 ---

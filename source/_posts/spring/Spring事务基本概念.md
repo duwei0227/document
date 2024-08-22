@@ -2,7 +2,6 @@
 layout: post
 title: Spring事务基本概念
 categories: [Spring]
-description: Spring事务基本概念
 permalink: spring/transaction.html
 date: 2024-05-08 14:02:29
 ---

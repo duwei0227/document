@@ -4,7 +4,6 @@ title: 使用Docker创建MySQL无法输入中文
 categories: [Docker]
 permalink: docker/mysql_chinese.html
 date: 2024-05-08 14:03:59
-description: 使用Docker创建MySQL无法输入中文
 ---
 在使用`docker`创建的`MySQL`容器中，使用终端连接数据后，无法输入中文或者中文查询结果为问号，本文介绍两种方式处理中文问题，方法一在重新进入容器后会失效，需要手工再次执行`source /etc/profile`，方法二永久生效。
 
