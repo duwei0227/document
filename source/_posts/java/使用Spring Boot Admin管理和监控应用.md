@@ -1,3 +1,11 @@
+---
+layout: post
+title: 使用Spring Boot Admin管理和监控应用
+categories: [Java]
+tags: 监控
+permalink: java/spring_boot_admin.html
+---
+
 `Spring Boot Admin`是一个监控工具，目的在与提供一个易于访问的方式可视化`Spring Boot Actuator`，它由两个主要部分组成：
 
 * `server端：`提供用户界面来显示 `Spring Boot Actuators` 并与之交互

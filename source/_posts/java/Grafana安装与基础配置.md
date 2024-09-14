@@ -1,3 +1,10 @@
+---
+layout: post
+title: Grafana安装与基础配置
+categories: [Java]
+permalink: java/grafana.html
+---
+
 ### 一、安装
 
 下载`Grafana` [https://grafana.com/grafana/download](https://grafana.com/grafana/download)，一般下载压缩包即可，直接解压可用

@@ -2,6 +2,7 @@
 layout: post
 title: Arthas常用命令使用
 categories: [Java]
+permalink: java/arthas.html
 ---
 
 运行 `arthas`：`java -jar arthas-boot.jar`
