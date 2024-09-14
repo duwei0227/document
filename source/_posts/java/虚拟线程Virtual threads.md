@@ -88,7 +88,7 @@ jdk.virtualThreadScheduler.minRunnable
 
 
 
-#### 3、底层实现
+#### 4、底层实现
 
 在执行`start()`方法时会创建正式的虚拟线程，并指定虚拟线程名称，所依托的普通线程调度器`scheduler`
 
