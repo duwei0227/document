@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Grafana安装与基础配置
+title: 虚拟线程Virtual threads
 categories: [Java]
 permalink: java/virtual_thread.html
 ---
