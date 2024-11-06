@@ -1,0 +1,846 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="运行 arthas：java -jar arthas-boot.jar 一、dashboard通过dashboard可以用于监控线程状态，CPU使用情况以及内存使用(包含GC)情况。 Usage： 1dashboard [-h] [-i &lt;value&gt;] [-n &lt;value&gt;]   参数解释：    参数名称 参数说明    -i 刷新实时数据的时间间隔 (ms)，默认">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Arthas常用命令使用">
+<meta property="og:url" content="https://probiecoder.cn/java/arthas.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="运行 arthas：java -jar arthas-boot.jar 一、dashboard通过dashboard可以用于监控线程状态，CPU使用情况以及内存使用(包含GC)情况。 Usage： 1dashboard [-h] [-i &lt;value&gt;] [-n &lt;value&gt;]   参数解释：    参数名称 参数说明    -i 刷新实时数据的时间间隔 (ms)，默认">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-10-31T07:34:48.576Z">
+<meta property="article:modified_time" content="2024-10-31T07:34:48.576Z">
+<meta property="article:author" content="duwei">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Arthas常用命令使用 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Arthas常用命令使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-10-31 15:34" pubdate>
+          2024年10月31日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          15 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Arthas常用命令使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>运行 <code>arthas</code>：<code>java -jar arthas-boot.jar</code></p>
+<h3 id="一、dashboard"><a href="#一、dashboard" class="headerlink" title="一、dashboard"></a>一、dashboard</h3><p>通过<code>dashboard</code>可以用于监控线程状态，<code>CPU</code>使用情况以及内存使用(包含<code>GC</code>)情况。</p>
+<p>Usage：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">dashboard [-h] [-i &lt;value&gt;] [-n &lt;value&gt;] <br></code></pre></td></tr></table></figure>
+
+<p>参数解释：</p>
+<table>
+<thead>
+<tr>
+<th align="right">参数名称</th>
+<th align="left">参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right"><code>-i</code></td>
+<td align="left">刷新实时数据的时间间隔 (ms)，默认 5000ms</td>
+</tr>
+<tr>
+<td align="right"><code>-n</code></td>
+<td align="left">刷新实时数据的次数</td>
+</tr>
+<tr>
+<td align="right"><code>-h</code></td>
+<td align="left">查看帮助</td>
+</tr>
+</tbody></table>
+<p>示例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">-- 每隔2秒刷新数据，总共刷新3次<br>dashboard -i 2000 -n 3<br></code></pre></td></tr></table></figure>
+
+
+
+<p><a target="_blank" rel="noopener" href="https://arthas.aliyun.com/doc/dashboard.html#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E">https://arthas.aliyun.com/doc/dashboard.html#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E</a></p>
+<h3 id="二、trace"><a href="#二、trace" class="headerlink" title="二、trace"></a>二、trace</h3><p><code>trace</code>主要用于分析接口各个方法执行用时，用于找出接口方法执行瓶颈。</p>
+<p>Usage：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">trace [-h] [-n &lt;value&gt;] [-m &lt;value&gt;] [-E] [--skipJDKMethod &lt;value&gt;] class-pattern method-pattern <br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><table>
+<thead>
+<tr>
+<th align="right">参数名称</th>
+<th align="left">参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right"><em>class-pattern</em></td>
+<td align="left">类名表达式匹配，支持模糊匹配，通配符使用<code>*</code></td>
+</tr>
+<tr>
+<td align="right"><em>method-pattern</em></td>
+<td align="left">方法名表达式匹配，支持模糊匹配，通配符使用<code>*</code></td>
+</tr>
+<tr>
+<td align="right"><code>-E</code></td>
+<td align="left">开启正则表达式匹配，默认为通配符匹配</td>
+</tr>
+<tr>
+<td align="right"><code>-n</code></td>
+<td align="left">命令执行次数，默认值为 100。同一个方法最大跟踪次数</td>
+</tr>
+<tr>
+<td align="right"><code>#cost</code></td>
+<td align="left">方法执行耗时</td>
+</tr>
+<tr>
+<td align="right"><code>-m</code></td>
+<td align="left">指定 Class 最大匹配数量，默认值为 50。长格式为<code>[maxMatch &lt;arg&gt;]</code>。</td>
+</tr>
+<tr>
+<td align="right"><code>--skipJDKMethod</code></td>
+<td align="left">是否包含<code>jdk</code>方法，默认为 <code>true</code></td>
+</tr>
+</tbody></table>
+<p><strong>示例：</strong></p>
+<h4 id="1、使用默认配置"><a href="#1、使用默认配置" class="headerlink" title="1、使用默认配置"></a>1、使用默认配置</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@12808]$ </span><span class="language-bash">trace cn.probiecoder.adminclient.TestController hello</span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 1) cost in 128 ms, listenerId: 1<br>`---ts=2024-09-13 13:22:48.208;thread_name=http-nio-8080-exec-1;id=50;is_daemon=true;priority=5;TCCL=org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader@1a1830fd<br>    `---[3316.403067ms] cn.probiecoder.adminclient.TestController:hello()<br>        +---[0.00% 0.019864ms ] kotlin.jvm.internal.Intrinsics:checkNotNullParameter()<br>        +---[6.43% 213.29613ms ] cn.probiecoder.adminclient.TestController:sleep_213_ms() #16<br>        +---[9.48% 314.234694ms ] cn.probiecoder.adminclient.TestController:sleep_314_ms() #17<br>        `---[14.33% 475.184939ms ] cn.probiecoder.adminclient.TestController:recall_5_times() #18<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2、根据耗时过滤"><a href="#2、根据耗时过滤" class="headerlink" title="2、根据耗时过滤"></a>2、根据耗时过滤</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-keyword">for</span> (i <span class="hljs-keyword">in</span> <span class="hljs-number">1.</span><span class="hljs-number">.5</span>) &#123;<br>    sleep_by_params(Random.nextLong(<span class="hljs-number">10</span>, <span class="hljs-number">200</span>))<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">sleep_by_params</span><span class="hljs-params">(time: <span class="hljs-type">Long</span>)</span></span> &#123;<br>    sleep(time)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@14400]$ </span><span class="language-bash">trace cn.probiecoder.adminclient.TestController sleep_by_params <span class="hljs-string">&#x27;#cost &gt; 100&#x27;</span></span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 1) cost in 70 ms, listenerId: 2<br>`---ts=2024-09-13 13:29:24.927;thread_name=http-nio-8080-exec-2;id=51;is_daemon=true;priority=5;TCCL=org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader@941d403<br>    `---[185.372153ms] cn.probiecoder.adminclient.TestController:sleep_by_params()<br><br>`---ts=2024-09-13 13:29:25.165;thread_name=http-nio-8080-exec-2;id=51;is_daemon=true;priority=5;TCCL=org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader@941d403<br>    `---[189.325869ms] cn.probiecoder.adminclient.TestController:sleep_by_params()<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="3、正则模糊匹配包下所有类"><a href="#3、正则模糊匹配包下所有类" class="headerlink" title="3、正则模糊匹配包下所有类"></a>3、正则模糊匹配包下所有类</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@14400]$ </span><span class="language-bash">trace -E cn.probiecoder..* hello</span><br>或<br><span class="hljs-meta prompt_">[arthas@14400]$ </span><span class="language-bash">trace cn.probiecoder.* hello</span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 6 , method count: 1) cost in 87 ms, listenerId: 4<br>`---ts=2024-09-13 13:31:18.561;thread_name=http-nio-8080-exec-5;id=54;is_daemon=true;priority=5;TCCL=org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader@941d403<br>    `---[3914.62719ms] cn.probiecoder.adminclient.TestController:hello()<br>        +---[0.00% 0.035068ms ] kotlin.jvm.internal.Intrinsics:checkNotNullParameter()<br>        +---[5.45% 213.1525ms ] cn.probiecoder.adminclient.TestController:sleep_213_ms() #16<br>        +---[8.03% 314.217455ms ] cn.probiecoder.adminclient.TestController:sleep_314_ms() #17<br>        +---[9.49% 371.404243ms ] cn.probiecoder.adminclient.TestController:recall_5_times() #18<br>        +---[0.00% min=0.023609ms,max=0.027875ms,total=0.125867ms,count=5] kotlin.random.Random$Default:nextLong() #21<br>        `---[17.94% min=95.302312ms,max=172.21433ms,total=702.456271ms,count=5] cn.probiecoder.adminclient.TestController:sleep_by_params() #21<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="4、模糊匹配类下边所有方法"><a href="#4、模糊匹配类下边所有方法" class="headerlink" title="4、模糊匹配类下边所有方法"></a>4、模糊匹配类下边所有方法</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@14400]$ </span><span class="language-bash">trace cn.probiecoder.adminclient.TestController *</span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 6) cost in 69 ms, listenerId: 6<br>`---ts=2024-09-13 13:34:45.418;thread_name=http-nio-8080-exec-9;id=58;is_daemon=true;priority=5;TCCL=org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader@941d403<br>    `---[3973.56132ms] cn.probiecoder.adminclient.TestController:hello()<br>        +---[0.00% 0.02265ms ] kotlin.jvm.internal.Intrinsics:checkNotNullParameter()<br>        +---[5.37% 213.475355ms ] cn.probiecoder.adminclient.TestController:sleep_213_ms() #16<br>        |   `---[99.96% 213.383829ms ] cn.probiecoder.adminclient.TestController:sleep_213_ms()<br>        +---[7.91% 314.269288ms ] cn.probiecoder.adminclient.TestController:sleep_314_ms() #17<br>        |   `---[99.98% 314.192024ms ] cn.probiecoder.adminclient.TestController:sleep_314_ms()<br>        +---[12.48% 495.794555ms ] cn.probiecoder.adminclient.TestController:recall_5_times() #18<br>        |   `---[99.94% 495.50564ms ] cn.probiecoder.adminclient.TestController:recall_5_times()<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="5、指定方法匹配次数"><a href="#5、指定方法匹配次数" class="headerlink" title="5、指定方法匹配次数"></a>5、指定方法匹配次数</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@14400]$ </span><span class="language-bash">trace cn.probiecoder.adminclient.TestController sleep_by_params -n 1</span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 1) cost in 47 ms, listenerId: 9<br>`---ts=2024-09-13 13:37:18.101;thread_name=http-nio-8080-exec-3;id=52;is_daemon=true;priority=5;TCCL=org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader@941d403<br>    `---[186.244449ms] cn.probiecoder.adminclient.TestController:sleep_by_params()<br><br>Command execution times exceed limit: 1, so command will exit. You can set it with -n option.<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="6、包含jdk函数"><a href="#6、包含jdk函数" class="headerlink" title="6、包含jdk函数"></a>6、包含jdk函数</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@17533]$ </span><span class="language-bash">trace cn.probiecoder.adminclient.TestController hello --skipJDKMethod <span class="hljs-literal">false</span></span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 1) cost in 92 ms, listenerId: 2<br>`---ts=2024-09-13 13:40:03.255;thread_name=http-nio-8080-exec-2;id=51;is_daemon=true;priority=5;TCCL=org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader@3115e66<br>    `---[3689.6658ms] cn.probiecoder.adminclient.TestController:hello()<br>        +---[0.00% 0.027708ms ] kotlin.jvm.internal.Intrinsics:checkNotNullParameter()<br>        +---[0.00% 0.129751ms ] java.io.PrintStream:println() #15<br>        +---[62.67% 2312.325601ms ] java.lang.Thread:sleep() #16<br>        +---[5.78% 213.316132ms ] cn.probiecoder.adminclient.TestController:sleep_213_ms() #17<br>        +---[8.52% 314.354881ms ] cn.probiecoder.adminclient.TestController:sleep_314_ms() #18<br>        +---[11.24% 414.624544ms ] cn.probiecoder.adminclient.TestController:recall_5_times() #19<br>        +---[0.00% min=0.028151ms,max=0.038561ms,total=0.167493ms,count=5] kotlin.random.Random$Default:nextLong() #22<br>        `---[11.75% min=11.291751ms,max=176.242833ms,total=433.429189ms,count=5] cn.probiecoder.adminclient.TestController:sleep_by_params() #22<br></code></pre></td></tr></table></figure>
+
+
+
+<p><a target="_blank" rel="noopener" href="https://arthas.aliyun.com/doc/trace.html">https://arthas.aliyun.com/doc/trace.html</a></p>
+<h3 id="三、watch"><a href="#三、watch" class="headerlink" title="三、watch"></a>三、watch</h3><p>使用<code>watch</code>观察指定函数的调用情况，能观察到的范围为：<code>返回值</code>、<code>抛出异常</code>、<code>入参</code></p>
+<p>Usage：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">watch [-b] [-e] [-x &lt;value&gt;] [-f] [-h] [-n &lt;value&gt;] [-m &lt;value&gt;] [-E] [-M &lt;value&gt;] [-s] [-v] class-pattern method-pattern [express] [condition-express] <br></code></pre></td></tr></table></figure>
+
+
+
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><em>class-pattern</em></td>
+<td>类名表达式匹配，支持模糊匹配，通配符使用<code>*</code></td>
+</tr>
+<tr>
+<td><em>method-pattern</em></td>
+<td>方法名表达式匹配，支持模糊匹配，通配符使用<code>*</code></td>
+</tr>
+<tr>
+<td><em>express</em></td>
+<td>观察表达式，默认值：<code>&#123;params, target, returnObj&#125;</code></td>
+</tr>
+<tr>
+<td><em>condition-express</em></td>
+<td>条件表达式</td>
+</tr>
+<tr>
+<td><code>-b</code></td>
+<td>在<strong>函数调用之前</strong>观察 <code>--before</code></td>
+</tr>
+<tr>
+<td><code>-e</code></td>
+<td>在<strong>函数异常之后</strong>观察 <code>--exception</code></td>
+</tr>
+<tr>
+<td><code>-s</code></td>
+<td>在<strong>函数返回之后</strong>观察 <code>--success</code></td>
+</tr>
+<tr>
+<td><code>-f</code></td>
+<td>在<strong>函数结束之后</strong>(正常返回和异常返回)观察 <code>--finish</code></td>
+</tr>
+<tr>
+<td><code>-E</code></td>
+<td>开启正则表达式匹配，默认为通配符匹配 <code>--regex</code></td>
+</tr>
+<tr>
+<td><code>-x</code></td>
+<td>指定输出结果的属性遍历深度，默认为 1，最大值是 4，适合与对象多层嵌套情况</td>
+</tr>
+</tbody></table>
+<h4 id="1、观察函数调用返回时的参数、this-对象和返回值"><a href="#1、观察函数调用返回时的参数、this-对象和返回值" class="headerlink" title="1、观察函数调用返回时的参数、this 对象和返回值"></a>1、观察函数调用返回时的参数、this 对象和返回值</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">arthas@17533]$ </span><span class="language-bash">watch cn.probiecoder.adminclient.TestController hello</span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 1) cost in 46 ms, listenerId: 5<br>method=cn.probiecoder.adminclient.TestController.hello location=AtExit<br>ts=2024-09-13 13:55:55.049; [cost=4074.771222ms] result=@ArrayList[<br>    @Object[][isEmpty=false;size=1],<br>    @TestController[cn.probiecoder.adminclient.TestController@1b95d54b],<br>    @String[hello_probie],<br>]<br><br></code></pre></td></tr></table></figure>
+
+<p><code>location=AtExit</code>指明方法正常执行退出</p>
+<h4 id="2、观察方法指定位置参数"><a href="#2、观察方法指定位置参数" class="headerlink" title="2、观察方法指定位置参数"></a>2、观察方法指定位置参数</h4><p>参数位置通过 <code>[index]</code> 指定，可以通过逗号分割参数，如果使用<code>+</code>时，参数会被拼接</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@17533]$ </span><span class="language-bash">watch cn.probiecoder.adminclient.TestController hello <span class="hljs-string">&#x27;&#123;params[0]&#125;&#x27;</span> -b</span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 1) cost in 48 ms, listenerId: 9<br>method=cn.probiecoder.adminclient.TestController.hello location=AtEnter<br>ts=2024-09-13 14:00:02.530; [cost=0.022049ms] result=@ArrayList[<br>    @String[probie],<br>]<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">观察多个参数</span><br><span class="hljs-meta prompt_">[arthas@21542]$ </span><span class="language-bash">watch cn.probiecoder.adminclient.TestController hello <span class="hljs-string">&#x27;&#123;params[0],params[1]&#125;&#x27;</span> -b</span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 1) cost in 62 ms, listenerId: 3<br>method=cn.probiecoder.adminclient.TestController.hello location=AtEnter<br>ts=2024-09-13 14:03:06.547; [cost=0.021551ms] result=@ArrayList[<br>    @String[probie],<br>    @Integer[3],<br>]<br><br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>表达式核心变量：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="right">变量名</th>
+<th align="left">变量解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right"><code>loader</code></td>
+<td align="left">本次调用类所在的 <code>ClassLoader</code></td>
+</tr>
+<tr>
+<td align="right"><code>clazz</code></td>
+<td align="left">本次调用类的 <code>Class</code> 引用</td>
+</tr>
+<tr>
+<td align="right"><code>method</code></td>
+<td align="left">本次调用方法反射引用</td>
+</tr>
+<tr>
+<td align="right"><code>target</code></td>
+<td align="left">本次调用类的实例</td>
+</tr>
+<tr>
+<td align="right"><code>params</code></td>
+<td align="left">本次调用参数列表，这是一个数组，如果方法是无参方法则为空数组</td>
+</tr>
+<tr>
+<td align="right"><code>returnObj</code></td>
+<td align="left">本次调用返回的对象。当且仅当 <code>isReturn==true</code> 成立时候有效，表明方法调用是以正常返回的方式结束。如果当前方法无返回值 <code>void</code>，则值为 null</td>
+</tr>
+<tr>
+<td align="right"><code>throwExp</code></td>
+<td align="left">本次调用抛出的异常。当且仅当 <code>isThrow==true</code> 成立时有效，表明方法调用是以抛出异常的方式结束。</td>
+</tr>
+<tr>
+<td align="right"><code>isBefore</code></td>
+<td align="left">辅助判断标记，当前的通知节点有可能是在方法一开始就通知，此时 <code>isBefore==true</code> 成立，同时 <code>isThrow==false</code> 和 <code>isReturn==false</code>，因为在方法刚开始时，还无法确定方法调用将会如何结束。</td>
+</tr>
+<tr>
+<td align="right"><code>isThrow</code></td>
+<td align="left">辅助判断标记，当前的方法调用以抛异常的形式结束。</td>
+</tr>
+<tr>
+<td align="right"><code>isReturn</code></td>
+<td align="left">辅助判断标记，当前的方法调用以正常返回的形式结束。</td>
+</tr>
+</tbody></table>
+<p>OGNL表达式官网：<a target="_blank" rel="noopener" href="https://commons.apache.org/dormant/commons-ognl/language-guide.html">https://commons.apache.org/dormant/commons-ognl/language-guide.html</a></p>
+<p>条件表达式核心变量：<a target="_blank" rel="noopener" href="https://arthas.aliyun.com/doc/advice-class.html">https://arthas.aliyun.com/doc/advice-class.html</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java/" class="category-chain-item">Java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Arthas常用命令使用</div>
+      <div>https://probiecoder.cn/java/arthas.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年10月31日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/java/groovy-script.html" title="配置运算表达式通过BigDecimal包裹">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">配置运算表达式通过BigDecimal包裹</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/java/grafana.html" title="Grafana安装与基础配置">
+                        <span class="hidden-mobile">Grafana安装与基础配置</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2024
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
