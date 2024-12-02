@@ -21,21 +21,21 @@
   <meta name="author" content="duwei">
   <meta name="keywords" content="">
   
-    <meta name="description" content="目的：通过反射的方式动态调用子类方法 代码示例： 123456789@Componentpublic class RequestContent &#123;    private final Map&lt;Class&lt;? extends RequestHandler&gt;, RequestHandler&gt; handlerMap &#x3D; new ConcurrentHashMap();">
+    <meta name="description" content="一、Spring拦截器中获取自定义注解并计算el表达式   类名 描述    ExpressionParser 表达式的解析器，主要用来生产表达式   Expression 表达式对象   EvaluationContext 表达式运行的上下文。包含了表达式运行时的参数，以及需要执行方法的类   1、自定义注解12345@Target(ElementType.METHOD)@Retention(R">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spring 通过构造器自动注入所有子类">
-<meta property="og:url" content="https://probiecoder.cn/spring/construct_autowired_subclass.html">
+<meta property="og:title" content="Spring EL表达式">
+<meta property="og:url" content="https://probiecoder.cn/spring/spring_el.html">
 <meta property="og:site_name" content="probie&#39;s blog">
-<meta property="og:description" content="目的：通过反射的方式动态调用子类方法 代码示例： 123456789@Componentpublic class RequestContent &#123;    private final Map&lt;Class&lt;? extends RequestHandler&gt;, RequestHandler&gt; handlerMap &#x3D; new ConcurrentHashMap();">
+<meta property="og:description" content="一、Spring拦截器中获取自定义注解并计算el表达式   类名 描述    ExpressionParser 表达式的解析器，主要用来生产表达式   Expression 表达式对象   EvaluationContext 表达式运行的上下文。包含了表达式运行时的参数，以及需要执行方法的类   1、自定义注解12345@Target(ElementType.METHOD)@Retention(R">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-12-02T02:19:54.074Z">
-<meta property="article:modified_time" content="2024-12-02T02:33:08.784Z">
+<meta property="article:published_time" content="2024-12-02T02:43:00.922Z">
+<meta property="article:modified_time" content="2024-12-02T03:53:08.598Z">
 <meta property="article:author" content="duwei">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Spring 通过构造器自动注入所有子类 - probie&#39;s blog</title>
+  <title>Spring EL表达式 - probie&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -189,7 +189,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Spring 通过构造器自动注入所有子类"></span>
+            <span id="subtitle" data-typed-text="Spring EL表达式"></span>
           
         </div>
 
@@ -200,7 +200,7 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-12-02 10:19" pubdate>
+        <time datetime="2024-12-02 10:43" pubdate>
           2024年12月2日 上午
         </time>
       </span>
@@ -212,7 +212,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          55 字
+          278 字
         
       </span>
     
@@ -223,7 +223,7 @@
         
         
         
-          1 分钟
+          3 分钟
         
       </span>
     
@@ -260,15 +260,55 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Spring 通过构造器自动注入所有子类</h1>
+            <h1 id="seo-header">Spring EL表达式</h1>
             
             
               <div class="markdown-body">
                 
-                <p><strong>目的：</strong>通过反射的方式动态调用子类方法</p>
-<p>代码示例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RequestContent</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Map&lt;Class&lt;? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">RequestHandler</span>&gt;, RequestHandler&gt; handlerMap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConcurrentHashMap</span>();<br>    <br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">RequestContext</span><span class="hljs-params">(Map&lt;String, RequestHandler&gt; handlers)</span> &#123;<br>        handler.forEach((k, v) -&gt; <span class="hljs-built_in">this</span>.handlerMap.put(v.getClass(), v));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+                <h4 id=""><a href="#" class="headerlink" title=""></a></h4><h3 id="一、Spring拦截器中获取自定义注解并计算el表达式"><a href="#一、Spring拦截器中获取自定义注解并计算el表达式" class="headerlink" title="一、Spring拦截器中获取自定义注解并计算el表达式"></a>一、Spring拦截器中获取自定义注解并计算el表达式</h3><table>
+<thead>
+<tr>
+<th>类名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ExpressionParser</code></td>
+<td>表达式的解析器，主要用来生产表达式</td>
+</tr>
+<tr>
+<td><code>Expression</code></td>
+<td>表达式对象</td>
+</tr>
+<tr>
+<td><code>EvaluationContext</code></td>
+<td>表达式运行的上下文。包含了表达式运行时的参数，以及需要执行方法的类</td>
+</tr>
+</tbody></table>
+<h4 id="1、自定义注解"><a href="#1、自定义注解" class="headerlink" title="1、自定义注解"></a>1、自定义注解</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Target(ElementType.METHOD)</span><br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> CompletionInstance &#123;<br>    String <span class="hljs-title function_">instanceId</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 
+
+
+<h4 id="2、注解使用SpEL"><a href="#2、注解使用SpEL" class="headerlink" title="2、注解使用SpEL"></a>2、注解使用SpEL</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@CompletionInstance(instanceId = &quot;#dto.instanceId&quot;)</span><br></code></pre></td></tr></table></figure>
+
+<p><code>dto</code>为一个对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Data</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Dto</span> &#123;<br>    <span class="hljs-keyword">private</span> Long instanceId;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="3、定义Aspect拦截"><a href="#3、定义Aspect拦截" class="headerlink" title="3、定义Aspect拦截"></a>3、定义Aspect拦截</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Aspect</span><br><span class="hljs-meta">@Component</span><br><span class="hljs-meta">@Order</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CompletionInstanceAspect</span> &#123;<br>    <span class="hljs-meta">@Around(value = &quot;@annotation(completionInstance)&quot;)</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">doProcess</span><span class="hljs-params">(ProceedingJoinPoint pjp, CompletionInstance completionInstance)</span> &#123;<br>        <span class="hljs-comment">// xxx</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><code>@Order</code>指定<code>Aspect</code>拦截优先级</li>
+<li><code>@annotation</code>括号中为方法定义的需要拦截的注解参数名</li>
+</ul>
+<h4 id="4、解析SpEL获取实际值"><a href="#4、解析SpEL获取实际值" class="headerlink" title="4、解析SpEL获取实际值"></a>4、解析SpEL获取实际值</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">MethodSignature</span> <span class="hljs-variable">signature</span> <span class="hljs-operator">=</span> (MethodSignature) pjp.getSignature();<br><span class="hljs-comment">// 获取方法参数</span><br>Object[] args = pjp.getArgs();<br><br><span class="hljs-comment">// 创建SpEL解析器</span><br><span class="hljs-type">ExpressionParser</span> <span class="hljs-variable">parser</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SpelExpressionParser</span>();<br><br><span class="hljs-comment">// 创建SpEL上下文</span><br><span class="hljs-type">StandardEvaluationContext</span> <span class="hljs-variable">context</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StandardEvaluationContext</span>();<br><span class="hljs-comment">// 此处设置SpEL表达式计算所需变量</span><br>String[] parameterNames = signature.getParameterNames();<br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; parameterNames.length; i++) &#123;<br>    context.setVariable(parameterNames[i], args[i]);<br>&#125;<br><br><span class="hljs-comment">// 获取注解上的SpEL表达式</span><br><span class="hljs-type">String</span> <span class="hljs-variable">expressionString</span> <span class="hljs-operator">=</span> completionInstance.instanceId();<br><br><span class="hljs-comment">// 解析和计算SpEL表达式</span><br><span class="hljs-type">Expression</span> <span class="hljs-variable">expression</span> <span class="hljs-operator">=</span> parser.parseExpression(expressionString);<br><span class="hljs-type">Long</span> <span class="hljs-variable">instanceId</span> <span class="hljs-operator">=</span> expression.getValue(context, Long.class);<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>可以将SpEL解析逻辑按需抽取</strong></p>
 
                 
               </div>
@@ -307,8 +347,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Spring 通过构造器自动注入所有子类</div>
-      <div>https://probiecoder.cn/spring/construct_autowired_subclass.html</div>
+      <div>Spring EL表达式</div>
+      <div>https://probiecoder.cn/spring/spring_el.html</div>
     </div>
     <div class="license-meta">
       
@@ -352,18 +392,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/spring/spring_el.html" title="Spring EL表达式">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Spring EL表达式</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/12/02/shell/Untitled/" title="">
-                        <span class="hidden-mobile"></span>
+                      <a href="/spring/construct_autowired_subclass.html" title="Spring 通过构造器自动注入所有子类">
+                        <span class="hidden-mobile">Spring 通过构造器自动注入所有子类</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
