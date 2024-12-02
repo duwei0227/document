@@ -21,21 +21,21 @@
   <meta name="author" content="duwei">
   <meta name="keywords" content="">
   
-    <meta name="description" content="一、 Fedora 系统安装 MySQL Server1. 更新软件包索引首先，确保你的软件包索引是最新的： 1sudo dnf update  2. 安装 MySQL ServerMySQL 在 Fedora 上提供了官方的 mysql-server 包。运行以下命令来安装 MySQL： 1sudo dnf install mysql-server  3. 启动 MySQL 服务安装完成后，需要">
+    <meta name="description" content="目的：通过反射的方式动态调用子类方法 代码示例： 123456789@Componentpublic class RequestContent &#123;    private final Map&lt;Class&lt;? extends RequestHandler&gt;, RequestHandler&gt; handlerMap &#x3D; new ConcurrentHashMap();">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL安装">
-<meta property="og:url" content="https://probiecoder.cn/mysql/install.html">
+<meta property="og:title" content="Spring 通过构造器自动注入所有子类">
+<meta property="og:url" content="https://probiecoder.cn/spring/construct_autowired_subclass.html">
 <meta property="og:site_name" content="probie&#39;s blog">
-<meta property="og:description" content="一、 Fedora 系统安装 MySQL Server1. 更新软件包索引首先，确保你的软件包索引是最新的： 1sudo dnf update  2. 安装 MySQL ServerMySQL 在 Fedora 上提供了官方的 mysql-server 包。运行以下命令来安装 MySQL： 1sudo dnf install mysql-server  3. 启动 MySQL 服务安装完成后，需要">
+<meta property="og:description" content="目的：通过反射的方式动态调用子类方法 代码示例： 123456789@Componentpublic class RequestContent &#123;    private final Map&lt;Class&lt;? extends RequestHandler&gt;, RequestHandler&gt; handlerMap &#x3D; new ConcurrentHashMap();">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-11-06T08:11:15.799Z">
-<meta property="article:modified_time" content="2024-11-06T08:18:05.402Z">
+<meta property="article:published_time" content="2024-12-02T02:19:54.074Z">
+<meta property="article:modified_time" content="2024-12-02T02:33:08.784Z">
 <meta property="article:author" content="duwei">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>MySQL安装 - probie&#39;s blog</title>
+  <title>Spring 通过构造器自动注入所有子类 - probie&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -189,7 +189,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="MySQL安装"></span>
+            <span id="subtitle" data-typed-text="Spring 通过构造器自动注入所有子类"></span>
           
         </div>
 
@@ -200,8 +200,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-11-06 16:11" pubdate>
-          2024年11月6日 下午
+        <time datetime="2024-12-02 10:19" pubdate>
+          2024年12月2日 上午
         </time>
       </span>
     
@@ -212,7 +212,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          353 字
+          55 字
         
       </span>
     
@@ -223,7 +223,7 @@
         
         
         
-          3 分钟
+          1 分钟
         
       </span>
     
@@ -260,41 +260,15 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">MySQL安装</h1>
+            <h1 id="seo-header">Spring 通过构造器自动注入所有子类</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="一、-Fedora-系统安装-MySQL-Server"><a href="#一、-Fedora-系统安装-MySQL-Server" class="headerlink" title="一、 Fedora 系统安装 MySQL Server"></a>一、 Fedora 系统安装 MySQL Server</h2><h3 id="1-更新软件包索引"><a href="#1-更新软件包索引" class="headerlink" title="1. 更新软件包索引"></a>1. <strong>更新软件包索引</strong></h3><p>首先，确保你的软件包索引是最新的：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> dnf update<br></code></pre></td></tr></table></figure>
+                <p><strong>目的：</strong>通过反射的方式动态调用子类方法</p>
+<p>代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RequestContent</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Map&lt;Class&lt;? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">RequestHandler</span>&gt;, RequestHandler&gt; handlerMap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConcurrentHashMap</span>();<br>    <br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">RequestContext</span><span class="hljs-params">(Map&lt;String, RequestHandler&gt; handlers)</span> &#123;<br>        handler.forEach((k, v) -&gt; <span class="hljs-built_in">this</span>.handlerMap.put(v.getClass(), v));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<h3 id="2-安装-MySQL-Server"><a href="#2-安装-MySQL-Server" class="headerlink" title="2. 安装 MySQL Server"></a>2. <strong>安装 MySQL Server</strong></h3><p>MySQL 在 Fedora 上提供了官方的 <code>mysql-server</code> 包。运行以下命令来安装 MySQL：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> dnf install mysql-server<br></code></pre></td></tr></table></figure>
-
-<h3 id="3-启动-MySQL-服务"><a href="#3-启动-MySQL-服务" class="headerlink" title="3. 启动 MySQL 服务"></a>3. <strong>启动 MySQL 服务</strong></h3><p>安装完成后，需要启动 MySQL 服务。运行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> systemctl start mysqld<br></code></pre></td></tr></table></figure>
-
-<h3 id="4-启用-MySQL-在系统启动时自动启动"><a href="#4-启用-MySQL-在系统启动时自动启动" class="headerlink" title="4. 启用 MySQL 在系统启动时自动启动"></a>4. <strong>启用 MySQL 在系统启动时自动启动</strong></h3><p>为了确保 MySQL 服务在系统启动时自动启动，可以使用以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> systemctl <span class="hljs-built_in">enable</span> mysqld<br></code></pre></td></tr></table></figure>
-
-<h3 id="5-查看-MySQL-服务状态"><a href="#5-查看-MySQL-服务状态" class="headerlink" title="5. 查看 MySQL 服务状态"></a>5. <strong>查看 MySQL 服务状态</strong></h3><p>确认 MySQL 服务正在运行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> systemctl status mysqld<br></code></pre></td></tr></table></figure>
-
-<p>如果 MySQL 正常运行，你会看到服务状态为 <code>active (running)</code>。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">● mysqld.service - MySQL 8.0 database server<br>     Loaded: loaded (/usr/lib/systemd/system/mysqld.service; disabled; preset: disabl&gt;<br>    Drop-In: /usr/lib/systemd/system/service.d<br>             └─10-timeout-abort.conf<br>     Active: active (running) since Wed 2024-11-06 16:07:03 CST; 5s ago<br><br></code></pre></td></tr></table></figure>
-
-<h3 id="6-运行-MySQL-安全配置"><a href="#6-运行-MySQL-安全配置" class="headerlink" title="6. 运行 MySQL 安全配置"></a>6. <strong>运行 MySQL 安全配置</strong></h3><p>运行 MySQL 的安全配置脚本以设置 root 密码、删除默认的匿名用户、禁用远程 root 登录等安全选项：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> mysql_secure_installation<br></code></pre></td></tr></table></figure>
-
-<p>按提示设置 MySQL root 用户的密码，并选择是否删除匿名用户、禁用远程 root 登录等。</p>
-<h3 id="8-登录到-MySQL"><a href="#8-登录到-MySQL" class="headerlink" title="8. 登录到 MySQL"></a>8. <strong>登录到 MySQL</strong></h3><p>使用设置的 root 密码登录到 MySQL：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">mysql -u root -p<br></code></pre></td></tr></table></figure>
-
-<p>系统会提示你输入密码，输入你在安全配置过程中设置的 root 密码即可。</p>
-<h3 id="9-验证-MySQL-安装"><a href="#9-验证-MySQL-安装" class="headerlink" title="9. 验证 MySQL 安装"></a>9. <strong>验证 MySQL 安装</strong></h3><p>登录后，你可以运行以下 SQL 查询，验证 MySQL 是否正确安装并正常运行：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> VERSION();<br></code></pre></td></tr></table></figure>
-
-<p>如果返回 MySQL 版本号，说明 MySQL 安装成功。</p>
 
                 
               </div>
@@ -313,7 +287,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/MySQL/" class="category-chain-item">MySQL</a>
+  <a href="/categories/Spring/" class="category-chain-item">Spring</a>
   
   
 
@@ -333,8 +307,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>MySQL安装</div>
-      <div>https://probiecoder.cn/mysql/install.html</div>
+      <div>Spring 通过构造器自动注入所有子类</div>
+      <div>https://probiecoder.cn/spring/construct_autowired_subclass.html</div>
     </div>
     <div class="license-meta">
       
@@ -346,7 +320,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年11月6日</div>
+          <div>2024年12月2日</div>
         </div>
       
       
@@ -378,18 +352,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/11/06/mysql/MySQL%E6%97%A5%E5%BF%97/" title="">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile"></span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/python/elementtree.html" title="Python使用ElementTree操作XML">
-                        <span class="hidden-mobile">Python使用ElementTree操作XML</span>
+                      <a href="/2024/12/02/shell/Untitled/" title="">
+                        <span class="hidden-mobile"></span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
