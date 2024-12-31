@@ -1,3 +1,10 @@
+---
+layout: post
+title: MySQL日志
+categories: [MySQL]
+permalink: mysql/log.html
+---
+
 
 
 
