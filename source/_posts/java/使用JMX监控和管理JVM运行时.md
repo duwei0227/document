@@ -67,7 +67,7 @@ permalink: java/jmx.html
 * 使用图形工具，例如 `VisualVM`(需要安装`VisualVM-BufferMonitor`插件)
 * 使用`jcmd`监控`Native Memory`的使用
   * 启用直接内存跟踪 `-XX:NativeMemoryTracking=options`,`options`支持`summary`：提供总的内存使用统计，开销较低，`detail`：提供详细的内存分配信息，开销较高；一般启用`summary`就可以
-  * 使用`jcmd pid VM.native_memory [summary|detail]`查看内存分布情况，直接内存一般在`Direct`或`Internal`模块下，可以使用`jcmd pid VM.native_memory baseline`创建数据基线，然后通过`jcmd pid VM.native_memory [summary|detail].diff`和基线比较，确定内存对比基线的升降
+  * 使用`jcmd pid VM.native_memory [summary|detail]`查看内存分布情况，直接内存一般在`Direct`或`Internal(jdk1.8)`模块下，可以使用`jcmd pid VM.native_memory baseline`创建数据基线，然后通过`jcmd pid VM.native_memory [summary|detail].diff`和基线比较，确定内存对比基线的升降
 
 
 
