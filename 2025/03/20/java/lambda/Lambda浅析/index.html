@@ -21,15 +21,15 @@
   <meta name="author" content="duwei">
   <meta name="keywords" content="">
   
-    <meta name="description" content="一、Lambda 表达式核心概念1. 基本语法12(parameters) -&gt; expression(parameters) -&gt; &#123; statements; &#125;  2. 类型推断机制12&#x2F;&#x2F; 编译器自动推断参数类型Function&lt;String, Integer&gt; lengthFunc &#x3D; s -&gt; s.length();    二、方法引用详">
+    <meta name="description" content="一、Lambda 表达式核心概念1. 基本语法12(parameters) -&gt; expression(parameters) -&gt; &#123; statements; &#125;   输入参数 固定格式： -&gt; 逻辑代码块  2. 类型推断机制12&#x2F;&#x2F; 编译器自动推断参数类型Function&lt;String, Integer&gt; lengthFunc &#x3D; s -&amp;g">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Lambda浅析">
 <meta property="og:url" content="https://probiecoder.cn/2025/03/20/java/lambda/Lambda%E6%B5%85%E6%9E%90/index.html">
 <meta property="og:site_name" content="probie&#39;s blog">
-<meta property="og:description" content="一、Lambda 表达式核心概念1. 基本语法12(parameters) -&gt; expression(parameters) -&gt; &#123; statements; &#125;  2. 类型推断机制12&#x2F;&#x2F; 编译器自动推断参数类型Function&lt;String, Integer&gt; lengthFunc &#x3D; s -&gt; s.length();    二、方法引用详">
+<meta property="og:description" content="一、Lambda 表达式核心概念1. 基本语法12(parameters) -&gt; expression(parameters) -&gt; &#123; statements; &#125;   输入参数 固定格式： -&gt; 逻辑代码块  2. 类型推断机制12&#x2F;&#x2F; 编译器自动推断参数类型Function&lt;String, Integer&gt; lengthFunc &#x3D; s -&amp;g">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-03-20T02:53:41.600Z">
-<meta property="article:modified_time" content="2025-03-21T01:10:04.997Z">
+<meta property="article:modified_time" content="2025-03-21T01:42:55.531Z">
 <meta property="article:author" content="duwei">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -212,7 +212,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          874 字
+          1.1k 字
         
       </span>
     
@@ -223,7 +223,7 @@
         
         
         
-          8 分钟
+          9 分钟
         
       </span>
     
@@ -267,9 +267,21 @@
                 
                 <h2 id="一、Lambda-表达式核心概念"><a href="#一、Lambda-表达式核心概念" class="headerlink" title="一、Lambda 表达式核心概念"></a>一、Lambda 表达式核心概念</h2><h3 id="1-基本语法"><a href="#1-基本语法" class="headerlink" title="1. 基本语法"></a>1. 基本语法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">(parameters) -&gt; expression<br>(parameters) -&gt; &#123; statements; &#125;<br></code></pre></td></tr></table></figure>
 
+<ul>
+<li>输入参数</li>
+<li>固定格式： <code>-&gt;</code></li>
+<li>逻辑代码块</li>
+</ul>
 <h3 id="2-类型推断机制"><a href="#2-类型推断机制" class="headerlink" title="2. 类型推断机制"></a>2. 类型推断机制</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 编译器自动推断参数类型</span><br>Function&lt;String, Integer&gt; lengthFunc = s -&gt; s.length(); <br></code></pre></td></tr></table></figure>
 
-<hr>
+<p>lambda表达式简化过程：</p>
+<ul>
+<li>省略输入参数类型</li>
+<li>参数数量判断：只有一个参数时可以去掉括号</li>
+<li>代码块简化：只有一行时，可以省略花括号，直接跟在 <code>-&gt;</code> 后边</li>
+<li>使用方法引用</li>
+</ul>
+<p><span style="color:red">Lambda表达式实际上就是对函数式接口方法的实现</span></p>
 <h2 id="二、方法引用详解"><a href="#二、方法引用详解" class="headerlink" title="二、方法引用详解"></a>二、方法引用详解</h2><h3 id="1-方法引用类型"><a href="#1-方法引用类型" class="headerlink" title="1. 方法引用类型"></a>1. 方法引用类型</h3><table>
 <thead>
 <tr>
@@ -309,7 +321,11 @@
 <h3 id="3-方法引用-vs-Lambda"><a href="#3-方法引用-vs-Lambda" class="headerlink" title="3. 方法引用 vs Lambda"></a>3. 方法引用 vs Lambda</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// Lambda 表达式</span><br>Function&lt;String, Integer&gt; f1 = s -&gt; s.length();<br><br><span class="hljs-comment">// 方法引用</span><br>Function&lt;String, Integer&gt; f2 = String::length;<br></code></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="三、核心函数式接口"><a href="#三、核心函数式接口" class="headerlink" title="三、核心函数式接口"></a>三、核心函数式接口</h2><h3 id="1-四大基础接口"><a href="#1-四大基础接口" class="headerlink" title="1. 四大基础接口"></a>1. 四大基础接口</h3><table>
+<h2 id="三、核心函数式接口"><a href="#三、核心函数式接口" class="headerlink" title="三、核心函数式接口"></a>三、核心函数式接口</h2><p>函数式接口：只包含一个抽象方法的接口为函数式接口，lambda表达式要求必须为函数式接口</p>
+<p>接口中<code>default</code>方法和<code>static</code>方法不再计数内。</p>
+<p><code>@FunctionalInterface</code>注解不是必需的，添加注解可以让编译器识别当前接口为函数时接口，如果接口中定义超过一个<code>abstract</code>方法时会抛出错误：</p>
+<p><code>Multiple non-overriding abstract methods found in interface cn.probiecoder.lambda.DoubleRandomSupplier</code></p>
+<h3 id="1-四大基础接口"><a href="#1-四大基础接口" class="headerlink" title="1. 四大基础接口"></a>1. 四大基础接口</h3><table>
 <thead>
 <tr>
 <th>接口</th>
