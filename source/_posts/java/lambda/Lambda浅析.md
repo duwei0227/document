@@ -15,13 +15,27 @@ categories: [Java]
 (parameters) -> { statements; }
 ```
 
+* 输入参数
+* 固定格式： `->`
+* 逻辑代码块
+
 ### 2. 类型推断机制
+
 ```java
 // 编译器自动推断参数类型
 Function<String, Integer> lengthFunc = s -> s.length(); 
 ```
 
----
+lambda表达式简化过程：
+
+* 省略输入参数类型
+* 参数数量判断：只有一个参数时可以去掉括号
+* 代码块简化：只有一行时，可以省略花括号，直接跟在 `->` 后边
+* 使用方法引用
+
+
+
+<span style="color:red">Lambda表达式实际上就是对函数式接口方法的实现</span>
 
 
 
@@ -63,7 +77,18 @@ Function<String, Integer> f2 = String::length;
 
 ## 三、核心函数式接口
 
+函数式接口：只包含一个抽象方法的接口为函数式接口，lambda表达式要求必须为函数式接口
+
+接口中`default`方法和`static`方法不再计数内。
+
+`@FunctionalInterface`注解不是必需的，添加注解可以让编译器识别当前接口为函数时接口，如果接口中定义超过一个`abstract`方法时会抛出错误：
+
+`Multiple non-overriding abstract methods found in interface cn.probiecoder.lambda.DoubleRandomSupplier`
+
+
+
 ### 1. 四大基础接口
+
 | 接口            | 方法签名            | 典型应用            |
 | --------------- | ------------------- | ------------------- |
 | `Supplier<T>`   | `T get()`           | 对象工厂/延迟初始化 |
