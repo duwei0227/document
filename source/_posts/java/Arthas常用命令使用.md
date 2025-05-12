@@ -728,10 +728,61 @@ Command execution times exceed limit: 1, so command will exit. You can set it wi
 
 
 
-## 三、附录
+## 三、后台任务
+
+需要监控偶发性行为时，可以借助后台任务捕获，同时将捕获结果可以输出到文件
+
+### 1、执行后台任务
+
+在命令最后边添加 **`*`** 执行后台任务，命令不会阻断终端屏幕，可以继续执行其他任务
+
+```java
+trace Class method &
+```
+
+
+
+### 2、查看后台任务
+
+```java
+jobs
+```
+
+```java
+[arthas@252]$ jobs
+[10]*
+       Running           trace org.apache.aries.spifly.Util  storeContextClassloader &
+       execution count : 0
+       start time      : Mon May 12 19:33:48 CST 2025
+       timeout date    : Tue May 13 19:33:48 CST 2025
+       session         : eb3cedf4-75a1-488c-af93-df3405ea7398 (current)
+```
+
+结果会输出任务id、任务状态，已执行捕获次数等信息
+
+
+
+### 3、停止命令
+
+异步执行的命令，如果希望停止，可执行`kill <job-id>
+
+
+
+### 4、任务输出重定向
+
+可通过`>`或者`>>`将任务输出结果输出到指定的文件中，可以和`&`一起使用，实现 arthas 命令的后台异步任务
+
+```shell
+$ trace Test t >> test.out &
+```
+
+
+
+## 四、附录
 
 官方文档：[https://arthas.aliyun.com/doc/quick-start.html](https://arthas.aliyun.com/doc/quick-start.html)
 
 OGNL表达式官网：[https://commons.apache.org/dormant/commons-ognl/language-guide.html](https://commons.apache.org/dormant/commons-ognl/language-guide.html)
 
 命令参数：`[xx]`选项为可选参数	
+
