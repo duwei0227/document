@@ -1,3 +1,12 @@
+---
+layout: post
+title: MyBatis自定义TypeHandler
+categories: [MyBatis]
+permalink: mybatis/typehandler.html
+tags: MyBatis
+date: {{date}}
+---
+
 背景：使用数据库存储 `json` 格式数据时，需要通过 `MyBatis` 转换映射为自定义数据类型。
 
 ## 一、项目依赖

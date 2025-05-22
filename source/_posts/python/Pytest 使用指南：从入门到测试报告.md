@@ -1,3 +1,12 @@
+---
+layout: post
+title: Pytest 使用指南：从入门到测试报告
+categories: [Python]
+permalink: python/pytest/tutorial.html
+tags: 自动化
+date: {{date}}
+---
+
 ## 一、入门
 
 ### 1、安装`pytest`
