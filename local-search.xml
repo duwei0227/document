@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>全局资源文件加载</title>
+    <link href="/python/global-env-load.html"/>
+    <url>/python/global-env-load.html</url>
+    
+    <content type="html"><![CDATA[<h2 id="一、使用-classmethod-全局加载"><a href="#一、使用-classmethod-全局加载" class="headerlink" title="一、使用 @classmethod 全局加载"></a>一、使用 <code>@classmethod</code> 全局加载</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tomllib<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Config</span>:<br>    _profile = <span class="hljs-literal">None</span><br><br><span class="hljs-meta">    @classmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__load</span>(<span class="hljs-params">cls</span>):<br>        <span class="hljs-keyword">if</span> cls._profile <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">import</span> os<br>            <span class="hljs-comment"># 根据当前配置加载文件获取 config.toml 文件的配置路径</span><br>            root_dir = os.path.dirname(os.path.abspath(__file__))<br>            <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(os.path.join(root_dir, <span class="hljs-string">&quot;config.toml&quot;</span>), <span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> fp:<br>                config_data = tomllib.load(fp)<br>                profiles = config_data.get(<span class="hljs-string">&quot;profiles&quot;</span>)<br>                active = profiles.get(<span class="hljs-string">&quot;active&quot;</span>)<br>                cls._profile = profiles.get(active)<br>        <span class="hljs-keyword">return</span> cls._profile<br><br><span class="hljs-meta">    @classmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get</span>(<span class="hljs-params">cls, key: <span class="hljs-built_in">str</span></span>):<br>        <span class="hljs-keyword">if</span> cls._profile <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            cls.__load()<br>        <span class="hljs-keyword">return</span> cls._profile.get(key)<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>Python</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>虚拟机性能监控与故障处理基础工具</title>
     <link href="/java/jvm/base-tool.html"/>
     <url>/java/jvm/base-tool.html</url>
@@ -48,19 +67,6 @@
       <tag>MyBatis</tag>
       
     </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title></title>
-    <link href="/2025/04/23/python/%E5%85%A8%E5%B1%80%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6%E5%8A%A0%E8%BD%BD/"/>
-    <url>/2025/04/23/python/%E5%85%A8%E5%B1%80%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6%E5%8A%A0%E8%BD%BD/</url>
-    
-    <content type="html"><![CDATA[<h2 id="一、使用-classmethod-全局加载"><a href="#一、使用-classmethod-全局加载" class="headerlink" title="一、使用 @classmethod 全局加载"></a>一、使用 <code>@classmethod</code> 全局加载</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tomllib<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Config</span>:<br>    _profile = <span class="hljs-literal">None</span><br><br><span class="hljs-meta">    @classmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__load</span>(<span class="hljs-params">cls</span>):<br>        <span class="hljs-keyword">if</span> cls._profile <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">import</span> os<br>            <span class="hljs-comment"># 根据当前配置加载文件获取 config.toml 文件的配置路径</span><br>            root_dir = os.path.dirname(os.path.abspath(__file__))<br>            <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(os.path.join(root_dir, <span class="hljs-string">&quot;config.toml&quot;</span>), <span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> fp:<br>                config_data = tomllib.load(fp)<br>                profiles = config_data.get(<span class="hljs-string">&quot;profiles&quot;</span>)<br>                active = profiles.get(<span class="hljs-string">&quot;active&quot;</span>)<br>                cls._profile = profiles.get(active)<br>        <span class="hljs-keyword">return</span> cls._profile<br><br><span class="hljs-meta">    @classmethod</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get</span>(<span class="hljs-params">cls, key: <span class="hljs-built_in">str</span></span>):<br>        <span class="hljs-keyword">if</span> cls._profile <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            cls.__load()<br>        <span class="hljs-keyword">return</span> cls._profile.get(key)<br></code></pre></td></tr></table></figure>]]></content>
-    
-    
     
   </entry>
   
@@ -1048,6 +1054,25 @@
   
   
   <entry>
+    <title>Java忽略https证书验证</title>
+    <link href="/2025/04/22/java/2020-03-30-Java%E5%BF%BD%E7%95%A5https%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81/"/>
+    <url>/2025/04/22/java/2020-03-30-Java%E5%BF%BD%E7%95%A5https%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81/</url>
+    
+    <content type="html"><![CDATA[<p>Java忽略https证书验证</p><p>   项目开发过程中，尤其内部项目可能会用到自签名证书，这个时候就需要忽略对证书的验证。</p><p>版本环境：  </p><blockquote><p>jdk 1.8<br>httpclient-4.5.5</p></blockquote><p>示例：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> HttpComponentsClientHttpRequestFactory httpRequesetFactory;<br><br><span class="hljs-keyword">static</span> &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-type">SSLContext</span> <span class="hljs-variable">sslContext</span> <span class="hljs-operator">=</span> SSLContextBuilder.creaet()<br>                        .loadTrustMaterial(<span class="hljs-keyword">new</span> <span class="hljs-title class_">TrustAllStrategy</span>());<br>                        .build();<br><br>        <span class="hljs-type">HostnameVerifier</span> <span class="hljs-variable">allowAllHosts</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NoopHostnameVerifier</span>();<br>        <span class="hljs-type">SSLConnectionSocketFactory</span> <span class="hljs-variable">factory</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SSLConnectionSocketFactory</span>(sslContext, allowAllHosts);<br><br>        <span class="hljs-type">CloseableHttpClient</span> <span class="hljs-variable">httpClient</span> <span class="hljs-operator">=</span> HttpClients.custom()<br>                .setSSLSocketFactory(factory)<br>                .setMacConnTotal(<span class="hljs-number">1000</span>)<br>                .setMaxConnPerRoute(<span class="hljs-number">200</span>)  <span class="hljs-comment">// 单个路由地址请求并发数</span><br>                .build();<br><br>        httpRequesetFactory = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpComponentsClientHttpRequestFactory</span>(httpClient);<br>    &#125; <span class="hljs-keyword">catch</span> (Exeception e) &#123;<br>        log.error(e.getMessage, e);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>Java</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Java中的正则表达式</title>
     <link href="/java/regexp.html"/>
     <url>/java/regexp.html</url>
@@ -1067,25 +1092,6 @@
       <tag>正则表达式</tag>
       
     </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>Java忽略https证书验证</title>
-    <link href="/2025/04/22/java/2020-03-30-Java%E5%BF%BD%E7%95%A5https%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81/"/>
-    <url>/2025/04/22/java/2020-03-30-Java%E5%BF%BD%E7%95%A5https%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81/</url>
-    
-    <content type="html"><![CDATA[<p>Java忽略https证书验证</p><p>   项目开发过程中，尤其内部项目可能会用到自签名证书，这个时候就需要忽略对证书的验证。</p><p>版本环境：  </p><blockquote><p>jdk 1.8<br>httpclient-4.5.5</p></blockquote><p>示例：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> HttpComponentsClientHttpRequestFactory httpRequesetFactory;<br><br><span class="hljs-keyword">static</span> &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-type">SSLContext</span> <span class="hljs-variable">sslContext</span> <span class="hljs-operator">=</span> SSLContextBuilder.creaet()<br>                        .loadTrustMaterial(<span class="hljs-keyword">new</span> <span class="hljs-title class_">TrustAllStrategy</span>());<br>                        .build();<br><br>        <span class="hljs-type">HostnameVerifier</span> <span class="hljs-variable">allowAllHosts</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NoopHostnameVerifier</span>();<br>        <span class="hljs-type">SSLConnectionSocketFactory</span> <span class="hljs-variable">factory</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SSLConnectionSocketFactory</span>(sslContext, allowAllHosts);<br><br>        <span class="hljs-type">CloseableHttpClient</span> <span class="hljs-variable">httpClient</span> <span class="hljs-operator">=</span> HttpClients.custom()<br>                .setSSLSocketFactory(factory)<br>                .setMacConnTotal(<span class="hljs-number">1000</span>)<br>                .setMaxConnPerRoute(<span class="hljs-number">200</span>)  <span class="hljs-comment">// 单个路由地址请求并发数</span><br>                .build();<br><br>        httpRequesetFactory = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpComponentsClientHttpRequestFactory</span>(httpClient);<br>    &#125; <span class="hljs-keyword">catch</span> (Exeception e) &#123;<br>        log.error(e.getMessage, e);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>]]></content>
-    
-    
-    <categories>
-      
-      <category>Java</category>
-      
-    </categories>
-    
     
   </entry>
   
