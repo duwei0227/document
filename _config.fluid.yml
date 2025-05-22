@@ -117,7 +117,8 @@ index:
   auto_excerpt:
     enable: false  # 开启自动摘要
   post_url_target: _blank
-  # banner_img: /img/bg/home.webp
+  banner_img: /img/bg/home.webp
+  banner_img_height: 60
   slogan:
     enable: false
     text: 这是一条 Slogan
@@ -129,27 +130,27 @@ index:
       headers: {}
       keys: ["hitokoto"]
 
-# category:
-#   banner_img: /img/bg/category.webp
-#   banner_img_height: 0
+category:
+  banner_img: /img/bg/category.webp
+  banner_img_height: 50
 
-# archive:
-#   banner_img: /img/bg/archive.webp
-#   banner_img_height: 0
+archive:
+  banner_img: /img/bg/archive.webp
+  banner_img_height: 50
 
 post:
-  banner_img: 
-#   banner_img_height: 0
+  banner_img: /img/bg/page.webp
+  banner_img_height: 40
 
 about:
   # avatar: /img/avatar.png
-  # banner_img: /img/bg/about.webp
-  # banner_img_height: 0
+  banner_img: /img/bg/about.webp
+  banner_img_height: 50
   name: "我"
   intro: "Java工程师"
   icons:
-    - { class: 'iconfont icon-github-fill', link: 'https://github.com', tip: 'GitHub' }
-    - { class: 'iconfont icon-wechat-fill', qrcode: '/img/favicon.png' }
+    - { class: 'iconfont icon-github-fill', link: 'https://github.com/duwei0227', tip: 'GitHub' }
+    # - { class: 'iconfont icon-wechat-fill', qrcode: '/img/favicon.png' }
 
 fun_features:
   typing: # 为 subtitle 添加打字机效果
