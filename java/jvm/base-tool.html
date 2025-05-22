@@ -29,7 +29,7 @@
 <meta property="og:description" content="1、 jps：虚拟机进程状况工具JVM Process Status Tool可以列出正在运行的虚拟机进程，并显示虚拟机执行主类(Main Class，main()函数所在的类)名称以及这些进程的本地虚拟机唯一ID(LVMID, Local Virtual Machine Identifier)。 语法： 1jps [options]  options选项：    选项 作用    -q 只输出L">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-05-20T05:16:25.530Z">
-<meta property="article:modified_time" content="2025-05-22T08:42:47.810Z">
+<meta property="article:modified_time" content="2025-05-22T09:12:59.844Z">
 <meta property="article:author" content="duwei">
 <meta property="article:tag" content="JVM">
 <meta name="twitter:card" content="summary_large_image">
@@ -380,8 +380,8 @@
 <td>输出<code>VM flag</code>值</td>
 </tr>
 <tr>
-<td>&#96;-flag [+</td>
-<td>-]<name>&#96;</td>
+<td><code>-flag [+|-]&lt;name&gt;</code></td>
+<td>启用或禁用<code>VM flag</code></td>
 </tr>
 <tr>
 <td><code>-flag &lt;name&gt;=&lt;value&gt;</code></td>
@@ -496,7 +496,7 @@
 <td>额外显示关于线程的附加信息，例如内存分配</td>
 </tr>
 </tbody></table>
-<h3 id="7、jcmd"><a href="#7、jcmd" class="headerlink" title="7、jcmd"></a>7、<code>jcmd</code></h3><p><code>JVM Command</code>虚拟机诊断命令工具，集成 <code>jmap</code>、<code>jstack</code>、<code>jinfo</code> 等传统工具的核心功能，支持动态获取 JVM 状态、生成诊断文件、修改运行时参数等。</p>
+<h3 id="7、jcmd：虚拟机诊断命令工具"><a href="#7、jcmd：虚拟机诊断命令工具" class="headerlink" title="7、jcmd：虚拟机诊断命令工具"></a>7、<code>jcmd</code>：虚拟机诊断命令工具</h3><p><code>JVM Command</code>虚拟机诊断命令工具，集成 <code>jmap</code>、<code>jstack</code>、<code>jinfo</code> 等传统工具的核心功能，支持动态获取 JVM 状态、生成诊断文件、修改运行时参数等。</p>
 <p>语法：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">jcmd &lt;pid&gt; &lt;command&gt; &lt;argument&gt;<br></code></pre></td></tr></table></figure>
 
@@ -803,7 +803,7 @@
 <li><p><strong>示例</strong>：  </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.info<br></code></pre></td></tr></table></figure></li>
 </ul>
-<h3 id="8、jhsdb"><a href="#8、jhsdb" class="headerlink" title="8、jhsdb"></a>8、<code>jhsdb</code></h3><p><code>Java HotSpot Debugger</code>是 JDK 提供的诊断工具，支持 <strong>实时进程调试</strong> 和 <strong>核心转储分析</strong>。它整合了 <code>jstack</code>、<code>jmap</code>、<code>jinfo</code> 等传统命令的功能，并扩展了底层调试能力，适用于内存泄漏、死锁、JVM 崩溃等复杂问题分析</p>
+<h3 id="8、jhsdb：虚拟机诊断Debugger"><a href="#8、jhsdb：虚拟机诊断Debugger" class="headerlink" title="8、jhsdb：虚拟机诊断Debugger"></a>8、<code>jhsdb</code>：虚拟机诊断Debugger</h3><p><code>Java HotSpot Debugger</code>是 JDK 提供的诊断工具，支持 <strong>实时进程调试</strong> 和 <strong>核心转储分析</strong>。它整合了 <code>jstack</code>、<code>jmap</code>、<code>jinfo</code> 等传统命令的功能，并扩展了底层调试能力，适用于内存泄漏、死锁、JVM 崩溃等复杂问题分析</p>
 <p>​									<strong><code>JCMD</code>、<code>JHSDB</code>和基础工具的对比</strong></p>
 <table>
 <thead>
@@ -816,7 +816,7 @@
 <tbody><tr>
 <td><code>jps -lm</code></td>
 <td><code>jcmd</code></td>
-<td>N&#x2F;A</td>
+<td><code>N/A    </code></td>
 </tr>
 <tr>
 <td><code>jmap -dump &lt;pid&gt;</code></td>
