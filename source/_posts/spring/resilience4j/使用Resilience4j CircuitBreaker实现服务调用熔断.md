@@ -8,7 +8,9 @@ permalink: resilience4j/circuitbreaker.html
 
 
 
-`Resilience4j`采用装饰器模式对原有请求进行装饰，会增加方法执行时间的计算，方法执行结束后状态的流转。
+断路器`CircitBreaker`是 Resilience4j 的核心机制，通过**有限状态机**和**环形位缓冲区（Ring Bit Buffer）** 实现故障检测与熔断
+
+`CircitBreaker`采用装饰器模式对原有请求进行装饰，同时会增加方法执行时间的计算，方法执行结束后发生状态的流转。
 
 
 
