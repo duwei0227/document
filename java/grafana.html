@@ -1,0 +1,787 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、安装下载Grafana https:&#x2F;&#x2F;grafana.com&#x2F;grafana&#x2F;download，一般下载压缩包即可，直接解压可用 默认配置：  端口：3000，访问地址 http:&#x2F;&#x2F;localhost:3000 用户名、密码：admin&#x2F;admin  二、配置1、自定义配置信息默认配置文件：$WORKING_DIR&#x2F;conf&#x2F;defaults.ini，其中 WORKING_DIR指Graf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Grafana安装与基础配置">
+<meta property="og:url" content="https://probiecoder.cn/java/grafana.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="一、安装下载Grafana https:&#x2F;&#x2F;grafana.com&#x2F;grafana&#x2F;download，一般下载压缩包即可，直接解压可用 默认配置：  端口：3000，访问地址 http:&#x2F;&#x2F;localhost:3000 用户名、密码：admin&#x2F;admin  二、配置1、自定义配置信息默认配置文件：$WORKING_DIR&#x2F;conf&#x2F;defaults.ini，其中 WORKING_DIR指Graf">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.764Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.764Z">
+<meta property="article:author" content="duwei">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Grafana安装与基础配置 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Grafana安装与基础配置"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          603 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          6 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Grafana安装与基础配置</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="一、安装"><a href="#一、安装" class="headerlink" title="一、安装"></a>一、安装</h3><p>下载<code>Grafana</code> <a target="_blank" rel="noopener" href="https://grafana.com/grafana/download">https://grafana.com/grafana/download</a>，一般下载压缩包即可，直接解压可用</p>
+<p>默认配置：</p>
+<ul>
+<li>端口：3000，访问地址 <code>http://localhost:3000</code></li>
+<li>用户名、密码：<code>admin/admin</code></li>
+</ul>
+<h3 id="二、配置"><a href="#二、配置" class="headerlink" title="二、配置"></a>二、配置</h3><h4 id="1、自定义配置信息"><a href="#1、自定义配置信息" class="headerlink" title="1、自定义配置信息"></a>1、自定义配置信息</h4><p>默认配置文件：<code>$WORKING_DIR/conf/defaults.ini</code>，其中 <code>WORKING_DIR</code>指<code>Grafana</code>所在目录，<strong>不要修改<code>defaults.ini</code>文件</strong>，如果需要自定义配置，在 &#96;&#96;$WORKING_DIR&#x2F;conf&#x2F;<code>目录下新增文件 </code>custom.ini<code>(此种方式适用于使用压缩包形式安装</code>Grafana&#96;，如果使用其他方式安装，需要参考：<a target="_blank" rel="noopener" href="https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/">https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/</a>)</p>
+<p>配置文件支持读取环境变量和外部文件，使用方式如下：</p>
+<ul>
+<li>环境变量读取：格式： <code>$__env&#123;KEY&#125;</code> 或 <code>$&#123;KEY&#125;</code></li>
+<li>外部文件读取：格式：<code>$__file&#123;FILE_PATH&#125;</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>配置</th>
+<th>描述</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>instance_name</code></td>
+<td><code>grafana-server</code>实例名称</td>
+<td><code>$&#123;HOSTNAME&#125;</code></td>
+</tr>
+<tr>
+<td><code>[paths].logs</code></td>
+<td><code>Grafana</code>日志存储路径，可以通过启动参数 <code>cfg:default.paths.logs=xxx</code>修改日志路径</td>
+<td><code>$&#123;WORKING_DIR&#125;/data/log</code></td>
+</tr>
+<tr>
+<td><code>[server].protocol</code></td>
+<td>协议，<code>http、https、socket</code></td>
+<td><code>http</code></td>
+</tr>
+<tr>
+<td><code>[server].http_port</code></td>
+<td><code>grafana-server</code>访问端口</td>
+<td><code>3000</code></td>
+</tr>
+<tr>
+<td><code>[server].cert_file</code></td>
+<td><code>certificate file</code>路径（协议为<code>https</code>时）</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[server].cert_key</code></td>
+<td><code>certificate key</code>路径（协议为<code>https</code>时）</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[database].type</code></td>
+<td>数据库类型(<code>mysql</code>,<code>postgres</code>,<code>sqlite3</code>)，<code>grafana</code>需要数据库存储用户和<code>dashboards</code>等信息</td>
+<td><code>sqlite3</code></td>
+</tr>
+<tr>
+<td><code>[database].host</code></td>
+<td>数据库连接<code>host</code>，包含端口，<code>host = 127.0.0.1:3306</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>[database].name</code></td>
+<td>数据库名</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[database].user</code></td>
+<td>数据库连接用户名</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[database].password</code></td>
+<td>数据库连接密码，如果密码包含<code>#</code>或<code>;</code>，需要使用三引号包括，例如<code>&quot;&quot;&quot;#password;&quot;&quot;&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>[database].max_idel_conn</code></td>
+<td>最大空闲连接数</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[database].max_open_conn</code></td>
+<td>允许创建的最大连接数</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[database].conn_max_lifetime</code></td>
+<td>连接最大存活时间</td>
+<td><code>14400s</code></td>
+</tr>
+<tr>
+<td><code>[database].log_queries</code></td>
+<td>打印<code>SQL</code>调用和执行时间</td>
+<td></td>
+</tr>
+<tr>
+<td><code>[security].disable_initial_admin_creation</code></td>
+<td>禁止在第一次启动时创建管理员用户</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>[security].admin_user</code></td>
+<td>默认的管理员账号，管理员拥有全部权限</td>
+<td><code>admin</code></td>
+</tr>
+<tr>
+<td><code>[security].admin_password</code></td>
+<td>默认的管理员密码</td>
+<td><code>admin</code></td>
+</tr>
+<tr>
+<td><code>[log].mode</code></td>
+<td>日志输出位置，<code>console</code> <code>file</code> <code>syslog</code>,支持多个模式的时候用空格分割</td>
+<td><code>console file</code></td>
+</tr>
+<tr>
+<td><code>[log].level</code></td>
+<td>日志级别，<code>debug</code> <code>info</code> <code>warn</code> <code>error</code> <code>critical</code></td>
+<td><code>info</code></td>
+</tr>
+<tr>
+<td><code>[log.file].level</code></td>
+<td>指定文件日志级别</td>
+<td>继承自<code>[log].level</code></td>
+</tr>
+<tr>
+<td><code>[log.file].format</code></td>
+<td>日志输出格式，<code>text</code> <code>console</code> <code>json</code></td>
+<td><code>text</code></td>
+</tr>
+<tr>
+<td><code>[log.file].log_rotate</code></td>
+<td>日志滚动</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>[log.file].max_lines</code></td>
+<td>每个文件允许的最大行</td>
+<td><code>1_000_000</code></td>
+</tr>
+<tr>
+<td><code>[log.file].max_size_shift</code></td>
+<td>文件大小</td>
+<td><code>28</code> <code>1 &lt;&lt; 28 = 256MB</code></td>
+</tr>
+<tr>
+<td><code>[log.file].daily_rotate</code></td>
+<td>允许按日滚动，<code>false</code> <code>true</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>[log.file].max_days</code></td>
+<td>日志文件最大保留天数</td>
+<td><code>7</code></td>
+</tr>
+</tbody></table>
+<p> 完整配置参考：<a target="_blank" rel="noopener" href="https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/">https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/</a></p>
+<p>详细使用手册参考：<a target="_blank" rel="noopener" href="https://grafana.com/docs/grafana/latest/">https://grafana.com/docs/grafana/latest/</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java/" class="category-chain-item">Java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Grafana安装与基础配置</div>
+      <div>https://probiecoder.cn/java/grafana.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/java/date_localdatetime.html" title="Date与LocalDateTime互相转换">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Date与LocalDateTime互相转换</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/java/logback.html" title="Logback使用配置">
+                        <span class="hidden-mobile">Logback使用配置</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

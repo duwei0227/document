@@ -1,0 +1,842 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1、正则表达式语法   表达式 描述 示例    字符     . 除换行符以外的任何字符，或者在DOTALL设置时表示任意字符 单独字符中的点不需要转义，后边跟着量词才有意义   \a,\e,\f,\n,\r,\t 响铃符，转义符，换页符，换行符，回车符，指标符 \n   字符类     [^...] 某个字符类的补集 [^\d\s]   [...&amp;&amp;...] 字符集的交集 [\">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java中的正则表达式">
+<meta property="og:url" content="https://probiecoder.cn/java/regexp.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="1、正则表达式语法   表达式 描述 示例    字符     . 除换行符以外的任何字符，或者在DOTALL设置时表示任意字符 单独字符中的点不需要转义，后边跟着量词才有意义   \a,\e,\f,\n,\r,\t 响铃符，转义符，换页符，换行符，回车符，指标符 \n   字符类     [^...] 某个字符类的补集 [^\d\s]   [...&amp;&amp;...] 字符集的交集 [\">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.762Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.762Z">
+<meta property="article:author" content="duwei">
+<meta property="article:tag" content="正则表达式">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Java中的正则表达式 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java中的正则表达式"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          818 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          7 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Java中的正则表达式</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="1、正则表达式语法"><a href="#1、正则表达式语法" class="headerlink" title="1、正则表达式语法"></a>1、正则表达式语法</h3><table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>描述</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>.</strong></td>
+<td>除换行符以外的任何字符，或者在DOTALL设置时表示任意字符</td>
+<td>单独字符中的点不需要转义，后边跟着量词才有意义</td>
+</tr>
+<tr>
+<td><code>\a,\e,\f,\n,\r,\t</code></td>
+<td>响铃符，转义符，换页符，换行符，回车符，指标符</td>
+<td>\n</td>
+</tr>
+<tr>
+<td>字符类</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>[^...]</code></td>
+<td>某个字符类的补集</td>
+<td><code>[^\d\s]</code></td>
+</tr>
+<tr>
+<td><code>[...&amp;&amp;...]</code></td>
+<td>字符集的交集</td>
+<td><code>[\p&#123;L&#125;&amp;&amp;[^A-Za-z]]</code></td>
+</tr>
+<tr>
+<td><code>\d,\D</code></td>
+<td>数字[0-9]\d+；它的补集</td>
+<td></td>
+</tr>
+<tr>
+<td><code>\w,\W</code></td>
+<td>单词字符[a-zA-Z0-9]；它的补集</td>
+<td></td>
+</tr>
+<tr>
+<td><code>\s,\S</code></td>
+<td>空白字符[ \n\r\t\f\x{8}]；他的补集</td>
+<td></td>
+</tr>
+<tr>
+<td><code>\h,\v,\H,\V</code></td>
+<td>水平空白字符、垂直空白字符；他们的补集</td>
+<td></td>
+</tr>
+<tr>
+<td>群组</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>(X)</code></td>
+<td>捕获X的匹配</td>
+<td><code>([^&#39;]*)</code>捕获的是被引用的文本</td>
+</tr>
+<tr>
+<td><code>\n</code></td>
+<td>第<code>n</code>组</td>
+<td><code>([&#39;&quot;]).*\1</code>可以匹配<code>&#39;Fred&#39;</code>和<code>&quot;Fred&quot;</code>,但是不能匹配<code>&quot;Fred&#39;</code></td>
+</tr>
+<tr>
+<td>量词（默认为贪婪模式，尽可能的匹配）</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>X?</code></td>
+<td>0或1次</td>
+<td></td>
+</tr>
+<tr>
+<td><code>X*</code></td>
+<td>出现0次或多次</td>
+<td></td>
+</tr>
+<tr>
+<td><code>X+</code></td>
+<td>至少出现一次</td>
+<td></td>
+</tr>
+<tr>
+<td><code>X&#123;n&#125;,X&#123;n,&#125;,X&#123;n,m&#125;</code></td>
+<td>n个X，至少n个X，n到m个X</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Q?</code>,其中Q是一个量词表达式</td>
+<td>非贪婪模式，先尝试匹配最短模式,Q是一个无上限的量词</td>
+<td><code>&#123;3&#125;</code>:只匹配<code>123</code>, <code>&#123;3,&#125;</code>:默认匹配全部<code>123...</code>，<code>&#123;3,&#125;</code>:匹配<code>123</code></td>
+</tr>
+<tr>
+<td>边界匹配</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>^,$</code></td>
+<td>输入的开头和结尾</td>
+<td></td>
+</tr>
+<tr>
+<td><code>\A,\Z,\z</code></td>
+<td>输入的开头，输入的结尾，输入的绝对结尾</td>
+<td></td>
+</tr>
+<tr>
+<td><code>\b,\B</code></td>
+<td>单词边界，非单词边界</td>
+<td></td>
+</tr>
+<tr>
+<td><code>R</code></td>
+<td>Unicode行分隔符</td>
+<td></td>
+</tr>
+<tr>
+<td><code>\G</code></td>
+<td>前一个匹配的结尾</td>
+<td></td>
+</tr>
+<tr>
+<td>其他</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>范围表示</td>
+<td>0-3表示0，1，2，3</td>
+</tr>
+</tbody></table>
+<h3 id="2、编译标志"><a href="#2、编译标志" class="headerlink" title="2、编译标志"></a>2、编译标志</h3><p><code>Pattern.compile(&quot;&quot;, Pattern.CASE_INSENSITIVE + Pattern.UNICODE_CASE)</code></p>
+<table>
+<thead>
+<tr>
+<th>标志</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Pattern.CASE_INSENSITIVE或r</code></td>
+<td>匹配字符时忽略字母的大小写，默认只考虑<code>US ASCII</code>字符</td>
+</tr>
+<tr>
+<td><code>Pattern.UNICODE_CASE</code></td>
+<td>与<code>CASE_INSENSITIVE</code>组合使用的时候，用<code>Unicode</code>字母的大小写来匹配</td>
+</tr>
+<tr>
+<td><code>Pattern.UNICODE_CHARACTER_CLASS或U</code></td>
+<td>选择<code>Unicode</code>字符类代替<code>POSIX</code>，其中蕴含了<code>UNICODE_CASE</code></td>
+</tr>
+<tr>
+<td><code>Pattern.MULTILINE或m</code></td>
+<td><code>^和$匹配行的开头和结尾，而不是整个输入的开头和结尾</code></td>
+</tr>
+<tr>
+<td><code>Pattern.UNIX_LINES或d</code></td>
+<td>在多行模式中匹配<code>^</code>和<code>$</code>时，只有<code>\n</code>被识别成行终止符</td>
+</tr>
+<tr>
+<td><code>Pattern.DOTALL或s</code></td>
+<td>**.**匹配所有字符，包含行终止符</td>
+</tr>
+<tr>
+<td><code>Pattern.COMMENTS或x</code></td>
+<td>空白字符和注释(从#到行末尾)将被忽略</td>
+</tr>
+<tr>
+<td><code>Pattern.LITERAL</code></td>
+<td>该模式将被逐字地采纳，必须精确匹配，因字母大小写而造成的差异除外</td>
+</tr>
+<tr>
+<td><code>Pattern.CANON_EQ</code></td>
+<td>考虑<code>Unicode</code>字符规范的等价性</td>
+</tr>
+</tbody></table>
+<h3 id="3、示例"><a href="#3、示例" class="headerlink" title="3、示例"></a>3、示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">text</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;This is my personal info. My cellphone &quot;</span> +<br>                <span class="hljs-string">&quot;number 15301234567 and email probiecoder@gmail.com.Today i will learn regex&quot;</span>;<br></code></pre></td></tr></table></figure>
+<h4 id="简单数值匹配"><a href="#简单数值匹配" class="headerlink" title="简单数值匹配"></a>简单数值匹配</h4><blockquote>
+<p>默认模式-贪婪模式，尽可能的多匹配</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">regex</span>  <span class="hljs-operator">=</span> <span class="hljs-string">&quot;\\d&#123;3,&#125;&quot;</span>;<br><span class="hljs-type">Pattern</span> <span class="hljs-variable">pattern</span> <span class="hljs-operator">=</span> Pattern.compile(regex);<br><span class="hljs-type">Matcher</span> <span class="hljs-variable">matcher</span> <span class="hljs-operator">=</span> pattern.matcher(text);<br><span class="hljs-keyword">if</span> (matcher.find()) &#123;<br>    System.out.println(matcher.group());<br>&#125;<br>输出:<span class="hljs-number">15301234567</span><br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>非贪婪模式</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">修改 regex = <span class="hljs-string">&quot;\\d&#123;3,&#125;&quot;</span><br>输出:<span class="hljs-number">153</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="email匹配"><a href="#email匹配" class="headerlink" title="email匹配"></a>email匹配</h4><p>涉及到 <strong>或</strong> 的使用<br>限制email后缀 <code>gmail.com qq.com 163.com</code> </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">regex</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;\\w&#123;3,&#125;@(gmail|qq|163).com&quot;</span>;<br><span class="hljs-type">Pattern</span> <span class="hljs-variable">pattern</span> <span class="hljs-operator">=</span> Pattern.compile(regex);<br><span class="hljs-type">Matcher</span> <span class="hljs-variable">matcher</span> <span class="hljs-operator">=</span> pattern.matcher(text);<br><span class="hljs-keyword">if</span> (matcher.find()) &#123;<br>    System.out.println(matcher.group());<br>&#125;<br>输出: probiecoder<span class="hljs-meta">@gmail</span>.com<br></code></pre></td></tr></table></figure>
+
+<h4 id="限定字符匹配区域"><a href="#限定字符匹配区域" class="headerlink" title="限定字符匹配区域[]"></a>限定字符匹配区域<code>[]</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">[Jj]ava<br>匹配java、Java<br></code></pre></td></tr></table></figure>
+
+<h4 id="分组匹配"><a href="#分组匹配" class="headerlink" title="分组匹配"></a>分组匹配</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">text</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;java,Java,aJava,iJava&quot;</span>;<br><span class="hljs-type">String</span> <span class="hljs-variable">regex</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;\\w+,(Java),aJava,(iJava)&quot;</span>;<br><span class="hljs-type">Pattern</span> <span class="hljs-variable">pattern</span> <span class="hljs-operator">=</span> Pattern.compile(regex);<br><span class="hljs-type">Matcher</span> <span class="hljs-variable">matcher</span> <span class="hljs-operator">=</span> pattern.matcher(text);<br><span class="hljs-keyword">if</span> (matcher.find()) &#123;<br>    System.out.println(matcher.group());   <span class="hljs-comment">// 输出整个匹配</span><br>    System.out.println(matcher.groupCount());  <span class="hljs-comment">// 匹配分组数</span><br>    System.out.println(matcher.group(<span class="hljs-number">1</span>));  <span class="hljs-comment">// 输出Java</span><br>    System.out.println(matcher.group(<span class="hljs-number">2</span>));  <span class="hljs-comment">// 输出iJava</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java/" class="category-chain-item">Java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="print-no-link">#正则表达式</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java中的正则表达式</div>
+      <div>https://probiecoder.cn/java/regexp.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/java/file.html" title="Path 常用方法介绍">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Path 常用方法介绍</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/25/java/2020-03-30-Java%E5%BF%BD%E7%95%A5https%E8%AF%81%E4%B9%A6%E9%AA%8C%E8%AF%81/" title="Java忽略https证书验证">
+                        <span class="hidden-mobile">Java忽略https证书验证</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,1383 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、BufferBoolMXBeanJVM 的 BufferPool 是一种用于管理直接缓冲区 (Direct Buffer) 的资源池，它是由 Java 平台引入来优化直接内存分配的机制，直接缓冲区通常用于 I&#x2F;O 操作（如文件或网络通信）以提高性能，内存区域不统计在JVM堆内存中。 主要方法：    名称 方法 描述    名称 (Name) getName BufferPool 的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用JMX监控和管理JVM运行时">
+<meta property="og:url" content="https://probiecoder.cn/java/jmx.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="一、BufferBoolMXBeanJVM 的 BufferPool 是一种用于管理直接缓冲区 (Direct Buffer) 的资源池，它是由 Java 平台引入来优化直接内存分配的机制，直接缓冲区通常用于 I&#x2F;O 操作（如文件或网络通信）以提高性能，内存区域不统计在JVM堆内存中。 主要方法：    名称 方法 描述    名称 (Name) getName BufferPool 的">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.764Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.764Z">
+<meta property="article:author" content="duwei">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>使用JMX监控和管理JVM运行时 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="使用JMX监控和管理JVM运行时"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">使用JMX监控和管理JVM运行时</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="一、BufferBoolMXBean"><a href="#一、BufferBoolMXBean" class="headerlink" title="一、BufferBoolMXBean"></a>一、BufferBoolMXBean</h3><p><strong>JVM 的 BufferPool 是一种用于管理直接缓冲区 (Direct Buffer) 的资源池</strong>，它是由 Java 平台引入来优化直接内存分配的机制，直接缓冲区通常用于 I&#x2F;O 操作（如文件或网络通信）以提高性能，<strong>内存区域不统计在<code>JVM</code>堆内存中</strong>。</p>
+<p><strong>主要方法：</strong></p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>名称 (Name)</td>
+<td><code>getName</code></td>
+<td>BufferPool 的名称，例如 <code>&quot;direct&quot;</code> 和 <code>&quot;mapped&quot;</code></td>
+</tr>
+<tr>
+<td>缓冲区数量 (Count)</td>
+<td><code>getCount</code></td>
+<td>当前池中活动缓冲区的数量</td>
+</tr>
+<tr>
+<td>内存使用量 (Memory Used)</td>
+<td><code>getMemoryUsed</code></td>
+<td>池中分配的直接内存的总量（以字节为单位）</td>
+</tr>
+<tr>
+<td>总容量 (Total Capacity)</td>
+<td><code>getTotalCapacity</code></td>
+<td>池中所有缓冲区的总容量（以字节为单位）</td>
+</tr>
+</tbody></table>
+<p><code>Memory Used</code>和<code>Total Capacity</code>的区别：</p>
+<p><code>Memory Used</code>:</p>
+<ul>
+<li>表示当前 <strong>已经分配</strong> 的内存总量</li>
+<li>包括所有已创建缓冲区的内存大小，即正在被使用的直接内存</li>
+</ul>
+<p><code>Total Capacity</code>:</p>
+<ul>
+<li>表示所有缓冲区的 <strong>总容量</strong></li>
+<li>包括分配的缓冲区的逻辑容量，而不仅是实际使用的内存</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>含义</th>
+<th>包含内容</th>
+<th>变化情况</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Memory Used</strong></td>
+<td>当前已分配的直接内存总量</td>
+<td>实际分配的内存大小</td>
+<td>缓冲区分配增加，释放减少</td>
+</tr>
+<tr>
+<td><strong>Total Capacity</strong></td>
+<td>所有缓冲区的逻辑容量总和</td>
+<td>缓冲区声明的容量总大小</td>
+<td>缓冲区分配时增加，释放时减少</td>
+</tr>
+</tbody></table>
+<p><strong>常见的<code>BufferPool</code>：</strong></p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+<th>分配方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>direct</code></td>
+<td>直接内存缓冲区</td>
+<td><code>ByteBuffer.allocateDirect()</code></td>
+</tr>
+<tr>
+<td><code>mapped</code></td>
+<td>映射到文件的缓冲区</td>
+<td><code>FileChannel.map()</code> <code>MappedByteBuffer buffer = channel.map(FileChannel.MapMode.*READ_WRITE*, 0, 1024)</code></td>
+</tr>
+</tbody></table>
+<p><strong>直接内存上限管理：</strong></p>
+<p>直接内存的上限由 JVM 参数 <code>-XX:MaxDirectMemorySize</code> 决定，如果没有显式设置，默认值与堆大小 (<code>-Xmx</code>) 相同；</p>
+<p>如果在分配直接内存时，内存空间不足会抛出 <code>java.lang.OutOfMemoryError: Direct buffer memory</code>异常</p>
+<p><strong>监控</strong></p>
+<ul>
+<li>使用图形工具，例如 <code>VisualVM</code>(需要安装<code>VisualVM-BufferMonitor</code>插件)</li>
+<li>使用<code>jcmd</code>监控<code>Native Memory</code>的使用<ul>
+<li>启用直接内存跟踪 <code>-XX:NativeMemoryTracking=options</code>,<code>options</code>支持<code>summary</code>：提供总的内存使用统计，开销较低，<code>detail</code>：提供详细的内存分配信息，开销较高；一般启用<code>summary</code>就可以</li>
+<li>使用<code>jcmd pid VM.native_memory [summary|detail]</code>查看内存分布情况，直接内存一般在<code>Direct</code>或<code>Internal(jdk1.8)</code>模块下，可以使用<code>jcmd pid VM.native_memory baseline</code>创建数据基线，然后通过<code>jcmd pid VM.native_memory [summary|detail].diff</code>和基线比较，确定内存对比基线的升降</li>
+</ul>
+</li>
+</ul>
+<p><strong>问题定位</strong></p>
+<ul>
+<li>发生<code>OutOfMemoryError: Direct buffer memory</code>：分析异常堆栈信息，找到导致<code>OOM</code>的位置</li>
+<li>直接内存占比较高：</li>
+</ul>
+<p>参考文档：</p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/BufferPoolMXBean.html">https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/BufferPoolMXBean.html</a></p>
+<h3 id="二、ClassLoadingMXBean"><a href="#二、ClassLoadingMXBean" class="headerlink" title="二、ClassLoadingMXBean"></a>二、ClassLoadingMXBean</h3><p>提供有关类加载器行为的监控和管理功能</p>
+<p> <strong>主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getLoadedClassCount()</code></td>
+<td>返回当前加载到 JVM 中的类的数量。</td>
+</tr>
+<tr>
+<td><code>getTotalLoadedClassCount()</code></td>
+<td>返回 JVM 自启动以来加载的类的总数（包括卸载的类）。</td>
+</tr>
+<tr>
+<td><code>getUnloadedClassCount()</code></td>
+<td>返回 JVM 自启动以来卸载的类的总数。</td>
+</tr>
+<tr>
+<td><code>isVerbose()</code></td>
+<td>检查是否启用了类加载详细信息。</td>
+</tr>
+<tr>
+<td><code>setVerbose(boolean value)</code></td>
+<td>启用或禁用类加载详细信息（仅限调试用途，可能影响性能）。</td>
+</tr>
+</tbody></table>
+<p>启用<code>verbose</code>详细输出时，会在日志中输出如下内容：</p>
+<p><code>[Loaded 类全路径 from file:jar包路径]</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">[Loaded io.lettuce.core.event.metrics.CommandLatencyEvent from file:/E:/pub/repos/io/lettuce/lettuce-core/<span class="hljs-number">5.0</span><span class="hljs-number">.5</span>.RELEASE/lettuce-core-<span class="hljs-number">5.0</span><span class="hljs-number">.5</span>.RELEASE.jar]<br><br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>使用示例</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// ClassLoadingMXBean mxBean = ManagementFactory.getClassLoadingMXBean();</span><br><span class="hljs-type">ClassLoadingMXBean</span> <span class="hljs-variable">mxBean</span> <span class="hljs-operator">=</span> ManagementFactory.getPlatformMXBean(ClassLoadingMXBean.class);<br><br>sb.append(<span class="hljs-string">&quot;TotalLoadedClassCount: &quot;</span>).append(mxBean.getTotalLoadedClassCount()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>        .append(<span class="hljs-string">&quot;LoadedClassCount: &quot;</span>).append(mxBean.getLoadedClassCount()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>        .append(<span class="hljs-string">&quot;UnloadedClassCount: &quot;</span>).append(mxBean.getUnloadedClassCount()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>        .append(<span class="hljs-string">&quot;isVerbose: &quot;</span>).append(mxBean.isVerbose()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br><br><span class="hljs-keyword">if</span> (!mxBean.isVerbose()) &#123;<br>    mxBean.setVerbose(<span class="hljs-literal">true</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="三、CompilationMXBean"><a href="#三、CompilationMXBean" class="headerlink" title="三、CompilationMXBean"></a>三、CompilationMXBean</h3><p>用于监控和管理 JVM 编译器的运行时行为，它提供有关即时编译（JIT，Just-In-Time）编译器的性能统计和配置信息</p>
+<p><strong>主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getName()</code></td>
+<td>获取 JIT 编译器的名称。</td>
+</tr>
+<tr>
+<td><code>isCompilationTimeMonitoringSupported()</code></td>
+<td>检查是否支持编译时间监控（某些 JVM 实现可能不支持）。</td>
+</tr>
+<tr>
+<td><code>getTotalCompilationTime()</code></td>
+<td>返回自 JVM 启动以来 JIT 编译花费的总时间（以毫秒为单位）。如果使用多线程编译，该值为每个线程编译时间总和</td>
+</tr>
+</tbody></table>
+<p><strong>示例</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">CompilationMXBean</span> <span class="hljs-variable">compilationMXBean</span> <span class="hljs-operator">=</span> ManagementFactory.getCompilationMXBean();<br>sb.append(<span class="hljs-string">&quot;isCompilationTimeMonitoringSupported: &quot;</span>).append(compilationMXBean.isCompilationTimeMonitoringSupported()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>        .append(<span class="hljs-string">&quot;getName: &quot;</span>).append(compilationMXBean.getName()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>        .append(<span class="hljs-string">&quot;getTotalCompilationTime: &quot;</span>).append(compilationMXBean.getTotalCompilationTime()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<p><strong>配置参数</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-XX:+TieredCompilation</code></td>
+<td>启用分层编译（默认开启）。</td>
+</tr>
+<tr>
+<td><code>-XX:CompileThreshold=&lt;invocations&gt;</code></td>
+<td>方法从解释执行到 JIT 编译所需的调用次数（默认约为 10,000 次）。</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p> <strong>与编译器日志相关的参数</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-XX:+PrintGC</code></td>
+<td>打印 GC 信息（结合编译时间监控分析编译与 GC 的关系）。</td>
+</tr>
+<tr>
+<td><code>-XX:+LogCompilation</code></td>
+<td>将 JIT 编译日志输出到文件，生成可视化日志（配合工具 <code>JITWatch</code> 使用）。</td>
+</tr>
+<tr>
+<td><code>-XX:+PrintCodeCache</code></td>
+<td>打印 JIT 编译器的代码缓存使用信息。</td>
+</tr>
+<tr>
+<td><code>-XX:+CITime</code></td>
+<td>输出编译器的时间统计信息（包括每个编译线程的耗时）。</td>
+</tr>
+</tbody></table>
+<hr>
+<p> <strong>与代码缓存（Code Cache）相关的参数</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-XX:InitialCodeCacheSize=&lt;size&gt;</code></td>
+<td>设置代码缓存的初始大小（默认 32MB）。</td>
+</tr>
+<tr>
+<td><code>-XX:ReservedCodeCacheSize=&lt;size&gt;</code></td>
+<td>设置代码缓存的最大大小（默认 240MB）。</td>
+</tr>
+<tr>
+<td><code>-XX:+UseCodeCacheFlushing</code></td>
+<td>启用代码缓存溢出时的缓存清理机制。</td>
+</tr>
+<tr>
+<td><code>-XX:CodeCacheExpansionSize=&lt;size&gt;</code></td>
+<td>设置代码缓存增长的块大小。</td>
+</tr>
+</tbody></table>
+<p><strong>内存使用监控</strong></p>
+<p>使用 <code>jcmd pid VM.native_memory summary</code>命令查看<code>native_memory</code>内存使用情况</p>
+<ul>
+<li><code>Compiler</code>:JIT编译器使用到的内存</li>
+<li><code>Code</code>:JIT编译器编译缓存代码占用空间</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><br>Native Memory Tracking:<br><br>Total: reserved=2377592KB, committed=1131948KB<br><br>-           Code (reserved=258133KB, committed=46169KB)<br>                (malloc=8533KB #<span class="hljs-number">17365</span>) <br>                (mmap: reserved=249600KB, committed=37636KB)<br><br>-           Compiler (reserved=365KB, committed=365KB)<br>                (malloc=234KB #<span class="hljs-number">638</span>)<br>                (arena=131KB #<span class="hljs-number">7</span>)<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="四、GarbageCollectorMXBean"><a href="#四、GarbageCollectorMXBean" class="headerlink" title="四、GarbageCollectorMXBean"></a>四、GarbageCollectorMXBean</h3><p>用于监控和管理 Java 虚拟机中垃圾收集器的行为和性能</p>
+<p><strong>主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getName()</code></td>
+<td>返回垃圾收集器的名称</td>
+</tr>
+<tr>
+<td><code>getCollectionCount()</code></td>
+<td>返回垃圾收集器运行的总次数。如果无法获取信息，返回 <code>-1</code></td>
+</tr>
+<tr>
+<td><code>getCollectionTime()</code></td>
+<td>返回垃圾收集器运行的总耗时（以毫秒为单位）。如果无法获取信息，返回 <code>-1</code></td>
+</tr>
+<tr>
+<td><code>getMemoryPoolNames()</code></td>
+<td>返回与垃圾收集器关联的内存池名称</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java">List&lt;GarbageCollectorMXBean&gt; mxBeans = ManagementFactory.getGarbageCollectorMXBeans();<br>mxBeans.forEach(mxBean -&gt; &#123;<br>    sb.append(<span class="hljs-string">&quot;Name: &quot;</span>).append(mxBean.getName()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>            .append(<span class="hljs-string">&quot;CollectionCount: &quot;</span>).append(mxBean.getCollectionCount()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>            .append(<span class="hljs-string">&quot;CollectionTime: &quot;</span>).append(mxBean.getCollectionTime()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>            .append(<span class="hljs-string">&quot;MemoryPoolNames: &quot;</span>).append(Arrays.toString(mxBean.getMemoryPoolNames())).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="五、-MemoryManagerMXBean"><a href="#五、-MemoryManagerMXBean" class="headerlink" title="五、 MemoryManagerMXBean"></a>五、 MemoryManagerMXBean</h3><p>用于管理和监控与 JVM 内存管理相关的组件。它是内存管理的高层接口，可以用于查看 JVM 中的内存管理器及其关联的内存池。</p>
+<p><strong>主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getName()</code></td>
+<td>返回内存管理器的名称</td>
+</tr>
+<tr>
+<td><code>getMemoryPoolNames()</code></td>
+<td>返回与该内存管理器关联的内存池名称</td>
+</tr>
+<tr>
+<td><code>isValid()</code></td>
+<td>返回内存管理器是否仍然有效 如果内存管理器已被 JVM 停用或不再使用，则返回 <code>false</code>，否则返回 <code>true</code></td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java">List&lt;MemoryManagerMXBean&gt; mxBeans = ManagementFactory.getMemoryManagerMXBeans();<br>mxBeans.forEach(mxBean -&gt; &#123;<br>    sb.append(<span class="hljs-string">&quot;Name: &quot;</span>).append(mxBean.getName()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>            .append(<span class="hljs-string">&quot;isValid: &quot;</span>).append(mxBean.isValid()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>            .append(<span class="hljs-string">&quot;MemoryPoolNames: &quot;</span>).append(Arrays.toString(mxBean.getMemoryPoolNames())).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="六、MemoryPoolMXBean"><a href="#六、MemoryPoolMXBean" class="headerlink" title="六、MemoryPoolMXBean"></a>六、MemoryPoolMXBean</h3><p>用于监控 JVM 中的内存池。内存池是 JVM 内存的逻辑划分，例如 Eden、Survivor、Old Gen、Metaspace 等。</p>
+<p>通过 <code>MemoryPoolMXBean</code>，可以获取内存池的使用情况、配置参数以及与垃圾收集器和内存管理器的关联信息</p>
+<p><strong>主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getName()</code></td>
+<td>返回内存池名称</td>
+</tr>
+<tr>
+<td><code>getType()</code></td>
+<td>返回内存池类型 <code>heap</code> <code>nonheap</code></td>
+</tr>
+<tr>
+<td><code>getMemoryManageNames()</code></td>
+<td>返回管理此内存池的内存管理器的名称</td>
+</tr>
+<tr>
+<td><code>isValid()</code></td>
+<td>测试此内存池在 Java 虚拟机中是否有效</td>
+</tr>
+<tr>
+<td><code>getUsage()</code></td>
+<td>返回此内存池的内存使用量估计值。<code>null</code> 如果此内存池无效（即不再存在），则此方法返回</td>
+</tr>
+<tr>
+<td><code>isUsageThresholdSupported()</code></td>
+<td>测试此内存池是否支持使用阈值，<strong>需要先判断是否支持在获取相关<code>threshold</code>指标</strong></td>
+</tr>
+<tr>
+<td><code>getUsageThreshold()</code></td>
+<td>返回此内存池的使用阈值（以字节为单位）</td>
+</tr>
+<tr>
+<td><code>getUsageThresholdCount()</code></td>
+<td>返回内存池使用量超过阈值的次数</td>
+</tr>
+<tr>
+<td><code>setUsageThreshold()</code></td>
+<td>设置使用率阈值（长阈值）</td>
+</tr>
+<tr>
+<td><code>isUsageThresholdExceeded()</code></td>
+<td>测试此内存池的内存使用量是否达到或超过其使用量阈值</td>
+</tr>
+<tr>
+<td><code>getCollectionUsage()</code></td>
+<td>获取垃圾收集后内存池的使用信息，返回 <code>MemoryUsage</code> 对象</td>
+</tr>
+<tr>
+<td><code>isCollectionUsageThresholdSupported()</code></td>
+<td>判断当前内存池是否支持设置 <code>CollectionUsageThreshold</code>，需要先判断是否支持在获取相关<code>threshold</code>指标</td>
+</tr>
+<tr>
+<td><code>getCollectionUsageThreshold()</code></td>
+<td>返回当前设置的垃圾收集后使用阈值</td>
+</tr>
+<tr>
+<td><code>getCollectionUsageThresholdCount()</code></td>
+<td>返回垃圾收集后内存池使用量超过阈值的次数</td>
+</tr>
+<tr>
+<td><code>isCollectionUsageThresholdExceeded()</code></td>
+<td>检查垃圾收集后内存池的使用量是否达到或超过设置的 <code>CollectionUsageThreshold</code>（垃圾收集后使用阈值）</td>
+</tr>
+<tr>
+<td><code>setCollectionUsageThreshold()</code></td>
+<td>设置垃圾收集后内存池的使用阈值，单位为字节</td>
+</tr>
+<tr>
+<td><code>getPeakUsage()</code></td>
+<td>返回自 Java 虚拟机启动或峰值重置以来此内存池的峰值内存使用量。<code>null</code> 如果此内存池无效（即不再存在），则此方法返回。</td>
+</tr>
+<tr>
+<td><code>resetPeakUsage()</code></td>
+<td>将此内存池的峰值内存使用量统计信息重置为当前内存使用量</td>
+</tr>
+</tbody></table>
+<p>可以考虑设置合理的内存<code>Threshold</code>，及时监控内存各个区使用情况</p>
+<p><strong>使用示例</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java">List&lt;MemoryPoolMXBean&gt; mxBeans = ManagementFactory.getMemoryPoolMXBeans();<br>mxBeans.forEach(mxBean -&gt; &#123;<br>    sb.append(<span class="hljs-string">&quot;Name: &quot;</span>).append(mxBean.getName()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>            .append(<span class="hljs-string">&quot;Type: &quot;</span>).append(mxBean.getType().toString()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>            .append(<span class="hljs-string">&quot;MemoryManageNames: &quot;</span>).append(Arrays.toString(mxBean.getMemoryManagerNames())).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>            .append(<span class="hljs-string">&quot;isValid: &quot;</span>).append(mxBean.isValid()).append(<span class="hljs-string">&quot;\n&quot;</span>)<br>            .append(<span class="hljs-string">&quot;Usage: &quot;</span>).append(mxBean.getUsage()).append(<span class="hljs-string">&quot;\t&quot;</span>);<br>    <span class="hljs-keyword">if</span> (mxBean.isUsageThresholdSupported()) &#123;<br>        sb.append(<span class="hljs-string">&quot;isUsageThresholdSupported: &quot;</span>).append(mxBean.isUsageThresholdSupported()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>                .append(<span class="hljs-string">&quot;UsageThreshold: &quot;</span>).append(mxBean.getUsageThreshold()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>                .append(<span class="hljs-string">&quot;UsageThresholdCount: &quot;</span>).append(mxBean.getUsageThresholdCount()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>                .append(<span class="hljs-string">&quot;isUsageThresholdExceeded: &quot;</span>).append(mxBean.isUsageThresholdExceeded()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>    &#125;<br><br>    sb.append(<span class="hljs-string">&quot;CollectionUsage: &quot;</span>).append(mxBean.getCollectionUsage()).append(<span class="hljs-string">&quot;\t&quot;</span>);<br>    <span class="hljs-keyword">if</span> (mxBean.isCollectionUsageThresholdSupported()) &#123;<br>        sb.append(<span class="hljs-string">&quot;isCollectionUsageThresholdSupported: &quot;</span>).append(mxBean.isCollectionUsageThresholdSupported()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>                .append(<span class="hljs-string">&quot;CollectionUsageThreshold: &quot;</span>).append(mxBean.getCollectionUsageThreshold()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>                .append(<span class="hljs-string">&quot;CollectionUsageThresholdCount: &quot;</span>).append(mxBean.getCollectionUsageThresholdCount()).append(<span class="hljs-string">&quot;\t&quot;</span>)<br>                .append(<span class="hljs-string">&quot;isCollectionUsageThresholdExceeded: &quot;</span>).append(mxBean.isCollectionUsageThresholdExceeded()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>    &#125;<br><br>    sb.append(<span class="hljs-string">&quot;PeakUsage: &quot;</span>).append(mxBean.getPeakUsage()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br><br>&#125;);<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>文档</strong></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/MemoryPoolMXBean.html">https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/MemoryPoolMXBean.html</a></p>
+<h3 id="七、MemoryMXBean"><a href="#七、MemoryMXBean" class="headerlink" title="七、MemoryMXBean"></a>七、MemoryMXBean</h3><p>获取堆内存和非堆内存的使用信息，并与垃圾回收交互</p>
+<p><strong>主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>gc()</code></td>
+<td>运行垃圾回收</td>
+</tr>
+<tr>
+<td><code>getHeapMemoryUsage()</code></td>
+<td>获取堆内存使用数据</td>
+</tr>
+<tr>
+<td><code>getNonHeapMemoryUsage()</code></td>
+<td>获取非堆内存使用数据</td>
+</tr>
+<tr>
+<td><code>isVerbose()</code></td>
+<td>当前是否启用详细输出</td>
+</tr>
+<tr>
+<td><code>setVerbose()</code></td>
+<td>启用或禁用详细输出</td>
+</tr>
+</tbody></table>
+<p>非堆内存：</p>
+<ul>
+<li>所有线程共享区域</li>
+</ul>
+<p><strong>使用示例</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-type">MemoryMXBean</span> <span class="hljs-variable">memoryMXBean</span> <span class="hljs-operator">=</span> ManagementFactory.getMemoryMXBean();<br>sb.append(<span class="hljs-string">&quot;HeapMemoryUsage: &quot;</span>).append(memoryMXBean.getHeapMemoryUsage()).append(<span class="hljs-string">&quot;\n&quot;</span>)<br>        .append(<span class="hljs-string">&quot;NonHeapMemoryUsage: &quot;</span>).append(memoryMXBean.getNonHeapMemoryUsage()).append(<span class="hljs-string">&quot;\n&quot;</span>)<br>        .append(<span class="hljs-string">&quot;isVerbose: &quot;</span>).append(memoryMXBean.isVerbose()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>文档</strong></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/MemoryMXBean.html">https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/MemoryMXBean.html</a></p>
+<p><strong>内存MXBean对比</strong></p>
+<table>
+<thead>
+<tr>
+<th>功能&#x2F;接口</th>
+<th>MemoryMXBean</th>
+<th>MemoryPoolMXBean</th>
+<th>MemoryManagerMXBean</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>作用范围</strong></td>
+<td>整个 JVM 的堆内存和非堆内存</td>
+<td>单个内存池（如 Eden、Old Gen 等）</td>
+<td>内存管理器（如垃圾收集器）</td>
+</tr>
+<tr>
+<td><strong>核心功能</strong></td>
+<td>总览 JVM 内存使用情况；垃圾回收控制</td>
+<td>监控特定内存池的使用情况和阈值</td>
+<td>管理内存池的内存管理器信息</td>
+</tr>
+<tr>
+<td><strong>是否支持阈值</strong></td>
+<td>否</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td><strong>与垃圾回收的关系</strong></td>
+<td>显式触发垃圾回收</td>
+<td>监控垃圾回收后内存池的使用情况</td>
+<td>管理负责垃圾回收的内存池</td>
+</tr>
+<tr>
+<td><strong>使用场景</strong></td>
+<td>监控 JVM 整体内存，调试和性能优化</td>
+<td>监控内存池使用量，分析内存分配问题</td>
+<td>分析垃圾收集器与内存池的关系</td>
+</tr>
+</tbody></table>
+<h3 id="八、ThreadMXBean"><a href="#八、ThreadMXBean" class="headerlink" title="八、ThreadMXBean"></a>八、ThreadMXBean</h3><p>用于获取关于线程的信息、线程状态、线程性能和线程死锁的诊断</p>
+<p><strong>主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getThreadCount()</code></td>
+<td>获取当前活动线程总数，包含非<code>daemon</code>线程</td>
+</tr>
+<tr>
+<td><code>getPeakThreadCount()</code></td>
+<td>获取从<code>JVM</code>启动到当前峰值线程总数</td>
+</tr>
+<tr>
+<td><code>getDaemonThreadCount()</code></td>
+<td>获取当前活动的<code>daemon</code>线程</td>
+</tr>
+<tr>
+<td><code>findDeadlockedThreads()</code></td>
+<td>死锁检测</td>
+</tr>
+<tr>
+<td><code>getAllThreadIds()</code></td>
+<td>获取所有活动线程id</td>
+</tr>
+<tr>
+<td><code>getThreadInfo(long id, int maxDepth)</code></td>
+<td>根据线程id获取线程信息,<code>maxDepth</code>指定堆栈跟踪深度</td>
+</tr>
+<tr>
+<td><code>getThreadInfo(long[] id, int maxDepth)</code></td>
+<td>根据线程id获取线程信息,<code>maxDepth</code>指定堆栈跟踪深度</td>
+</tr>
+</tbody></table>
+<p><strong>ThreadInfo主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getThreadName()</code></td>
+<td>线程名称</td>
+</tr>
+<tr>
+<td><code>getThreadId()</code></td>
+<td>线程ID</td>
+</tr>
+<tr>
+<td><code>getThreadState()</code></td>
+<td>线程状态，<code>NEW,RUNNABLE,BLOCKED,WAITING,TIMED_WAITING,TERMINATE</code></td>
+</tr>
+<tr>
+<td><code>getBlockCount()</code></td>
+<td>线程因进入或重新进入监视器而受阻的总次数</td>
+</tr>
+<tr>
+<td><code>getBlockTime()</code></td>
+<td>线程因进入或重新进入监视器而受阻的总次数累计耗用时间（毫秒为单位）</td>
+</tr>
+<tr>
+<td><code>getWaitedCount()</code></td>
+<td>线程等待通知的总次数</td>
+</tr>
+<tr>
+<td><code>getWaitedTime()</code></td>
+<td>线程等待通知的累计耗用时间（毫秒为单位）</td>
+</tr>
+<tr>
+<td><code>isDaemon()</code></td>
+<td>线程是否为<code>daemon</code>线程</td>
+</tr>
+<tr>
+<td><code>getPriority()</code></td>
+<td>获取线程优先级</td>
+</tr>
+<tr>
+<td><code>getLockName()</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>getStackTrace()</code></td>
+<td>获取堆栈信息，在获取<code>ThreadInfo</code>时，需要指定<code>maxDepth</code></td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">ThreadMXBean</span> <span class="hljs-variable">threadMXBean</span> <span class="hljs-operator">=</span> ManagementFactory.getThreadMXBean();<br>sb.append(<span class="hljs-string">&quot;ThreadCount: &quot;</span>).append(threadMXBean.getThreadCount()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;PeakThreadCount: &quot;</span>).append(threadMXBean.getPeakThreadCount()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;DaemonThreadCount: &quot;</span>).append(threadMXBean.getDaemonThreadCount()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;DeadlockedThreads: &quot;</span>).append(Arrays.toString(threadMXBean.findDeadlockedThreads())).append(<span class="hljs-string">&quot;\n&quot;</span>);<br><br><span class="hljs-type">long</span>[] threadIds = threadMXBean.getAllThreadIds();<br>ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(threadIds, <span class="hljs-number">10</span>);  <span class="hljs-comment">// 不指定 maxDepth 时，无堆栈信息</span><br>Arrays.stream(threadInfos)<br>        .filter(threadInfo -&gt; threadInfo.getThreadName().equals(<span class="hljs-string">&quot;Thread-117&quot;</span>)).findFirst()<br>        .ifPresent(threadInfo -&gt; &#123;<br>            sb.append(<span class="hljs-string">&quot;Name: &quot;</span>).append(threadInfo.getThreadName()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>            sb.append(<span class="hljs-string">&quot;Id: &quot;</span>).append(threadInfo.getThreadId()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>            sb.append(<span class="hljs-string">&quot;LockName: &quot;</span>).append(threadInfo.getLockName()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>            sb.append(<span class="hljs-string">&quot;State: &quot;</span>).append(threadInfo.getThreadState()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>            sb.append(<span class="hljs-string">&quot;Block: &quot;</span>).append(threadInfo.getBlockedCount()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>            sb.append(<span class="hljs-string">&quot;Waited: &quot;</span>).append(threadInfo.getWaitedCount()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>            sb.append(<span class="hljs-string">&quot;StackTrace: &quot;</span>).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>            StackTraceElement[] stackTraceElements = threadInfo.getStackTrace();<br>            System.out.println(stackTraceElements.length);<br>            <span class="hljs-keyword">for</span> (StackTraceElement stackTraceElement : stackTraceElements) &#123;<br>                sb.append(stackTraceElement.toString()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>            &#125;<br>        &#125;);<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<p><strong>文档</strong></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/ThreadMXBean.html">https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/ThreadMXBean.html</a>	</p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/ThreadInfo.html">https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/ThreadInfo.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.State.html">https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.State.html</a></p>
+<h3 id="九、OperatingSystemMXBean"><a href="#九、OperatingSystemMXBean" class="headerlink" title="九、OperatingSystemMXBean"></a>九、OperatingSystemMXBean</h3><p>用于从操作系统获取相关的系统级指标</p>
+<p><strong>主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getName()</code></td>
+<td>获取系统名称</td>
+</tr>
+<tr>
+<td><code>getVersion()</code></td>
+<td>获取系统版本</td>
+</tr>
+<tr>
+<td><code>getArch()</code></td>
+<td>获取系统架构</td>
+</tr>
+<tr>
+<td><code>getAvailableProcessors()</code></td>
+<td>获取虚拟机可用的处理器数量</td>
+</tr>
+<tr>
+<td><code>getSystemLoadAverage()</code></td>
+<td>返回最后一分钟的系统负载平均值，如果不允许获取返回负数</td>
+</tr>
+</tbody></table>
+<p><strong>com.sun.management.OperatingSystemMXBean主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getTotalPhysicalMemorySize()</code></td>
+<td>系统总物理内存</td>
+</tr>
+<tr>
+<td><code>getFreeePhysicalMemorySize()</code></td>
+<td>系统空闲物理内存</td>
+</tr>
+<tr>
+<td><code>getTotalSwapSpaceSize()</code></td>
+<td>总交换空间</td>
+</tr>
+<tr>
+<td><code>getFreeSwapSpaceSize()</code></td>
+<td>空闲交换空间</td>
+</tr>
+<tr>
+<td><code>getSystemCpuLoad()</code></td>
+<td>系统CPU使用率</td>
+</tr>
+<tr>
+<td><code>getProcessCpuLoad()</code></td>
+<td>JVM进程CPU使用率</td>
+</tr>
+<tr>
+<td><code>getProcessCpuTime()</code></td>
+<td>JVM进程CPU处理时间</td>
+</tr>
+<tr>
+<td><code>getCommittedVirtualMemorySize()</code></td>
+<td>已提交的虚拟内存</td>
+</tr>
+</tbody></table>
+<p><code>com.sun.management.OperatingSystemMXBean</code>继承自<code>java.lang.management.OperatingSystemMXBean</code>，通过<code>ManagementFactory.getOperatingSystemMXBean()</code>获取以后需要进行类型转换；<code>com.sun.management.OperatingSystemMXBean</code> 是 Sun&#x2F;Oracle JVM 的实现，其他 JVM（如 OpenJ9）可能不支持</p>
+<p><strong>使用示例</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">OperatingSystemMXBean</span> <span class="hljs-variable">os</span> <span class="hljs-operator">=</span> ManagementFactory.getOperatingSystemMXBean();<br>sb.append(<span class="hljs-string">&quot;Name: &quot;</span>).append(os.getName()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;Version: &quot;</span>).append(os.getVersion()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;Arch: &quot;</span>).append(os.getArch()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;Available Processors: &quot;</span>).append(os.getAvailableProcessors()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;System LoadAverage: &quot;</span>).append(os.getSystemLoadAverage()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br><br>com.sun.management.<span class="hljs-type">OperatingSystemMXBean</span> <span class="hljs-variable">sunOs</span> <span class="hljs-operator">=</span> (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();<br>sb.append(<span class="hljs-string">&quot;Total PhysicalMemorySize: &quot;</span>).append(sunOs.getTotalPhysicalMemorySize()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;Free PhysicalMemorySize: &quot;</span>).append(sunOs.getFreePhysicalMemorySize()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;Total Swap Space: &quot;</span>).append(sunOs.getTotalSwapSpaceSize()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;Free Swap Space: &quot;</span>).append(sunOs.getFreeSwapSpaceSize()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;System Cpu Load: &quot;</span>).append(sunOs.getSystemCpuLoad()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;Process Cpu Load: &quot;</span>).append(sunOs.getProcessCpuLoad()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;Process Cpu Time: &quot;</span>).append(sunOs.getProcessCpuTime()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;Committed Virtual Memory Size: &quot;</span>).append(sunOs.getCommittedVirtualMemorySize()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>文档</strong></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/OperatingSystemMXBean.html">https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/OperatingSystemMXBean.html</a></p>
+<h3 id="十、RuntimeMXBean"><a href="#十、RuntimeMXBean" class="headerlink" title="十、RuntimeMXBean"></a>十、RuntimeMXBean</h3><p>取与 Java 虚拟机（JVM）运行时相关的信息和属性</p>
+<p><strong>主要方法</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>方法名称</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getName()</code></td>
+<td>返回 JVM 名称，格式为 <code>&lt;pid&gt;@&lt;hostname&gt;</code>，表示 JVM 的进程 ID 和主机名。</td>
+</tr>
+<tr>
+<td><code>getStartTime()</code></td>
+<td>返回 JVM 的启动时间，表示从纪元开始的毫秒数（Unix 时间戳）。</td>
+</tr>
+<tr>
+<td><code>getUptime()</code></td>
+<td>返回 JVM 自启动以来的运行时间（以毫秒为单位）。</td>
+</tr>
+<tr>
+<td><code>getVmName()</code></td>
+<td>具体的JVM名称，例如 <code>Java HotSpot(TM) 64-Bit Server VM</code>。</td>
+</tr>
+<tr>
+<td><code>getVmVendor()</code></td>
+<td>JVM虚拟机供应商名称，例如 <code>Oracle Corporation</code>。</td>
+</tr>
+<tr>
+<td><code>getVmVersion()</code></td>
+<td>JVM虚拟机版本号，例如 <code>25.201-b09</code>。</td>
+</tr>
+<tr>
+<td><code>getSpecName()</code></td>
+<td>Java虚拟机规范名称，例如 <code>Java Virtual Machine Specification</code>。</td>
+</tr>
+<tr>
+<td><code>getSpecVendor()</code></td>
+<td>Java虚拟机规范的供应商名称，例如 <code>Oracle Corporation</code>。</td>
+</tr>
+<tr>
+<td><code>getSpecVersion()</code></td>
+<td>Java虚拟机规范版本号，例如 <code>1.8</code> 或 <code>11</code>。</td>
+</tr>
+<tr>
+<td><code>getInputArguments()</code></td>
+<td>传递给 Java 虚拟机的输入参数，其中不包括主方法的参数。例如 <code>-Xms512m</code> 或 <code>-Xmx1024m</code>。</td>
+</tr>
+<tr>
+<td><code>getSystemProperties()</code></td>
+<td>返回 JVM 的系统属性键值对，例如操作系统信息、Java 版本等。</td>
+</tr>
+<tr>
+<td><code>getBootClassPath()</code></td>
+<td>返回引导类加载器的类路径（仅在特定 JVM 上支持）。</td>
+</tr>
+<tr>
+<td><code>isBootClassPathSupported()</code></td>
+<td>检查当前 JVM 是否支持 <code>getBootClassPath()</code> 方法。</td>
+</tr>
+<tr>
+<td><code>getClassPath()</code></td>
+<td>返回类路径字符串，表示 <code>-classpath</code> 或 <code>-cp</code> 参数指定的值。</td>
+</tr>
+<tr>
+<td><code>getLibraryPath()</code></td>
+<td>返回动态库加载路径字符串，表示 <code>-Djava.library.path</code> 参数的值。</td>
+</tr>
+<tr>
+<td><code>getManagementSpecVersion()</code></td>
+<td>返回 JMX 规范版本，例如 <code>1.2</code>。</td>
+</tr>
+<tr>
+<td><code>getPid()</code></td>
+<td>返回当前 JVM 的进程 ID（PID）。 (Java 9+)</td>
+</tr>
+</tbody></table>
+<p><strong>示例</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">RuntimeMXBean</span> <span class="hljs-variable">mxBean</span> <span class="hljs-operator">=</span> ManagementFactory.getRuntimeMXBean();<br>sb.append(<span class="hljs-string">&quot;Name: &quot;</span>).append(mxBean.getName()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;StartTime: &quot;</span>).append(mxBean.getStartTime()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;Uptime: &quot;</span>).append(mxBean.getUptime()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;VmName: &quot;</span>).append(mxBean.getVmName()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;VmVendor: &quot;</span>).append(mxBean.getVmVendor()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;VmVersion: &quot;</span>).append(mxBean.getVmVersion()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;IsBootClassPathSupported: &quot;</span>).append(mxBean.isBootClassPathSupported()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;BootClassPath: &quot;</span>).append(mxBean.getBootClassPath()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;LibraryPath: &quot;</span>).append(mxBean.getLibraryPath()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;ClassPath: &quot;</span>).append(mxBean.getClassPath()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;SpecName: &quot;</span>).append(mxBean.getSpecName()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;SpecVendor: &quot;</span>).append(mxBean.getSpecVendor()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;SpecVersion: &quot;</span>).append(mxBean.getSpecVersion()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;InputArguments: &quot;</span>).append(mxBean.getInputArguments()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;ManagementsSpecVersion: &quot;</span>).append(mxBean.getManagementSpecVersion()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br>sb.append(<span class="hljs-string">&quot;SystemProperties: &quot;</span>).append(mxBean.getSystemProperties()).append(<span class="hljs-string">&quot;\n&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>文档</strong></p>
+<p><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/RuntimeMXBean.html">https://docs.oracle.com/en/java/javase/21/docs/api/java.management/java/lang/management/RuntimeMXBean.html</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java/" class="category-chain-item">Java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>使用JMX监控和管理JVM运行时</div>
+      <div>https://probiecoder.cn/java/jmx.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/java/logback.html" title="Logback使用配置">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Logback使用配置</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/java/spring_boot_admin.html" title="使用Spring Boot Admin管理和监控应用">
+                        <span class="hidden-mobile">使用Spring Boot Admin管理和监控应用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

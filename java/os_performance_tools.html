@@ -1,0 +1,846 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、vmstatvmstat（virtual memory statistics） 提供有关系统的虚拟内存、进程、CPU 活动、I&#x2F;O 以及其他系统资源的实时统计信息。 vmstat 命令有多种选项，可以用来指定输出的内容和格式，帮助你更精确地监控和分析系统性能。以下是常见的 vmstat 选项及其功能： 1. 基本用法   1vmstat [options] [delay [count">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统性能监测工具">
+<meta property="og:url" content="https://probiecoder.cn/java/os_performance_tools.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="一、vmstatvmstat（virtual memory statistics） 提供有关系统的虚拟内存、进程、CPU 活动、I&#x2F;O 以及其他系统资源的实时统计信息。 vmstat 命令有多种选项，可以用来指定输出的内容和格式，帮助你更精确地监控和分析系统性能。以下是常见的 vmstat 选项及其功能： 1. 基本用法   1vmstat [options] [delay [count">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.764Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.765Z">
+<meta property="article:author" content="duwei">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>操作系统性能监测工具 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="操作系统性能监测工具"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">操作系统性能监测工具</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="一、vmstat"><a href="#一、vmstat" class="headerlink" title="一、vmstat"></a>一、vmstat</h3><p><code>vmstat</code>（<code>virtual memory statistics</code>） 提供有关系统的虚拟内存、进程、CPU 活动、I&#x2F;O 以及其他系统资源的实时统计信息。</p>
+<p><code>vmstat</code> 命令有多种选项，可以用来指定输出的内容和格式，帮助你更精确地监控和分析系统性能。以下是常见的 <code>vmstat</code> 选项及其功能：</p>
+<h4 id="1-基本用法"><a href="#1-基本用法" class="headerlink" title="1. 基本用法"></a>1. <strong>基本用法</strong></h4>   <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat [options] [delay [count]]<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>delay</code>：每隔多少秒刷新一次输出。如果不指定，默认显示一次输出。</li>
+<li><code>count</code>：显示多少次输出。如果不指定，则无限次输出，直到用户终止命令。</li>
+</ul>
+<h4 id="2-常见选项"><a href="#2-常见选项" class="headerlink" title="2. 常见选项"></a>2. <strong>常见选项</strong></h4><ul>
+<li><p><strong><code>-a</code>（active&#x2F;inactive 内存）</strong>：<br>显示活动（active）和非活动（inactive）内存信息，增加了 <code>active</code> 和 <code>inactive</code> 列。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -a<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-f</code>（forks）</strong>：<br>显示自系统启动以来的进程创建（fork）次数。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -f<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-m</code>（slabinfo）</strong>：<br>显示内存中 slab 信息，包括缓存对象的使用统计数据。<strong>该选项需要更高级别权限</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -m<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-n</code>（no header）</strong>：<br>仅在第一次报告中显示头信息，以后不再重复显示头信息。这对于连续输出时有用，减少视觉干扰。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -n 2 5<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-s</code>（statistics summary）</strong>：<br>显示自系统启动以来的系统资源统计摘要信息，包括内存、CPU、交换等方面的统计数据。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -s<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-d</code>（disk statistics）</strong>：<br>显示磁盘设备的 I&#x2F;O 统计信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -d<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-p [partition]</code>（partition statistics）</strong>：<br>显示指定磁盘分区的 I&#x2F;O 统计信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -p sda1<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-t</code>（timestamp）</strong>：<br>在每行输出的开头显示当前时间戳，有助于记录数据的时间点。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -t 2 5<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-S [unit]</code>（unit size）</strong>：<br><strong><code>S</code>为大写</strong></p>
+<p>指定输出单位，可以是 <code>k</code>（千字节）、<code>m</code>（兆字节）或 <code>b</code>（块，1024 字节）。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -S m 2 5<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-w</code>（wide output）</strong>：<br>使输出更宽，以包含更完整的信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -w<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="3、输出解读"><a href="#3、输出解读" class="headerlink" title="3、输出解读"></a>3、<strong>输出解读</strong></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----<br> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st<br><br></code></pre></td></tr></table></figure>
+
+<p>   <code>vmstat</code> 的输出包括多个列，每列代表不同的系统指标。以下是常见的列及其含义：</p>
+   <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----<br> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>procs（进程）</strong>：</p>
+<ul>
+<li><code>r</code>：处于运行队列中的进程数，或者准备运行的进程数。如果这个值大于 CPU 核心数量，表示系统可能存在 CPU 瓶颈。</li>
+<li><code>b</code>：处于不可中断睡眠状态的进程数，通常表示等待 I&#x2F;O 操作完成。</li>
+</ul>
+</li>
+<li><p><strong>memory（内存）</strong>：</p>
+<ul>
+<li><code>swpd</code>：已使用的交换空间大小（以 KB 为单位）。</li>
+<li><code>free</code>：空闲物理内存大小（以 KB 为单位）。</li>
+<li><code>buff</code>：用于缓冲的内存大小（以 KB 为单位），通常用于块设备的缓冲。</li>
+<li><code>cache</code>：用于缓存的内存大小（以 KB 为单位），通常用于文件系统的缓存。</li>
+</ul>
+</li>
+<li><p><strong>swap（交换空间）</strong>：</p>
+<ul>
+<li><code>si</code>：从交换空间调入内存的交换大小（以 KB 为单位），表示系统将数据从交换区调入内存的速率。</li>
+<li><code>so</code>：从内存调出到交换空间的交换大小（以 KB 为单位），表示系统将数据从内存调出到交换区的速率。</li>
+</ul>
+</li>
+<li><p><strong>io（I&#x2F;O）</strong>：</p>
+<ul>
+<li><code>bi</code>：块设备读取操作的速率（以 KB 为单位），表示每秒从块设备读取的数据量。</li>
+<li><code>bo</code>：块设备写入操作的速率（以 KB 为单位），表示每秒向块设备写入的数据量。</li>
+</ul>
+</li>
+<li><p><strong>system（系统）</strong>：</p>
+<ul>
+<li><code>in</code>：每秒的中断数，包括硬件和软件中断。</li>
+<li><code>cs</code>：每秒的上下文切换次数，表示进程之间的切换频率。</li>
+</ul>
+</li>
+<li><p><strong>cpu（CPU 使用情况）</strong>：</p>
+<ul>
+<li><p><code>us</code>：用户态 CPU 使用率，表示 CPU 在用户进程上花费的时间百分比。</p>
+</li>
+<li><p><code>sy</code>：内核态 CPU 使用率，表示 CPU 在内核进程上花费的时间百分比。</p>
+</li>
+<li><p><code>id</code>：空闲 CPU 时间百分比。</p>
+</li>
+<li><p><code>wa</code>：等待 I&#x2F;O 完成的 CPU 时间百分比。</p>
+</li>
+<li><p><code>st</code>：虚拟机偷取的 CPU 时间百分比（stolen time），指虚拟机管理程序（如 KVM、Xen）占用的时间。</p>
+</li>
+</ul>
+<p><code>us</code>和<code>sy</code>合计表示 CPU 总使用率</p>
+</li>
+</ul>
+<h4 id="4、-使用示例"><a href="#4、-使用示例" class="headerlink" title="4、 使用示例"></a>4、 <strong>使用示例</strong></h4><ul>
+<li><p><strong>监控磁盘 I&#x2F;O 活动，每隔 2 秒更新一次，输出 10 次：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -d 2 10<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>显示活动和非活动内存信息，包含时间戳，每秒更新一次：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -a -t 1<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>每秒更新一次统计数据，显示 5 次，并使用兆字节作为单位：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -S m 1 5<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查看系统的统计摘要：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmstat -s<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="二、iostat"><a href="#二、iostat" class="headerlink" title="二、iostat"></a>二、iostat</h3><p><code>iostat</code> 显示 CPU 的使用情况以及磁盘 I&#x2F;O 的统计信息，帮助用户分析系统瓶颈，尤其是与存储设备相关的性能问题。</p>
+<h4 id="1-iostat-的基本功能"><a href="#1-iostat-的基本功能" class="headerlink" title="1. iostat 的基本功能"></a>1. <strong><code>iostat</code> 的基本功能</strong></h4><ul>
+<li><strong>监控 CPU 使用情况</strong>：显示系统总体的 CPU 使用情况，包括用户态、系统态、I&#x2F;O 等待时间等。</li>
+<li><strong>监控设备 I&#x2F;O 性能</strong>：显示每个块设备的 I&#x2F;O 活动统计信息，包括读写速率、每秒传输块数、平均请求时间等。</li>
+</ul>
+<h4 id="2-基本用法"><a href="#2-基本用法" class="headerlink" title="2. 基本用法"></a>2. <strong>基本用法</strong></h4>   <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat [options] [delay [count]]<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>delay</code>：每隔多少秒刷新一次输出。如果不指定，默认显示一次输出。</li>
+<li><code>count</code>：显示多少次输出。如果不指定，则无限次输出，直到用户终止命令。</li>
+</ul>
+<h4 id="3-常见选项"><a href="#3-常见选项" class="headerlink" title="3. 常见选项"></a>3. <strong>常见选项</strong></h4><ul>
+<li><p><strong><code>-c</code>（显示 CPU 使用情况）</strong>：<br>显示 CPU 使用情况统计，包括用户态、系统态、I&#x2F;O 等待时间等。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -c<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-d</code>（显示磁盘 I&#x2F;O 统计信息）</strong>：<br>显示块设备的 I&#x2F;O 统计数据。默认情况下，<code>iostat</code> 会同时显示 CPU 和磁盘 I&#x2F;O 的统计信息，使用 <code>-d</code> 选项可以仅显示磁盘 I&#x2F;O。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -d<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>**<code>-k</code> 或 <strong><code>-m</code>（指定单位）</strong>：<br>将 I&#x2F;O 统计数据以千字节 (<code>-k</code>) 或兆字节 (<code>-m</code>) 为单位显示。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -k<br>iostat -m<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-x</code>（扩展 I&#x2F;O 统计信息）</strong>：<br>显示更详细的设备 I&#x2F;O 统计信息，包括平均队列长度、平均服务时间、设备利用率等。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -x<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-p [device]</code>（显示分区统计信息）</strong>：<br>显示指定设备的分区统计信息。如果未指定设备，则显示所有设备的分区统计信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -p sda<br>iostat -p<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>**<code>-t</code> 或 <strong><code>-z</code>（显示时间戳）</strong>：<br>使用 <code>-t</code> 选项在每行输出前面添加时间戳，使用 <code>-z</code> 选项则隐藏所有值为零的设备（减少无用信息）。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -t<br>iostat -z<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-N</code>（显示 LVM 逻辑卷统计信息）</strong>：<br>显示 LVM（逻辑卷管理器）逻辑卷的统计信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -N<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>-p ALL</code>（显示所有分区和设备）</strong>：<br>使用 <code>-p ALL</code> 显示所有设备和其分区的详细统计信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -p ALL<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="4-iostat-输出解读"><a href="#4-iostat-输出解读" class="headerlink" title="4. iostat 输出解读"></a>4. <strong><code>iostat</code> 输出解读</strong></h4><p>   <strong>基本输出格式</strong>：</p>
+<p>   典型的 <code>iostat</code> 输出包括两部分：CPU 使用情况和设备 I&#x2F;O 使用情况。以下是一个基本输出的例子：<br>   <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">Linux 5.4.0-42-generic (hostname) 	08/21/2024 	_x86_64_	(4 CPU)<br><br>avg-cpu:  %user   %nice %system %iowait  %steal   %idle<br>           10.05    0.02    2.03    1.15    0.00   86.75<br><br>Device             tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn<br>sda               5.00        256.00       512.00     123456     654321<br>sdb               2.00        128.00       256.00      65432     321654<br></code></pre></td></tr></table></figure></p>
+<ul>
+<li><p><strong>CPU 使用情况</strong> (<code>avg-cpu</code>)：</p>
+<ul>
+<li><code>%user</code>：在用户态执行的 CPU 时间百分比。</li>
+<li><code>%nice</code>：在用户态执行的、优先级调整过的进程的 CPU 时间百分比。</li>
+<li><code>%system</code>：在内核态执行的 CPU 时间百分比。</li>
+<li><code>%iowait</code>：CPU 等待 I&#x2F;O 操作完成的时间百分比。</li>
+<li><code>%steal</code>：被虚拟化管理程序“窃取”的时间百分比。</li>
+<li><code>%idle</code>：CPU 空闲的时间百分比。</li>
+</ul>
+</li>
+<li><p><strong>设备使用情况</strong>（每个块设备）：</p>
+<ul>
+<li><code>tps</code>（Transfers per second）：每秒钟设备 I&#x2F;O 请求的次数，包括读和写操作。</li>
+<li><code>kB_read/s</code>：每秒钟从设备读取的数据量（以 KB 为单位）。</li>
+<li><code>kB_wrtn/s</code>：每秒钟向设备写入的数据量（以 KB 为单位）。</li>
+<li><code>kB_read</code>：自系统启动以来从设备读取的总数据量（以 KB 为单位）。</li>
+<li><code>kB_wrtn</code>：自系统启动以来向设备写入的总数据量（以 KB 为单位）。</li>
+</ul>
+</li>
+</ul>
+<p>   <strong>扩展的设备统计信息（使用 <code>-x</code> 选项）</strong>：</p>
+<p>   <code>iostat -x</code> 提供了更详细的设备统计数据，包含以下信息：</p>
+<ul>
+<li>**<code>r/s</code>**：每秒钟读取请求的次数。</li>
+<li>**<code>w/s</code>**：每秒钟写入请求的次数。</li>
+<li>**<code>rkB/s</code>**：每秒钟读取的数据量（以 KB 为单位）。</li>
+<li>**<code>wkB/s</code>**：每秒钟写入的数据量（以 KB 为单位）。</li>
+<li>**<code>avgrq-sz</code>**：平均每次 I&#x2F;O 请求的数据大小（以扇区为单位）。</li>
+<li>**<code>avgqu-sz</code>**：平均 I&#x2F;O 请求队列长度。</li>
+<li>**<code>await</code>**：每次 I&#x2F;O 操作的平均等待时间（以毫秒为单位），包括队列中的时间和服务时间。</li>
+<li>**<code>svctm</code>**：每次 I&#x2F;O 操作的平均服务时间（以毫秒为单位）。</li>
+<li>**<code>%util</code>**：设备的利用率，表示设备被占用的时间百分比（在 100% 表示设备始终处于忙碌状态）。</li>
+</ul>
+<h4 id="5-示例分析"><a href="#5-示例分析" class="headerlink" title="5. 示例分析"></a>5. <strong>示例分析</strong></h4><ul>
+<li><p>使用<code>-x</code>显示磁盘扩展信息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -x<br><br>Device            r/s     w/s   rkB/s   wkB/s  avgrq-sz  avgqu-sz   await  svctm  %util<br>sda              25.00   30.00  500.00  600.00    32.00      0.10    4.00   1.50   10.00<br>sdb              10.00   15.00  200.00  300.00    40.00      0.50   10.00   3.00   30.00<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong><code>sda</code> 设备分析</strong>：</p>
+<ul>
+<li><code>r/s</code> 和 <code>w/s</code> 表示每秒有 25 次读取和 30 次写入操作。</li>
+<li><code>await</code> 是 4 毫秒，表明该设备的 I&#x2F;O 等待时间较短，I&#x2F;O 性能良好。</li>
+<li><code>%util</code> 是 10%，说明 <code>sda</code> 设备的利用率较低，系统资源尚未饱和。</li>
+</ul>
+</li>
+<li><p><strong><code>sdb</code> 设备分析</strong>：</p>
+<ul>
+<li><code>avgqu-sz</code> 为 0.50，表示该设备的 I&#x2F;O 请求队列相对较长。</li>
+<li><code>await</code> 为 10 毫秒，比 <code>sda</code> 设备的等待时间高，可能有轻微的 I&#x2F;O 瓶颈。</li>
+<li><code>%util</code> 为 30%，虽然利用率比 <code>sda</code> 高，但仍未达到饱和状态。</li>
+</ul>
+</li>
+<li><p><strong>每隔 2 秒显示一次 CPU 使用情况和磁盘 I&#x2F;O 统计信息，共显示 5 次：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -c -d 2 5<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>以千字节为单位显示扩展 I&#x2F;O 统计信息，并隐藏零值设备：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -xkz<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>显示所有设备及其分区的 I&#x2F;O 统计信息，并添加时间戳：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -p ALL -t<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>仅显示指定磁盘设备 <code>sda</code> 的分区 I&#x2F;O 统计信息：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -p sda<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>每隔 1 秒显示一次 LVM 逻辑卷的统计信息：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">iostat -N 1<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h4 id="6、iostat安装"><a href="#6、iostat安装" class="headerlink" title="6、iostat安装"></a>6、iostat安装</h4><h5 id="6-1-Feodra系统安装iostat"><a href="#6-1-Feodra系统安装iostat" class="headerlink" title="6.1 Feodra系统安装iostat"></a>6.1 Feodra系统安装iostat</h5><p><code>iostat</code> 是 <code>sysstat</code>软件包的一部分，因此安装<code>sysstat</code>包即可</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">1、更新软件包索引<br>sudo dnf update<br><br>2. 安装 sysstat 软件包<br>sudo dnf install sysstat<br><br>3、验证安装<br>iostat --version<br><br></code></pre></td></tr></table></figure>
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java/" class="category-chain-item">Java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>操作系统性能监测工具</div>
+      <div>https://probiecoder.cn/java/os_performance_tools.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/java/gc.html" title="Grafana安装与基础配置">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Grafana安装与基础配置</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/25/java/lambda/Lambda%E6%B5%85%E6%9E%90/" title="Lambda浅析">
+                        <span class="hidden-mobile">Lambda浅析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

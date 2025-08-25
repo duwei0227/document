@@ -1,0 +1,760 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、垃圾收集算法1、CMS专为老年代设计的一个低延迟收集器，通常会与一个用于 Young GC 的并行收集器(ParNew)配对使用。 垃圾收集阶段：  初始标记(initial mark)(STW) 并发标记（concurrent mark） 并发预清理（concurrent preclean） 重新标记（remark）（STW） 并发清理（concurrent sweep） 并发重置（conc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Grafana安装与基础配置">
+<meta property="og:url" content="https://probiecoder.cn/java/gc.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="一、垃圾收集算法1、CMS专为老年代设计的一个低延迟收集器，通常会与一个用于 Young GC 的并行收集器(ParNew)配对使用。 垃圾收集阶段：  初始标记(initial mark)(STW) 并发标记（concurrent mark） 并发预清理（concurrent preclean） 重新标记（remark）（STW） 并发清理（concurrent sweep） 并发重置（conc">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.764Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.764Z">
+<meta property="article:author" content="duwei">
+<meta property="article:tag" content="监控">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Grafana安装与基础配置 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Grafana安装与基础配置"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          860 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          8 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Grafana安装与基础配置</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="一、垃圾收集算法"><a href="#一、垃圾收集算法" class="headerlink" title="一、垃圾收集算法"></a>一、垃圾收集算法</h3><h4 id="1、CMS"><a href="#1、CMS" class="headerlink" title="1、CMS"></a>1、CMS</h4><p>专为老年代设计的一个低延迟收集器，通常会与一个用于 <code>Young GC</code> 的并行收集器(<code>ParNew</code>)配对使用。</p>
+<p>垃圾收集阶段：</p>
+<ol>
+<li>初始标记(<code>initial mark</code>)(<code>STW</code>)</li>
+<li>并发标记（<code>concurrent mark</code>）</li>
+<li>并发预清理（<code>concurrent preclean</code>）</li>
+<li>重新标记（<code>remark</code>）（<code>STW</code>）</li>
+<li>并发清理（<code>concurrent sweep</code>）</li>
+<li>并发重置（<code>concurrent reset</code>）</li>
+</ol>
+<p>初始标记阶段的目的是为该区域内的垃圾收集提供一个稳定的起点集合，这些起点集合称为<strong>内部指针</strong>，相当于用于收集周期的垃圾收集根。</p>
+<p>并发标记阶段本质上是在堆上运行三色标记算法，记录以后可能需要修正的任何修改</p>
+<p>并发预清理阶段尽可能缩短会造成<code>STW</code>的重新标记阶段的长度</p>
+<p>重新标记阶段使用卡表来修正可能会在并发标记阶段受<code>Mutator</code>（应用）线程影响的标记</p>
+<p>启用标志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">-XX:+UseConcMarkSweepGC<br></code></pre></td></tr></table></figure>
+
+<p>此标志也会同步启用<code>ParNewGC</code>（用于新生代内存回收）</p>
+<h4 id="2、G1"><a href="#2、G1" class="headerlink" title="2、G1"></a>2、G1</h4><p><code>G1</code>堆基于区域(<code>region</code>)&#96;的概念。支持的区域大小为1、2、4、8、16、32或64MB中的某个值，默认情况下，期望堆中区域的数量在2048到4095之间，如果不在，会调整区域的大小来实现这个目标。</p>
+<p>区域大小计算：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">Heap</span> <span class="hljs-attr">Size</span>&gt;</span> / 2048 ,结果取整数，选择离它最近的所允许的区域大小<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>区域数量计算：</strong></p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs fortran"><span class="hljs-keyword">Number</span> of regions = &lt;Heap <span class="hljs-built_in">Size</span>&gt; / &lt;Region <span class="hljs-built_in">Size</span>&gt;<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>巨型区域与巨型对象：</strong></p>
+<p>占用空间超过一半的对象被认定为是巨型(<code>humongous</code>)对象.</p>
+<p>巨型区域是连续的空闲区域，可以立即成为<code>Tenured</code>区域（而非<code>Eden</code>区域）的一部分</p>
+<p><strong>记忆集（remembered set , RSet）：</strong></p>
+<p>每个区域都有的条目，它们会记录指向当前堆区域的外部引用。<code>G1</code>不需要通过遍历整个堆来寻找指向某个区域的引用，只需要检查<code>RSet</code>即可。</p>
+<p><strong><code>G1</code>的各阶段：</strong></p>
+<p>1、初始标记(<code>initial mak</code>) <code>STW</code></p>
+<p>2、并发根扫描(<code>concurrent root scan</code>)</p>
+<p>​	扫描初始标记的<code>Survivor</code>区域以寻找指向老年代的引用</p>
+<p>3、并发标记(<code>concurrent remark</code>)</p>
+<p>4、重新标记(<code>remark</code>) <code>STW</code></p>
+<p>5、清理(<code>cleanup</code>) <code>STW</code></p>
+<p>启用标志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">-XX:UseG1GC<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>配置参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center">标志</th>
+<th align="center">描述</th>
+<th align="center">默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>XX:MaxGCPauseMillis=200</code></td>
+<td align="center"><code>GC</code>最大暂停时间</td>
+<td align="center">200</td>
+</tr>
+<tr>
+<td align="center"><code>-XX:G1HeapRegionSize=&lt;n&gt;</code></td>
+<td align="center"><code>Region</code>区域大小，<code>n</code>必须是2的幂，范围在1～64MB之间</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center"><code>-XX:ConcGCThreads</code></td>
+<td align="center">并发标记线程数量</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center"><code>-XX:+AlwaysPreTouch</code></td>
+<td align="center">在启动时由操作系统将物理内存分配给VM，而不是实际使用的时候在由虚拟内存映射物理内存</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<p><strong>要求JDK最低版本 8u40</strong></p>
+<h3 id="二、垃圾收集日志"><a href="#二、垃圾收集日志" class="headerlink" title="二、垃圾收集日志"></a>二、垃圾收集日志</h3><p>​															<strong>垃圾收集标志(jdk8)</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center">标志</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>-Xloggc:gc.log</code></td>
+<td align="center">控制垃圾收集事件写入哪个文件</td>
+</tr>
+<tr>
+<td align="center"><code>-XX:+PrintGCDetails</code></td>
+<td align="center">将垃圾收集事件的详细信息写入日志</td>
+</tr>
+<tr>
+<td align="center"><code>-XX:+PrintTenuringDistribution</code></td>
+<td align="center">提供了计算关键的内存压力影响和事件（如过早晋升）所需的原始数据，需要使用工具查看</td>
+</tr>
+<tr>
+<td align="center"><code>-XX:+PrintGCTimeStamps</code></td>
+<td align="center">打印垃圾收集事件的发生时间（自虚拟机启动后的秒数）</td>
+</tr>
+<tr>
+<td align="center"><code>-XX:+PrintGCDateStamps</code></td>
+<td align="center">打印垃圾收集事件发生的挂钟时间</td>
+</tr>
+<tr>
+<td align="center"><code>-XX:+UseGCLogFileRotation</code></td>
+<td align="center">打开日志文件滚动</td>
+</tr>
+<tr>
+<td align="center"><code>-XX:+NumberOfGCLogFiles=&lt;n&gt;</code></td>
+<td align="center">设置滚动日志文件的个数</td>
+</tr>
+<tr>
+<td align="center"><code>-XX:+GCLogFileSize=&lt;size&gt;</code></td>
+<td align="center">设置滚动日志文件的最大值，当文件大小超过该参数值时，日志将写入下一个文件</td>
+</tr>
+</tbody></table>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java/" class="category-chain-item">Java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%9B%91%E6%8E%A7/" class="print-no-link">#监控</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Grafana安装与基础配置</div>
+      <div>https://probiecoder.cn/java/gc.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/java/spring_boot_admin.html" title="使用Spring Boot Admin管理和监控应用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">使用Spring Boot Admin管理和监控应用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/java/os_performance_tools.html" title="操作系统性能监测工具">
+                        <span class="hidden-mobile">操作系统性能监测工具</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

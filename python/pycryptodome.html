@@ -1,0 +1,761 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、安装1pip install pycryptodome  二、包模块介绍   包名 描述    Crypto.Cipher 数据的加密、解密模块，例如 AES   Crypto.Signature 数据的签名、验签   Crypto.Hash 消息摘要   Crypto.PublicKey 用于公钥的生成、导出和导入   Crypto.Random 用于生成随机数据   Crypto.Util">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyCryptodome使用笔记">
+<meta property="og:url" content="https://probiecoder.cn/python/pycryptodome.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="一、安装1pip install pycryptodome  二、包模块介绍   包名 描述    Crypto.Cipher 数据的加密、解密模块，例如 AES   Crypto.Signature 数据的签名、验签   Crypto.Hash 消息摘要   Crypto.PublicKey 用于公钥的生成、导出和导入   Crypto.Random 用于生成随机数据   Crypto.Util">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.767Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.767Z">
+<meta property="article:author" content="duwei">
+<meta property="article:tag" content="PyCryptodome">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>PyCryptodome使用笔记 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="PyCryptodome使用笔记"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">PyCryptodome使用笔记</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="一、安装"><a href="#一、安装" class="headerlink" title="一、安装"></a>一、安装</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">pip install pycryptodome<br></code></pre></td></tr></table></figure>
+
+<h3 id="二、包模块介绍"><a href="#二、包模块介绍" class="headerlink" title="二、包模块介绍"></a>二、包模块介绍</h3><table>
+<thead>
+<tr>
+<th>包名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Crypto.Cipher</code></td>
+<td>数据的加密、解密模块，例如 <code>AES</code></td>
+</tr>
+<tr>
+<td><code>Crypto.Signature</code></td>
+<td>数据的签名、验签</td>
+</tr>
+<tr>
+<td><code>Crypto.Hash</code></td>
+<td>消息摘要</td>
+</tr>
+<tr>
+<td><code>Crypto.PublicKey</code></td>
+<td>用于公钥的生成、导出和导入</td>
+</tr>
+<tr>
+<td><code>Crypto.Random</code></td>
+<td>用于生成随机数据</td>
+</tr>
+<tr>
+<td><code>Crypto.Util</code></td>
+<td>工具类，例如数据填充</td>
+</tr>
+</tbody></table>
+<h4 id="1、Crypto-PublicKey"><a href="#1、Crypto-PublicKey" class="headerlink" title="1、Crypto.PublicKey"></a>1、Crypto.PublicKey</h4><p>用于公钥、私钥证书的生成以及证书格式转换(字符串)</p>
+<p><code>pycryptodome</code>支持的Key类型：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/public_key/rsa.html">RSA keys</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/public_key/dsa.html">DSA keys</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/public_key/ecc.html">Elliptic Curve keys</a></li>
+</ul>
+<p>在导入公钥、私钥时，需要进行格式填充</p>
+<p><code>RSA</code>私钥文件结构：</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs vbnet">-----BEGIN RSA <span class="hljs-keyword">PRIVATE</span> <span class="hljs-keyword">KEY</span>-----<br>私钥正文<br>-----<span class="hljs-keyword">END</span> RSA <span class="hljs-keyword">PRIVATE</span> <span class="hljs-keyword">KEY</span>-----<br></code></pre></td></tr></table></figure>
+
+<p><code>RSA</code>公钥文件：</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs vbnet">-----BEGIN <span class="hljs-keyword">PUBLIC</span> <span class="hljs-keyword">KEY</span>-----<br>公钥正文<br>-----<span class="hljs-keyword">END</span> <span class="hljs-keyword">PUBLIC</span> <span class="hljs-keyword">KEY</span>-----<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 生成私钥、公钥</span><br><span class="hljs-comment"># bits指定生成的私钥文件大小</span><br><span class="hljs-comment"># passphrase指定私钥文件加密密码</span><br>key = RSA.generate(bits=<span class="hljs-number">2048</span>)<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;private_key.pem&#x27;</span>, <span class="hljs-string">&#x27;wb&#x27;</span>) <span class="hljs-keyword">as</span> fp:<br>    fp.write(key.export_key(<span class="hljs-built_in">format</span>=<span class="hljs-string">&#x27;PEM&#x27;</span>, passphrase=<span class="hljs-string">&#x27;123456&#x27;</span>))<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;public_key.pem&#x27;</span>, <span class="hljs-string">&#x27;wb&#x27;</span>) <span class="hljs-keyword">as</span> fp:<br>    fp.write(key.publickey().export_key())<br>    <br><span class="hljs-comment"># 导入公钥、私钥文件</span><br>private_key_start = <span class="hljs-string">&#x27;-----BEGIN RSA PRIVATE KEY-----&#x27;</span><br>private_key_end = <span class="hljs-string">&#x27;-----END RSA PRIVATE KEY-----&#x27;</span><br>public_key_start = <span class="hljs-string">r&#x27;-----BEGIN PUBLIC KEY-----&#x27;</span><br>public_key_end = <span class="hljs-string">r&#x27;-----END PUBLIC KEY-----&#x27;</span><br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;private_key.pem&#x27;</span>, <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> fp:<br>    pk = fp.read().decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> pk.startswith(private_key_start):<br>        pk = private_key_start + pk<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> pk.endswith(private_key_end):<br>            pk += private_key_end<br>            private_key = RSA.import_key(pk, passphrase=<span class="hljs-string">&#x27;123456&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<h4 id="2、Crypto-Cipher"><a href="#2、Crypto-Cipher" class="headerlink" title="2、Crypto.Cipher"></a>2、Crypto.Cipher</h4><p><code>Cipher</code>模块用于数据的加密和解密</p>
+<ul>
+<li><p>对称算法：双方使用相同的密钥进行数据的加密和解密。对称加密的速度通常比较快，代表有 <code>AES</code>,<code>DES3</code></p>
+</li>
+<li><p>非对称算法</p>
+<p>发送方和接收方使用不同的密钥。发送方使用公钥（非机密）加密，而接收方使用私钥（机密）解密。非对称密钥通常很慢。代表有 <code>PKCS#1 OAEP (RSA)</code></p>
+</li>
+</ul>
+<p><code>pycryptodome</code>支持的算法：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/cipher/des.html">Single DES</a> and <a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/cipher/des3.html">Triple DES</a> (block ciphers)</li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/cipher/arc2.html">RC2</a> (block cipher)</li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/cipher/arc4.html">ARC4</a> (stream cipher)</li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/cipher/blowfish.html">Blowfish</a> (block cipher)</li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/cipher/cast.html">CAST-128</a> (block cipher)</li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/cipher/pkcs1_v1_5.html">PKCS#1 v1.5 encryption (RSA)</a> (asymmetric cipher)</li>
+</ul>
+<h5 id="AES-Advanced-Encryption-Standard"><a href="#AES-Advanced-Encryption-Standard" class="headerlink" title="AES(Advanced Encryption Standard)"></a>AES(Advanced Encryption Standard)</h5><p><code>AES</code>具有16字节的固定数据块大小。它的密钥可以是128、192或256位(bit)长。</p>
+<ul>
+<li>使用ECB(Electronic Code Book)进行数据的加密解密：</li>
+</ul>
+<p>    <code>ECB</code>将加密的数据分成若干组，每组的大小跟加密密钥长度相同，然后每组都用相同的密钥进行加密。所以在加密的时候需要对明文数据进行填充保证数据的长度是密码长度的倍数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 数据加密</span><br>plain_text = <span class="hljs-string">b&#x27;hello&#x27;</span><br>key = get_random_bytes(<span class="hljs-number">16</span>)<br>cipher = AES.new(key, AES.MODE_ECB)<br>ct_bytes = cipher.encrypt(pad(plain_text, AES.block_size))<br>enc_data = base64.b64encode(ct_bytes).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><br><br><span class="hljs-comment">#数据解密</span><br>enc_data = <span class="hljs-string">&#x27;/zgUiJHvUyu1h+wr9evHCA==&#x27;</span><br>key = <span class="hljs-string">&#x27;dhcvKhdF3kwoXUjGTmK3Ww==&#x27;</span><br>cipher = AES.new(base64.b64decode(key), AES.MODE_ECB)<br>pad_plain_data = cipher.decrypt(base64.b64decode(enc_data))<br>plain_data = unpad(pad_plain_data, AES.block_size)<br><span class="hljs-built_in">print</span>(plain_data.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>))<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>CBC</code>模式的加密首先也是将明文分成固定长度的块，然后将前面一个加密块输出的密文与下一个要加密的明文块进行异或操作，将计算结果再用密钥进行加密得到密文。第一明文块加密的时候，因为前面没有加密的密文，所以需要一个初始化向量。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 数据加密</span><br>plain_text = <span class="hljs-string">b&#x27;hello&#x27;</span><br>key = get_random_bytes(<span class="hljs-number">16</span>)<br><span class="hljs-comment"># 初始偏移量可以不指定，如果不指定非随机生成</span><br>iv = get_random_bytes(<span class="hljs-number">16</span>)<br>cipher = AES.new(key, AES.MODE_CBC, iv=iv)<br>ct_bytes = cipher.encrypt(pad(plain_text, AES.block_size))<br>enc_data = base64.b64encode(ct_bytes).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;加密密文==&#x27;</span>, enc_data)<br><br><span class="hljs-comment"># 数据解密</span><br>cipher = AES.new(key, AES.MODE_CBC, iv=iv)<br>pad_plain_data = cipher.decrypt(base64.b64decode(enc_data))<br>plain_text = unpad(pad_plain_data, AES.block_size).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;解密后明文==&#x27;</span>, plain_text)<br></code></pre></td></tr></table></figure>
+
+<h5 id="RSA"><a href="#RSA" class="headerlink" title="RSA"></a>RSA</h5><p><code>RSA</code>加解密一般是公钥加密，私钥解密;<code>PyCryptodome</code>当前建议使用 <code>PKCS1_OAEP</code>算法；如果加解密双方为 <code>Python</code>与 <code>Java</code>且 <code>Java</code>端采用 <code>RSA/ECB/PKCS1Padding</code>时，<code>Python</code>端需要采用 <code>PKCS1_v1_5</code></p>
+<p><strong>加解密模块为：</strong><code>Crypto.Cipher</code>模块</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">import base64<br><span class="hljs-built_in">from</span> Crypto.Cipher import PKCS1_OAEP, PKCS1_v1_5<br><span class="hljs-built_in">from</span> Crypto.PublicKey import RSA<br><br><span class="hljs-comment"># 数据加密--公钥</span><br>data = <span class="hljs-string">&quot;I met aliens in UFO. Here is the map.&quot;</span>.encode(<span class="hljs-string">&quot;utf-8&quot;</span>)<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;public_key.pem&#x27;</span>, mode=<span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> fp:<br>    <span class="hljs-comment"># 如果是读取字符串公钥需要补齐字符串格式</span><br>    public_key = RSA.import_key(fp.<span class="hljs-built_in">read</span>())<br>    cipher_rsa = PKCS1_v1_5.<span class="hljs-built_in">new</span>(public_key)<br>    <span class="hljs-comment">#cipher_rsa = PKCS1_OAEP.new(public_key)</span><br>    enc_data = cipher_rsa.<span class="hljs-built_in">encrypt</span>(data)<br>    print(base64.b64encode(enc_data).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>))<br>    <br><span class="hljs-comment"># 数据解密--私钥</span><br>enc_data = <span class="hljs-string">&#x27;rDrJC9aaAmL5szCKzPy1peJ/Yx8noKuBEDFsUGSjDQgxRId3jgG9fAVuXpJnqRtHL+RXncOLuqRtKVowyt5H3Ag/KZm+7RJDeY7nT3AvgUiy0xfQgZChOW63BDoIMFIDZqXv5yPwqoMDT2Tz3Yj7FWYb5/0zbbFbJqwyA3knY2vUOFOp/YyqpZ7gzzyKjgAgi8pWgEDs2bXMirGIWA1McHFVdDfHF7Xi2s2Ob2oHylW7rJT9SXfQh0CPvWRxTstv6e8GWRQo4qYK/qGxqGQfLexSw2/o10DIAsYOxN9xubVKPLA+jXQchSH7Z/Js2g9t3WSI8027JXg//HTB5AO74A==&#x27;</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;private_key.pem&#x27;</span>, mode=<span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> fp:<br>    <span class="hljs-comment"># 如果是读取字符串公钥需要补齐字符串格式</span><br>    pk = RSA.import_key(fp.<span class="hljs-built_in">read</span>(), passphrase=<span class="hljs-string">&#x27;123456&#x27;</span>)<br>    cipher = PKCS1_v1_5.<span class="hljs-built_in">new</span>(pk)<br>    <span class="hljs-comment">#sentinel:当发生错误时返回对象</span><br>    plain_data_byte = cipher.<span class="hljs-built_in">decrypt</span>(base64.b64decode(enc_data), sentinel=<span class="hljs-string">&#x27;no&#x27;</span>)<br>    <span class="hljs-comment"># PKCS1_OAEP解密</span><br>    <span class="hljs-comment">#cipher = PKCS1_OAEP.new(pk)</span><br>    <span class="hljs-comment">#plain_data_byte = cipher.decrypt(base64.b64decode(enc_data))</span><br>    print(plain_data_byte.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>))<br><br></code></pre></td></tr></table></figure>
+
+<h4 id="3、Crypto-Signature"><a href="#3、Crypto-Signature" class="headerlink" title="3、Crypto.Signature"></a>3、Crypto.Signature</h4><p><code>RSA</code>使用私钥签名，公钥验签；签名验签在 <code>Crypto.Signature</code>模块包提供</p>
+<p><code>pycryptodome</code>支持的算法：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/signature/pkcs1_v1_5.html">PKCS#1 v1.5 (RSA)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/signature/pkcs1_pss.html">PKCS#1 PSS (RSA)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/signature/dsa.html">Digital Signature Algorithm (DSA and ECDSA)</a></li>
+</ul>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">from</span> Crypto.PublicKey <span class="hljs-keyword">import</span> RSA<br><span class="hljs-keyword">from</span> Crypto.Signature <span class="hljs-keyword">import</span> PKCS1_v1_5<br><br>plain_data = <span class="hljs-string">&quot;Hello, World!!&quot;</span><br><span class="hljs-keyword">with</span> open(<span class="hljs-string">&#x27;private_key.pem&#x27;</span>, mode=<span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> fp:<br>    <span class="hljs-comment"># 如果是读取字符串公钥需要补齐字符串格式</span><br>    private_key = RSA.import_key(fp.read(), passphrase=<span class="hljs-string">&#x27;123456&#x27;</span>)<br>    hash_data = SHA256.<span class="hljs-keyword">new</span>(plain_data.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>))<br>    sign_data = PKCS1_v1_5.<span class="hljs-keyword">new</span>(private_key).sign(hash_data)<br>    <span class="hljs-built_in">print</span>(base64.b64encode(sign_data).decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>))<br>    <br><span class="hljs-comment"># 验签</span><br>plain_data = <span class="hljs-string">&quot;Hello, World!!&quot;</span><br>sign_data = <span class="hljs-string">&#x27;itVttV7vTzB8OoglNtuPn2PgpRzpZ3ILOnLWQDAqiOuQig9Whs0a6ht5P3oc1baUZ6PfVksSNzuPd8sNaR9eQeKkaSiuiJP11BJ8cugPuSyn&#x27;</span><br><span class="hljs-keyword">with</span> open(<span class="hljs-string">&#x27;public_key.pem&#x27;</span>, mode=<span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> fp:<br>    hash_data = SHA256.<span class="hljs-keyword">new</span>(plain_data.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>))<br>    public_key = RSA.import_key(fp.read())<br>    try:<br>        PKCS1_v1_5.<span class="hljs-keyword">new</span>(public_key).verify(hash_data, signature=base64.b64decode(sign_data))<br>    except Exception <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;验签失败&#x27;</span>, e)<br></code></pre></td></tr></table></figure>
+
+<h4 id="4、Crypto-Hash"><a href="#4、Crypto-Hash" class="headerlink" title="4、Crypto.Hash"></a>4、Crypto.Hash</h4><p><code>Hash</code>模块主要用于消息摘要</p>
+<p><code>pycryptodome</code>支持的算法：</p>
+<ul>
+<li><p>SHA-2 family (FIPS 180-4)</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/sha224.html">SHA-224</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/sha256.html">SHA-256</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/sha384.html">SHA-384</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/sha512.html">SHA-512, SHA-512&#x2F;224, SHA-512&#x2F;256</a></li>
+</ul>
+</li>
+<li><p>SHA-3 family (FIPS 202)</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/sha3_224.html">SHA3-224</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/sha3_256.html">SHA3-256</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/sha3_384.html">SHA3-384</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/sha3_512.html">SHA3-512</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/tuplehash128.html">TupleHash128</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/tuplehash256.html">TupleHash256</a></li>
+</ul>
+</li>
+<li><p>BLAKE2</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/blake2s.html">BLAKE2s</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/src/hash/blake2b.html">BLAKE2b</a></li>
+</ul>
+</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">cal_hash256</span>(<span class="hljs-params">data: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    sha256计算</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :param data: 需要计算hash值的文本字符串</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :return 十六进制hash值</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-keyword">return</span> SHA256.new(data.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)).hexdigest()<br></code></pre></td></tr></table></figure>
+
+<h3 id="三、参考"><a href="#三、参考" class="headerlink" title="三、参考"></a>三、参考</h3><p><a target="_blank" rel="noopener" href="https://www.pycryptodome.org/en/latest/">https://www.pycryptodome.org/en/latest/</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/PyCryptodome/" class="print-no-link">#PyCryptodome</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>PyCryptodome使用笔记</div>
+      <div>https://probiecoder.cn/python/pycryptodome.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/python/elementtree.html" title="Python使用ElementTree操作XML">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python使用ElementTree操作XML</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/python/pytest/tutorial.html" title="Pytest 使用指南：从入门到测试报告">
+                        <span class="hidden-mobile">Pytest 使用指南：从入门到测试报告</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

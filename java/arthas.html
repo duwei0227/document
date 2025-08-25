@@ -1,0 +1,1318 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、启动Arthas1java -jar arthas-boot.jar    二、表达式核心变量匹配表达式和观察表达式核心判断变量    变量名 变量解释    loader 本次调用类所在的 ClassLoader   clazz 本次调用类的 Class 引用   method 本次调用方法反射引用   target 本次调用类的实例   params 本次调用参数列表，这是一个数组，如果方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Arthas常用命令使用">
+<meta property="og:url" content="https://probiecoder.cn/java/arthas.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="一、启动Arthas1java -jar arthas-boot.jar    二、表达式核心变量匹配表达式和观察表达式核心判断变量    变量名 变量解释    loader 本次调用类所在的 ClassLoader   clazz 本次调用类的 Class 引用   method 本次调用方法反射引用   target 本次调用类的实例   params 本次调用参数列表，这是一个数组，如果方">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/duwei0227/picbed/main/image-20250507083504830.png">
+<meta property="article:published_time" content="2025-08-25T02:14:15.762Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.764Z">
+<meta property="article:author" content="duwei">
+<meta property="article:tag" content="性能">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/duwei0227/picbed/main/image-20250507083504830.png">
+  
+  
+  
+  <title>Arthas常用命令使用 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Arthas常用命令使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          29 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Arthas常用命令使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="一、启动Arthas"><a href="#一、启动Arthas" class="headerlink" title="一、启动Arthas"></a>一、启动Arthas</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">java -jar arthas-boot.jar<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="二、表达式核心变量"><a href="#二、表达式核心变量" class="headerlink" title="二、表达式核心变量"></a>二、表达式核心变量</h2><p>匹配表达式和观察表达式核心判断变量</p>
+<table>
+<thead>
+<tr>
+<th align="right">变量名</th>
+<th align="left">变量解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">loader</td>
+<td align="left">本次调用类所在的 ClassLoader</td>
+</tr>
+<tr>
+<td align="right">clazz</td>
+<td align="left">本次调用类的 Class 引用</td>
+</tr>
+<tr>
+<td align="right">method</td>
+<td align="left">本次调用方法反射引用</td>
+</tr>
+<tr>
+<td align="right">target</td>
+<td align="left">本次调用类的实例</td>
+</tr>
+<tr>
+<td align="right">params</td>
+<td align="left">本次调用参数列表，这是一个数组，如果方法是无参方法则为空数组</td>
+</tr>
+<tr>
+<td align="right">returnObj</td>
+<td align="left">本次调用返回的对象。当且仅当 <code>isReturn==true</code> 成立时候有效，表明方法调用是以正常返回的方式结束。如果当前方法无返回值 <code>void</code>，则值为 null</td>
+</tr>
+<tr>
+<td align="right">throwExp</td>
+<td align="left">本次调用抛出的异常。当且仅当 <code>isThrow==true</code> 成立时有效，表明方法调用是以抛出异常的方式结束。</td>
+</tr>
+<tr>
+<td align="right">isBefore</td>
+<td align="left">辅助判断标记，当前的通知节点有可能是在方法一开始就通知，此时 <code>isBefore==true</code> 成立，同时 <code>isThrow==false</code> 和 <code>isReturn==false</code>，因为在方法刚开始时，还无法确定方法调用将会如何结束。</td>
+</tr>
+<tr>
+<td align="right">isThrow</td>
+<td align="left">辅助判断标记，当前的方法调用以抛异常的形式结束。</td>
+</tr>
+<tr>
+<td align="right">isReturn</td>
+<td align="left">辅助判断标记，当前的方法调用以正常返回的形式结束。</td>
+</tr>
+</tbody></table>
+<p>官网文档：<a target="_blank" rel="noopener" href="https://arthas.aliyun.com/doc/advice-class.html">https://arthas.aliyun.com/doc/advice-class.html</a></p>
+<h2 id="三、命令列表"><a href="#三、命令列表" class="headerlink" title="三、命令列表"></a>三、命令列表</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>dashboard</code></td>
+<td>当前系统的实时数据面板–直观查看CPU和内存使用</td>
+</tr>
+<tr>
+<td><code>getstatic</code></td>
+<td>查看类的静态属性</td>
+</tr>
+<tr>
+<td><code>heapdump</code></td>
+<td>打印堆信息，类似与 <code>jmap</code></td>
+</tr>
+<tr>
+<td><code>jvm</code></td>
+<td>查看当前<code>JVM</code>的信息</td>
+</tr>
+<tr>
+<td><code>logger</code></td>
+<td>查看和修改<code>logger</code></td>
+</tr>
+<tr>
+<td><code>memory</code></td>
+<td>查看<code>JVM</code>的内存信息</td>
+</tr>
+<tr>
+<td><code>thread</code></td>
+<td>查看当前<code>JVM</code>的线程堆栈信息</td>
+</tr>
+<tr>
+<td><code>sysenv</code></td>
+<td>查看<code>JVM</code>的环境变量–系统环境变量信息</td>
+</tr>
+<tr>
+<td><code>sysprop</code></td>
+<td>查看和修改<code>JVM</code>的系统属性</td>
+</tr>
+<tr>
+<td><code>vmoption</code></td>
+<td>查看和修改 JVM 里诊断相关的 option</td>
+</tr>
+<tr>
+<td><code>classloader</code></td>
+<td>查看<code>classloader</code>信息</td>
+</tr>
+<tr>
+<td><code>jad</code></td>
+<td>反编译已加载类的源码</td>
+</tr>
+<tr>
+<td><code>sc</code></td>
+<td>查看<code>JVM</code>已加载的类信息</td>
+</tr>
+<tr>
+<td><code>sm</code></td>
+<td>查看<code>JVM</code>已加载类的方法信息</td>
+</tr>
+<tr>
+<td><code>stack</code></td>
+<td>输出当前方法被调用的调用路径</td>
+</tr>
+<tr>
+<td><code>trace</code></td>
+<td>方法内部调用路径，并输出方法路径上每个节点的耗时</td>
+</tr>
+<tr>
+<td><code>watch</code></td>
+<td>方法执行数据观测</td>
+</tr>
+</tbody></table>
+<h3 id="1、dashboard"><a href="#1、dashboard" class="headerlink" title="1、dashboard"></a>1、dashboard</h3><p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th align="right">参数名称</th>
+<th align="left">参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right"><code>-i</code></td>
+<td align="left">刷新实时数据的时间间隔 (ms)，默认 5000ms</td>
+</tr>
+<tr>
+<td align="right"><code>-n</code></td>
+<td align="left">刷新实时数据的次数</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<p>每3秒刷新一次数据，总共刷新3次</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">dashbaord -i 3000 -n 3<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/duwei0227/picbed/main/image-20250507083504830.png" srcset="/img/loading.gif" lazyload alt="image-20250507083504830"></p>
+<p><strong>CPU数据说明</strong></p>
+<ul>
+<li>ID: Java 级别的线程 ID，注意这个 ID 不能跟 jstack 中的 nativeID 一一对应。</li>
+<li>NAME: 线程名</li>
+<li>GROUP: 线程组名</li>
+<li>PRIORITY: 线程优先级, 1~10 之间的数字，越大表示优先级越高</li>
+<li>STATE: 线程的状态</li>
+<li>CPU%: 线程的 cpu 使用率。比如采样间隔 1000ms，某个线程的增量 cpu 时间为 100ms，则 cpu 使用率&#x3D;100&#x2F;1000&#x3D;10%</li>
+<li>DELTA_TIME: 上次采样之后线程运行增量 CPU 时间，数据格式为<code>秒</code></li>
+<li>TIME: 线程运行总 CPU 时间，数据格式为<code>分:秒</code></li>
+<li>INTERRUPTED: 线程当前的中断位状态</li>
+<li>DAEMON: 是否是 daemon 线程</li>
+</ul>
+<h3 id="2、getstatic"><a href="#2、getstatic" class="headerlink" title="2、getstatic"></a>2、getstatic</h3><p>查看类的静态属性，支持查看<code>private</code>和<code>public</code>属性，官网推荐直接使用<code>ognl</code></p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">getstatic [-c &lt;value&gt;] [-x &lt;value&gt;] [-E] class-pattern field-pattern [express] <br></code></pre></td></tr></table></figure>
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-c</code></td>
+<td>指定<code>classloader</code>哈希值，可以通过<code>sc -d</code>获取哈希值或 <code>classloader -t</code>获取</td>
+</tr>
+<tr>
+<td><code>class-pattern</code></td>
+<td>需要查看的类全路径</td>
+</tr>
+<tr>
+<td><code>field-pattern</code></td>
+<td>需要查看的属性,支持模糊匹配,如果添加选项<code>-E</code>时，会按照严格模式匹配</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 获取属性<br><span class="hljs-meta prompt_">[arthas@14691]$ </span><span class="language-bash">getstatic cn.probiecoder.arthas_demo.TestController map</span><br>field: map<br>@HashMap[<br>    @String[key1]:@String[value1],<br>    @String[key2]:@String[value2],<br>    @String[key3]:@String[value3],<br>]<br>  <br>// 查看类下边所有属性<br><span class="hljs-meta prompt_">[arthas@14691]$ </span><span class="language-bash">getstatic -c 76ed5528 cn.probiecoder.arthas_demo.TestController *</span><br>field: MESSAGE<br>@String[Hello, Arthas!]<br>field: GETSTATIC_MESSAGE<br>@String[getStaticMessage]<br>field: map<br>@HashMap[<br>    @String[key1]:@String[value1],<br>    @String[key2]:@String[value2],<br>    @String[key3]:@String[value3],<br>]<br><br>// 模糊匹配属性    <br><span class="hljs-meta prompt_">[arthas@14691]$ </span><span class="language-bash">getstatic -c 76ed5528 cn.probiecoder.arthas_demo.TestController *M*</span><br>field: MESSAGE<br>@String[Hello, Arthas!]<br>field: GETSTATIC_MESSAGE<br>@String[getStaticMessage]<br>       <br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3、heapdump"><a href="#3、heapdump" class="headerlink" title="3、heapdump"></a>3、heapdump</h3><p>打印堆信息，类似于<code>jmap</code></p>
+<p><strong>语法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">heapdump [-l] [file]<br></code></pre></td></tr></table></figure>
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-l</code></td>
+<td>只 <code>dump live</code> 对象，不添加时<code>dump</code>所有对象</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">// dump所有对象<br><span class="hljs-meta prompt_">[arthas@14691]$ </span><span class="language-bash">heapdump /home/duwei/arthas-output/heap.hprof</span><br>Dumping heap to /home/duwei/arthas-output/heap.hprof ...<br>Heap dump file created<br><br>// dump live 对象<br><span class="hljs-meta prompt_">[arthas@14691]$ </span><span class="language-bash">heapdump -l /home/duwei/arthas-output/heap_live.hprof</span><br>Dumping heap to /home/duwei/arthas-output/heap_live.hprof ...<br>Heap dump file created<br></code></pre></td></tr></table></figure>
+
+
+
+<p><code>dump</code>时需要确保路径已经创建，否则会报错：<code>heap dump error: No such file or directory</code></p>
+<h3 id="4、jvm"><a href="#4、jvm" class="headerlink" title="4、jvm"></a>4、jvm</h3><p>查看当前 JVM 信息，会输出当前内存、线程、GC等信息</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">jvm<br></code></pre></td></tr></table></figure>
+
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 会输出以下类别信息，具体内容省略<br><span class="hljs-meta prompt_">[arthas@14691]$ </span><span class="language-bash">jvm</span><br> RUNTIME                                                                                           <br> CLASS-LOADING                                                                                           <br> COMPILATION                                                                                         <br> GARBAGE-COLLECTORS                                                                        <br> MEMORY-MANAGERS                                                                                  <br> MEMORY                                                                                <br> OPERATING-SYSTEM                                                                                    <br> THREAD                                                                                         <br> FILE-DESCRIPTOR                             <br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="logger"><a href="#logger" class="headerlink" title="logger"></a>logger</h3><p>查看<code>logger</code> 信息，更新 <code>logger level</code>，临时调整日志记录级别用于问题定位会很有用</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">logger [-c &lt;value&gt;] [-l &lt;value&gt;] [-n &lt;value&gt;] <br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-c</code></td>
+<td>指定<code>classloader</code>，可以通过<code>sc -d</code>获取<code>classloader</code>的哈希值</td>
+</tr>
+<tr>
+<td><code>-l</code></td>
+<td>指定<code>level</code>级别</td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td>指定<code>logger</code>名字，这里可以为类路径</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 查看所有的logger<br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">logger</span><br> name             ROOT                                                                                  <br> class            ch.qos.logback.classic.Logger                                                         <br> classLoader      jdk.internal.loader.ClassLoaders$AppClassLoader@76ed5528                              <br> classLoaderHash  76ed5528                                                                              <br> level            INFO                                                                                  <br> effectiveLevel   INFO  <br> <br>// 更新指定类或包的日志级别<br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">logger -n cn.probiecoder.arthas_demo.TestController -l debug</span><br>Update logger level success.<br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">logger -n cn.probiecoder.arthas_demo -l debug</span><br>Update logger level success.<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="5、memory"><a href="#5、memory" class="headerlink" title="5、memory"></a>5、memory</h3><p>查看<code>JVM</code>内存信息，如果只查看<code>heap</code>和<code>nonheap</code>使用情况，可以使用<code>dashboard</code>动态刷新监控</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">memory<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>使用示例</strong></p>
+<p>可以使用<code>java.nio.ByteBuffer.allocateDirect(1024 * 1024 * 10); // 10MB</code>分配对外直接内存</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">memory</span> <br>Memory                                       used          total          max            usage          <br>heap                                         37M           76M            3918M          0.95%          <br>g1_eden_space                                10M           40M            -1             25.00%         <br>g1_old_gen                                   25M           34M            3918M          0.66%          <br>g1_survivor_space                            1M            2M             -1             65.71%         <br>nonheap                                      86M           88M            -1             97.96%         <br>codeheap_&#x27;non-nmethods&#x27;                      1M            2M             5M             33.16%         <br>metaspace                                    57M           58M            -1             98.68%         <br>codeheap_&#x27;profiled_nmethods&#x27;                 15M           15M            117M           13.29%         <br>compressed_class_space                       6M            7M             1024M          0.67%          <br>codeheap_&#x27;non-profiled_nmethods&#x27;             5M            5M             117M           4.28%          <br>mapped                                       0K            0K             -              0.00%          <br>direct                                       14M           14M            -              100.00%        <br>mapped - &#x27;non-volatile memory&#x27;               0K            0K             -              0.00%  <br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="6、thread"><a href="#6、thread" class="headerlink" title="6、thread"></a>6、thread</h3><p>查看当前线程信息，查看线程的堆栈</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">thread [--all] [-b] [-i &lt;value&gt;] [--state &lt;value&gt;] [-n &lt;value&gt;] [id]    <br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--all</code></td>
+<td>列出所有线程</td>
+</tr>
+<tr>
+<td><code>-b</code></td>
+<td>找出当前阻塞其他线程的线程</td>
+</tr>
+<tr>
+<td><code>-i</code></td>
+<td>指定采样时间间隔</td>
+</tr>
+<tr>
+<td><code>--state</code></td>
+<td>根据线程状态过滤，<code>NEW, RUNNABLE, TIMED_WAITING, WAITING, BLOCKED, TERMINATED</code></td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td>指定要查看的线程数量，按照<code>CPU</code>使用率降序排序</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>线程id，查看指定线程的堆栈信息</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 死锁检测<br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">thread -b</span><br>&quot;Thread-4&quot; Id=80 BLOCKED on java.lang.Object@12ea72d3 owned by &quot;Thread-5&quot; Id=81<br>    at app//cn.probiecoder.arthas_demo.TestController.lambda$0(TestController.java:89)<br>    -  blocked on java.lang.Object@12ea72d3<br>    -  locked java.lang.Object@16629d6a &lt;---- but blocks 1 other threads!<br>    at app//cn.probiecoder.arthas_demo.TestController$$Lambda/0x00007fa97475dcd0.run(Unknown Source)<br>    at java.base@21.0.6/java.lang.Thread.runWith(Thread.java:1596)<br>    at java.base@21.0.6/java.lang.Thread.run(Thread.java:1583)<br><br><br>// 根据状态过滤<br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">thread --state BLOCKED</span><br>Threads Total: 39, NEW: 0, RUNNABLE: 17, BLOCKED: 2, WAITING: 13, TIMED_WAITING: 7, TERMINATED: 0       <br>ID  NAME                      GROUP        PRIORITY STATE    %CPU    DELTA_TI TIME     INTERRU DAEMON   <br>80  Thread-4                  main         5        BLOCKED  0.02    0.000    0:0.002  false   true     <br>81  Thread-5                  main         5        BLOCKED  0.01    0.000    0:0.002  false   true     <br>  <br>// 查看最繁忙的3个线程，采样时间为3秒内<br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">thread -i 3000 -n 3</span><br><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="7、sysenv"><a href="#7、sysenv" class="headerlink" title="7、sysenv"></a>7、sysenv</h3><p>查看当前<code>JVM</code>的环境属性，操作系统环境变量信息</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sysenv [env-name]  <br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>env-name</code></td>
+<td>可选，默认展示所有的环境属性，指定时输出指定属性值</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">sysenv LANG</span><br> KEY                  VALUE                                                                             <br>--------------------------------------------------------------------------------------------------------<br> LANG                 en_US.UTF-8   <br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="8、sysprop"><a href="#8、sysprop" class="headerlink" title="8、sysprop"></a>8、sysprop</h3><p>查看或修改当前<code>JVM</code> 的系统属性</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sysprop [property-name] [property-value]  <br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>property-name</code></td>
+<td>属性名称,默认输出所有属性</td>
+</tr>
+<tr>
+<td><code>property-value</code></td>
+<td>属性修改后的值</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">sysenv spring.profiles.active</span><br> KEY                  VALUE                                                                             <br>--------------------------------------------------------------------------------------------------------<br> spring.profiles.active  null            <br><span class="hljs-meta prompt_"> </span><br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">sysprop spring.profiles.active dev</span><br>Successfully changed the system property.<br> KEY                  VALUE                                                                             <br>--------------------------------------------------------------------------------------------------------<br> spring.profiles.active  dev                                                                               <br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">sysprop spring.profiles.active</span> <br> KEY                  VALUE                                                                             <br>--------------------------------------------------------------------------------------------------------<br> spring.profiles.active  dev                                                                               <br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="9、vmoption"><a href="#9、vmoption" class="headerlink" title="9、vmoption"></a>9、vmoption</h3><p>查看，更新 VM 诊断相关的参数，在更新<code>option</code>时，<code>option</code>需要支持运行时动态更新</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vmoption [name] [value]                                                                         <br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>name</code></td>
+<td><code>option</code>的名称</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td>修改后的值</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 查看指定option<br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">vmoption HeapDumpBeforeFullGC</span><br> KEY                       VALUE                     ORIGIN                    WRITEABLE                <br>--------------------------------------------------------------------------------------------------------<br> HeapDumpBeforeFullGC      false                     DEFAULT                   true                     <br>// 修改指定option<br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">vmoption HeapDumpBeforeFullGC <span class="hljs-literal">true</span></span><br>Successfully updated the vm option.<br> NAME                  BEFORE-VALUE  AFTER-VALUE                                                        <br>-------------------------------------------------                                                       <br> HeapDumpBeforeFullGC  false         true                                                               <br><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">vmoption HeapDumpBeforeFullGC</span><br> KEY                       VALUE                     ORIGIN                    WRITEABLE                <br>--------------------------------------------------------------------------------------------------------<br> HeapDumpBeforeFullGC      true                      MANAGEMENT                true      <br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="10、classloader"><a href="#10、classloader" class="headerlink" title="10、classloader"></a>10、classloader</h3><p>展示<code>JVM</code>中所有的<code>classloader</code>信息，可以加载指定类</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">classloader -t<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-t</code></td>
+<td>查看<code>ClassLoader</code>的继承树</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">classloader -t</span><br>+-BootstrapClassLoader                                                                                  <br>+-jdk.internal.loader.ClassLoaders$PlatformClassLoader@4ca1ec81                                         <br>  +-com.taobao.arthas.agent.ArthasClassloader@734cb0e4                                                  <br>  +-jdk.internal.loader.ClassLoaders$AppClassLoader@76ed5528                                            <br>    +-sun.reflect.misc.MethodUtil@1af4d51c   <br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="11、jad"><a href="#11、jad" class="headerlink" title="11、jad"></a>11、jad</h3><p>反编译指定已加载类的源码</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">jad [-c &lt;value&gt;] [--lineNumber &lt;value&gt;] [--source-only] class-pattern [method-name] <br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-c</code></td>
+<td>指定<code>classloader</code>的哈希值</td>
+</tr>
+<tr>
+<td><code>--lineNumber</code></td>
+<td>反编译以后是否显示行号 <code>true</code> <code>false</code></td>
+</tr>
+<tr>
+<td><code>--source-only</code></td>
+<td>默认情况下，反编译结果里会带有<code>ClassLoader</code>信息，通过<code>--source-only</code>选项，可以只打印源代码</td>
+</tr>
+<tr>
+<td><code>class-pattern</code></td>
+<td>需要反编译的类路径</td>
+</tr>
+<tr>
+<td><code>method-name</code></td>
+<td>方法名，支持指定方法反编译</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@44455]$ </span><span class="language-bash">jad -c 76ed5528 --source-only --lineNumber <span class="hljs-literal">false</span> cn.probiecoder.arthas_demo.TestController  threadPoolBlock</span><br>@GetMapping(value=&#123;&quot;/thread_pool_block&quot;&#125;)<br>public String threadPoolBlock() &#123;<br>    ExecutorService executor = Executors.newFixedThreadPool(1);<br>    executor.submit(() -&gt; &#123;<br>        try &#123;<br>            Thread.sleep(10000L);<br>        &#125;<br>        catch (InterruptedException e) &#123;sc<br>            Thread.currentThread().interrupt();<br>        &#125;<br>    &#125;);<br>    return &quot;Thread pool block test started&quot;;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="12、sc-search-class"><a href="#12、sc-search-class" class="headerlink" title="12、sc(search-class)"></a>12、sc(search-class)</h3><p>查看 JVM 已加载的类信息</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sc [-d] [-c &lt;value&gt;] [-f] class-pattern<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-c</code></td>
+<td>指定<code>classloader</code>哈希值</td>
+</tr>
+<tr>
+<td><code>-f</code></td>
+<td>输出当前类的成员变量信息（需要配合参数-d 一起使用）</td>
+</tr>
+<tr>
+<td><code>-d</code></td>
+<td>输出当前类的详细信息，包括这个类所加载的原始文件来源、类的声明、加载的 ClassLoader 等详细信息。<br/>如果一个类被多个 ClassLoader 所加载，则会出现多次</td>
+</tr>
+<tr>
+<td><code>class-pattern</code></td>
+<td>类路径</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@73802]$ </span><span class="language-bash">sc -d -f cn.probiecoder.arthas_demo.TestController</span> <br> class-info        cn.probiecoder.arthas_demo.TestController                                            <br> name              cn.probiecoder.arthas_demo.TestController                                            <br> isInterface       false                                                                                <br> isAnnotation      false                                                                                <br> isEnum            false                                                                                <br> isAnonymousClass  false     <br> .....<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="13、sm"><a href="#13、sm" class="headerlink" title="13、sm"></a>13、sm</h3><p>查看已加载类的方法信息</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sm [-c &lt;value&gt;][-d] class-pattern [method-pattern] <br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-c</code></td>
+<td>指定<code>classloader</code>哈希值</td>
+</tr>
+<tr>
+<td><code>-d</code></td>
+<td>输出当前类的详细信息，包括这个类所加载的原始文件来源、类的声明、加载的 ClassLoader 等详细信息。<br/>如果一个类被多个 ClassLoader 所加载，则会出现多次</td>
+</tr>
+<tr>
+<td><code>class-pattern</code></td>
+<td>类路径</td>
+</tr>
+<tr>
+<td><code>method-pattern</code></td>
+<td>方法名称，支持*模糊匹配，不指定时列出当前类下所有的方法</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">[arthas@73802]$ </span><span class="language-bash">sm -d cn.probiecoder.arthas_demo.TestController throwException</span><br> declaring-class  cn.probiecoder.arthas_demo.TestController                                             <br> method-name      throwException                                                                        <br> modifier         public                                                                                <br> annotation       org.springframework.web.bind.annotation.GetMapping                                    <br> parameters                                                                                             <br> return           void                                                                                  <br> exceptions                                                                                             <br> classLoaderHash  76ed5528 <br> <br>// 列出所有方法<br><span class="hljs-meta prompt_">[arthas@73802]$ </span><span class="language-bash">sm cn.probiecoder.arthas_demo.TestController</span> <br>cn.probiecoder.arthas_demo.TestController &lt;init&gt;()V<br>cn.probiecoder.arthas_demo.TestController throwException()V<br>......<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="14、stack"><a href="#14、stack" class="headerlink" title="14、stack"></a>14、stack</h3><p>输出当前方法被调用的调用路径</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">stack class-pattern [method-pattern] [condition-express] <br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>class-pattern</code></td>
+<td>类路径</td>
+</tr>
+<tr>
+<td><code>method-pattern</code></td>
+<td>监控方法，可选，为空时可以跟踪类下所有方法</td>
+</tr>
+<tr>
+<td><code>condition-express</code></td>
+<td>条件表达式，一个合法的<code>ognl</code>表达式，可以参考核心变量，<code>#cost</code>：执行时间，使用条件表达式时，监控方法需要指定</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 按照时间过滤<br>stack cn.probiecoder.arthas_demo.TestController longRunning &#x27;#cost&gt;2000&#x27;<br><br>// 匹配第一个参数的长度为3<br>stack cn.probiecoder.arthas_demo.TestController hello params[0].length==3<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="15、trace"><a href="#15、trace" class="headerlink" title="15、trace"></a>15、trace</h3><p>方法内部调用路径，并输出方法路径上的每个节点上耗时，可以用于分析方法执行性能瓶颈</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">trace [-n &lt;value&gt;] [--skipJDKMethod &lt;value&gt;] class-pattern method-pattern [condition-express]<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-n</code></td>
+<td>指定捕捉结果的次数，达到限制次数时直接停止监听</td>
+</tr>
+<tr>
+<td><code>--skipJDKMethod</code></td>
+<td>是否包含 jdk 里的函数调用，默认<code>false</code></td>
+</tr>
+<tr>
+<td><code>class-pattern</code></td>
+<td>类路径</td>
+</tr>
+<tr>
+<td><code>method-pattern</code></td>
+<td>方法名，支持*通配匹配</td>
+</tr>
+<tr>
+<td><code>condition-express</code></td>
+<td>过滤条件表达式，符合<code>ognl</code>的表达式，支持<code>#cost</code>进行时间过滤</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 启用jdk方法调用监控，限制监听次数<br><span class="hljs-meta prompt_">[arthas@73802]$ </span><span class="language-bash">trace --skipJDKMethod <span class="hljs-literal">true</span> -n 1 cn.probiecoder.arthas_demo.TestController longRunning <span class="hljs-string">&#x27;#cost&gt;2000&#x27;</span></span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 1) cost in 35 ms, listenerId: 20<br>`---ts=2025-05-08 01:16:40.324;thread_name=http-nio-8080-exec-2;id=46;is_daemon=true;priority=5;TCCL=org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader@5e8507f1<br>    `---[2200.492615ms] cn.probiecoder.arthas_demo.TestController:longRunning()<br><br>Command execution times exceed limit: 1, so command will exit. You can set it with -n option.<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="16、watch"><a href="#16、watch" class="headerlink" title="16、watch"></a>16、watch</h3><p>函数执行数据观测，能观察到的范围为：<code>返回值</code>、<code>抛出异常</code>、<code>入参</code>，通过编写 OGNL 表达式进行对应变量的查看</p>
+<p><strong>语法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">watch [-b] [-e] [-f] [-s] [-n &lt;value&gt;] class-pattern method-pattern [express] [condition-express]  <br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>参数说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>参数说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-b</code></td>
+<td>在<strong>函数调用之前</strong>观察，由于观察事件点是在函数调用前，此时返回值或异常均不存在</td>
+</tr>
+<tr>
+<td><code>-e</code></td>
+<td>在<strong>函数异常之后</strong>观察</td>
+</tr>
+<tr>
+<td><code>-f</code></td>
+<td>在<strong>函数结束之后</strong>(正常返回和异常返回)观察，默认值</td>
+</tr>
+<tr>
+<td><code>-s</code></td>
+<td>在<strong>函数成功返回之后</strong>观察</td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td>执行监控次数</td>
+</tr>
+<tr>
+<td><code>class-pattern</code></td>
+<td>要监控的类路径</td>
+</tr>
+<tr>
+<td><code>method-pattern</code></td>
+<td>方法匹配模式，可以通过*进行通配匹配</td>
+</tr>
+<tr>
+<td><code>express</code></td>
+<td>观察表达式，默认值：<code>&#123;params, target, returnObj&#125;</code>，围绕<code>Advice</code>通知对象，<code>get</code>请求使用<code>params</code>观察时入参为空，需要使用<code>params[0]</code></td>
+</tr>
+<tr>
+<td><code>condition-expression</code></td>
+<td>条件表达式，合法的<code>ognl</code>表达式，根据条件过滤拦截</td>
+</tr>
+</tbody></table>
+<p><strong>使用示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs shell">// 方法调用前监听<br><span class="hljs-meta prompt_">[arthas@73802]$ </span><span class="language-bash">watch -b cn.probiecoder.arthas_demo.TestController hello &#123;params[0],returnObj&#125;</span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 1) cost in 28 ms, listenerId: 28<br>method=cn.probiecoder.arthas_demo.TestController.hello location=AtEnter<br>ts=2025-05-08 01:38:32.377; [cost=0.006553ms] result=@ArrayList[<br>    @String[waw],<br>    null,<br><br>// 限制监听次数<br><span class="hljs-meta prompt_">[arthas@73802]$ </span><span class="language-bash">watch -b -n 1 cn.probiecoder.arthas_demo.TestController hello &#123;params[0],returnObj&#125;</span><br>Press Q or Ctrl+C to abort.<br>Affect(class count: 1 , method count: 1) cost in 38 ms, listenerId: 29<br>method=cn.probiecoder.arthas_demo.TestController.hello location=AtEnter<br>ts=2025-05-08 01:41:43.892; [cost=0.022054ms] result=@ArrayList[<br>    @String[waw],<br>    null,<br>]<br>Command execution times exceed limit: 1, so command will exit. You can set it with -n option.<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="三、后台任务"><a href="#三、后台任务" class="headerlink" title="三、后台任务"></a>三、后台任务</h2><p>需要监控偶发性行为时，可以借助后台任务捕获，同时将捕获结果可以输出到文件</p>
+<h3 id="1、执行后台任务"><a href="#1、执行后台任务" class="headerlink" title="1、执行后台任务"></a>1、执行后台任务</h3><p>在命令最后边添加 <strong><code>*</code></strong> 执行后台任务，命令不会阻断终端屏幕，可以继续执行其他任务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">trace Class method &amp;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2、查看后台任务"><a href="#2、查看后台任务" class="headerlink" title="2、查看后台任务"></a>2、查看后台任务</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">jobs<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java">[arthas@<span class="hljs-number">252</span>]$ jobs<br>[<span class="hljs-number">10</span>]*<br>       Running           trace org.apache.aries.spifly.Util  storeContextClassloader &amp;<br>       execution count : <span class="hljs-number">0</span><br>       start time      : Mon May <span class="hljs-number">12</span> <span class="hljs-number">19</span>:<span class="hljs-number">33</span>:<span class="hljs-number">48</span> CST <span class="hljs-number">2025</span><br>       timeout date    : Tue May <span class="hljs-number">13</span> <span class="hljs-number">19</span>:<span class="hljs-number">33</span>:<span class="hljs-number">48</span> CST <span class="hljs-number">2025</span><br>       session         : eb3cedf4-75a1-488c-af93-df3405ea7398 (current)<br></code></pre></td></tr></table></figure>
+
+<p>结果会输出任务id、任务状态，已执行捕获次数等信息</p>
+<h3 id="3、停止命令"><a href="#3、停止命令" class="headerlink" title="3、停止命令"></a>3、停止命令</h3><p>异步执行的命令，如果希望停止，可执行&#96;kill <job-id></p>
+<h3 id="4、任务输出重定向"><a href="#4、任务输出重定向" class="headerlink" title="4、任务输出重定向"></a>4、任务输出重定向</h3><p>可通过<code>&gt;</code>或者<code>&gt;&gt;</code>将任务输出结果输出到指定的文件中，可以和<code>&amp;</code>一起使用，实现 arthas 命令的后台异步任务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">trace Test t &gt;&gt; test.out &amp;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="四、附录"><a href="#四、附录" class="headerlink" title="四、附录"></a>四、附录</h2><p>官方文档：<a target="_blank" rel="noopener" href="https://arthas.aliyun.com/doc/quick-start.html">https://arthas.aliyun.com/doc/quick-start.html</a></p>
+<p>OGNL表达式官网：<a target="_blank" rel="noopener" href="https://commons.apache.org/dormant/commons-ognl/language-guide.html">https://commons.apache.org/dormant/commons-ognl/language-guide.html</a></p>
+<p>命令参数：<code>[xx]</code>选项为可选参数	</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java/" class="category-chain-item">Java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%80%A7%E8%83%BD/" class="print-no-link">#性能</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Arthas常用命令使用</div>
+      <div>https://probiecoder.cn/java/arthas.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/java/groovy-script.html" title="配置运算表达式通过BigDecimal包裹">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">配置运算表达式通过BigDecimal包裹</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/algorithms/introduce.html" title="算法概要介绍">
+                        <span class="hidden-mobile">算法概要介绍</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,806 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本篇使用xml.etree.ElementTree模块进行xml文件的解析和创建。ET有两个主要的类用于xml的解析和构建-ElementTree将整个XML文档作为一棵树，Element代表树中的一个节点。 一、解析XML示例 XML 文档： 1234567891011121314151617181920212223&lt;?xml version&#x3D;&quot;1.0&quot;?&gt;&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python使用ElementTree操作XML">
+<meta property="og:url" content="https://probiecoder.cn/python/elementtree.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="本篇使用xml.etree.ElementTree模块进行xml文件的解析和创建。ET有两个主要的类用于xml的解析和构建-ElementTree将整个XML文档作为一棵树，Element代表树中的一个节点。 一、解析XML示例 XML 文档： 1234567891011121314151617181920212223&lt;?xml version&#x3D;&quot;1.0&quot;?&gt;&amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.767Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.767Z">
+<meta property="article:author" content="duwei">
+<meta property="article:tag" content="ElementTree">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Python使用ElementTree操作XML - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Python使用ElementTree操作XML"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Python使用ElementTree操作XML</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>  本篇使用<code>xml.etree.ElementTree</code>模块进行xml文件的解析和创建。<code>ET</code>有两个主要的类用于xml的解析和构建-<code>ElementTree</code>将整个XML文档作为一棵树，<code>Element</code>代表树中的一个节点。</p>
+<h3 id="一、解析XML"><a href="#一、解析XML" class="headerlink" title="一、解析XML"></a>一、解析XML</h3><p>示例 XML 文档：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span>?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">data</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">country</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Liechtenstein&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">rank</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-name">rank</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">year</span>&gt;</span>2008<span class="hljs-tag">&lt;/<span class="hljs-name">year</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">gdppc</span>&gt;</span>141100<span class="hljs-tag">&lt;/<span class="hljs-name">gdppc</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">neighbor</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Austria&quot;</span> <span class="hljs-attr">direction</span>=<span class="hljs-string">&quot;E&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">neighbor</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Switzerland&quot;</span> <span class="hljs-attr">direction</span>=<span class="hljs-string">&quot;W&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">country</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">country</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Singapore&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">rank</span>&gt;</span>4<span class="hljs-tag">&lt;/<span class="hljs-name">rank</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">year</span>&gt;</span>2011<span class="hljs-tag">&lt;/<span class="hljs-name">year</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">gdppc</span>&gt;</span>59900<span class="hljs-tag">&lt;/<span class="hljs-name">gdppc</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">neighbor</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Malaysia&quot;</span> <span class="hljs-attr">direction</span>=<span class="hljs-string">&quot;N&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">country</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">country</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Panama&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">rank</span>&gt;</span>68<span class="hljs-tag">&lt;/<span class="hljs-name">rank</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">year</span>&gt;</span>2011<span class="hljs-tag">&lt;/<span class="hljs-name">year</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">gdppc</span>&gt;</span>13600<span class="hljs-tag">&lt;/<span class="hljs-name">gdppc</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">neighbor</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Costa Rica&quot;</span> <span class="hljs-attr">direction</span>=<span class="hljs-string">&quot;W&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">neighbor</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Colombia&quot;</span> <span class="hljs-attr">direction</span>=<span class="hljs-string">&quot;E&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">country</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">data</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="1、从文件中解析XML文档"><a href="#1、从文件中解析XML文档" class="headerlink" title="1、从文件中解析XML文档"></a>1、从文件中解析XML文档</h4><p>使用<code>parse(file_name)</code>方法解析xml文件，<code>parse</code>返回<code>ElementTree</code>对象,使用<code>getroot()</code>获取根节点对象</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml">import xml.etree.ElementTree as ET<br><br>tree = ET.parse(xml文件全路径)<br>root = tree.getroot()<br>print(root.tag)<br></code></pre></td></tr></table></figure>
+
+<h4 id="2、从字符串中解析XML文档"><a href="#2、从字符串中解析XML文档" class="headerlink" title="2、从字符串中解析XML文档"></a>2、从字符串中解析XML文档</h4><p><code>fromstring()</code>方法从一个字符串中解析xml对象，返回的对象为 <code>Element</code>，该对象为xml元素树的根(<code>root</code>)节点对象</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml">import xml.etree.ElementTree as ET<br><br>root = ET.fromstring(country_data_as_string)<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="3、解析带有命名空间-Namespace-的XML文档"><a href="#3、解析带有命名空间-Namespace-的XML文档" class="headerlink" title="3、解析带有命名空间(Namespace)的XML文档"></a>3、解析带有命名空间(Namespace)的XML文档</h4><p>如果xml文档有声明命名空间时，解析后的文档 标签(<code>tags</code>)和属性(<code>attributes</code>)都会添加一个前缀，前缀格式为<code>&#123;uri&#125;sometag</code>,其中<code>uri</code>为完整的<code>namespace</code>地址，在进行元素的操作时都需要添加前缀(<code>prefix</code>)</p>
+<p>在如下示例中包含两个命名空间，一个以前缀<code>fictional</code>开头，其他的采用默认命名空间</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span>?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">actors</span> <span class="hljs-attr">xmlns:fictional</span>=<span class="hljs-string">&quot;http://characters.example.com&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;http://people.example.com&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">actor</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>John Cleese<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">fictional:character</span>&gt;</span>Lancelot<span class="hljs-tag">&lt;/<span class="hljs-name">fictional:character</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">fictional:character</span>&gt;</span>Archie Leach<span class="hljs-tag">&lt;/<span class="hljs-name">fictional:character</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">actor</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">actor</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>Eric Idle<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">fictional:character</span>&gt;</span>Sir Robin<span class="hljs-tag">&lt;/<span class="hljs-name">fictional:character</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">fictional:character</span>&gt;</span>Gunther<span class="hljs-tag">&lt;/<span class="hljs-name">fictional:character</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">fictional:character</span>&gt;</span>Commander Clement<span class="hljs-tag">&lt;/<span class="hljs-name">fictional:character</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">actor</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">actors</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>文档里解析与方法1或者方法2相同，区别在与解析后的文档对象</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml">root = ET.fromstring(xml_doc)<br>print(root.tag)<br><br>输出：&#123;http://people.example.com&#125;actors<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="二、元素查找"><a href="#二、元素查找" class="headerlink" title="二、元素查找"></a>二、元素查找</h3><h4 id="1、iter-tag-None"><a href="#1、iter-tag-None" class="headerlink" title="1、iter(tag&#x3D;None)"></a>1、iter(tag&#x3D;None)</h4><p>​	使用当前元素作为根元素构建一颗迭代(<code>iterator</code>)树，会迭代当前元素及其所有子元素(包括非直接子元素)。如果<code>tag</code>不为<code>None</code>或者为<code>*</code>时，仅仅匹配元素的<code>tag</code>与当前传入的<code>tag</code>一致的对象</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs xml"># 迭代所有元素<br>for e in element.iter(t ag=&#x27;*&#x27;):<br>	print(e.tag)<br><br># 迭代所有 neighbor<br>for e in element.iter(tag=&#x27;neighbor&#x27;):<br>    print(e.attrib)<br><br><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2、findall-match-namespaces-None"><a href="#2、findall-match-namespaces-None" class="headerlink" title="2、findall(match, namespaces&#x3D;None)"></a>2、findall(<em>match</em>, <em>namespaces&#x3D;None</em>)</h4><p>查找所有匹配的直接子元素，查询条件可以是标签名称(<code>tag name</code>)或者<code>xpath</code>。返回所有匹配元素列表<code>list</code>,元素顺序按照文档顺序排序。<code>namespace</code>是一个可选的条件，用于匹配包含命名空间的文档</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"># 查找文档根节点下所有的country<br>for e in element.findall(&#x27;country&#x27;):<br>	print(e.attrib)<br><br><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="3、find-match-namespaces-None"><a href="#3、find-match-namespaces-None" class="headerlink" title="3、find(match, namespaces&#x3D;None)"></a>3、find(<em>match</em>, <em>namespaces&#x3D;None</em>)</h4><p>查找第一个符合条件的直接子元素，查询条件可以是标签名称(<code>tag name</code>)或者<code>xpath</code>。返回匹配的元素实例或者4<code>None</code>,元素顺序按照文档顺序排序。<code>namespace</code>是一个可选的条件，用于匹配包含命名空间的文档</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"># 查找第一个匹配的 country<br>first_element = element.find(&#x27;country&#x27;)<br>print(first_element.attrib)<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="4、get-key-default-None"><a href="#4、get-key-default-None" class="headerlink" title="4、get(key, default&#x3D;None)"></a>4、get(<em>key</em>, <em>default&#x3D;None</em>)</h4><p>根据<code>key</code>获取元素属性值，如果属性不存在返回一个默认值</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs xml"># 查找第一个匹配的 country<br>first_element = element.find(&#x27;country&#x27;)<br>print(first_element.attrib)<br><br># 查找 name 属性<br>first_element.get(&#x27;name&#x27;)<br><br># 查找不存在的属性<br>first_element.get(&#x27;haha&#x27;, default=&#x27;^_^&#x27;)<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="5、xpath"><a href="#5、xpath" class="headerlink" title="5、xpath"></a>5、xpath</h4><p><code>ElementTree</code>支持的<code>xpath</code>语法，以下示例从 <code>root</code>节点开始解析</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xml">import xml.etree.ElementTree as ET<br><br>root = ET.fromstring(countrydata)<br></code></pre></td></tr></table></figure>
+
+
+
+<table>
+<thead>
+<tr>
+<th>语法</th>
+<th>描述</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>tag</code></td>
+<td>匹配所有与给定tag匹配的直接子元素。从<code>Python3.8</code>开始支持<code>*</code>: <code>&#123;namespace&#125;*</code>匹配给定命名空间下所有元素；<code>&#123;*&#125;spam</code>匹配所有<code>tag</code>名为<code>spam</code>的元素，前边命名空间可以为任意;<code>&#123;&#125;*</code>匹配未限定命名空间的元素</td>
+<td><code>element.findall(&#39;country&#39;)</code><br><code>element.findall(&#39;&#123;&#125;*&#39;)</code></td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>查找所有的子元素，包含注释和处理指令。例如<code>*/egg</code>匹配所有孙辈的<code>egg</code>元素</td>
+<td>当前元素的所有直接子元素<code>element.findall(&#39;*&#39;)</code></td>
+</tr>
+<tr>
+<td><code>.</code></td>
+<td>查找当前元素节点。通常用于在相对路径中的起始节点</td>
+<td>当前元素下所有的<code>year</code><br><code>element.findall(&#39;./country/year&#39;)</code></td>
+</tr>
+<tr>
+<td><code>//</code></td>
+<td>选择当前元素下所有级别上的所有子元素(可以跳过元素的层级查找)。例如<code>//egg</code>选择整个树中的所有<code>egg</code>元素</td>
+<td><code>element.findall(&#39;.//rank&#39;)</code></td>
+</tr>
+<tr>
+<td><code>..</code></td>
+<td>选择父元素。如果路径试图到达起始元素（已调用元素find）的祖先，则返回None。</td>
+<td>查找<code>rank</code>的父元素<code>element.findall(&#39;.//rank/..&#39;)</code></td>
+</tr>
+<tr>
+<td><code>[@attrib]</code></td>
+<td>选择具有给定属性的所有元素。</td>
+<td>查找当前元素下所有包含direction属性的元素<code>element.findall(&#39;.//*[@direction]&#39;)</code></td>
+</tr>
+<tr>
+<td><code>[@attrib=&#39;value&#39;]</code></td>
+<td>选择给定属性具有给定值的所有元素。该值不能包含引号。</td>
+<td>查找当前元素下所有包含direction属性且值等于E的元素<br><code>element.findall(&#39;.//*[@direction=&quot;E&quot;]&#39;</code></td>
+</tr>
+<tr>
+<td><code>[@attrib!=&#39;value&#39;]</code></td>
+<td>选择给定属性没有给定值的所有元素。该值不能包含引号。<br/>3.10版新增。</td>
+<td>查找当前元素下所有包含direction属性且值不等于E的元素<br/><code>element.findall(&#39;.//*[@direction!=&quot;E&quot;]&#39;)</code></td>
+</tr>
+<tr>
+<td><code>[tag]</code></td>
+<td>选择具有名为tag的子元素的所有元素。只支持直系子女。</td>
+<td>过滤子元素中包含<code>year</code>的<code>country</code>元素element.findall(‘.&#x2F;country&#x2F;[year]’)&#96;</td>
+</tr>
+<tr>
+<td><code>[.=&#39;text&#39;]</code></td>
+<td>选择其完整文本内容（包括子体）等于给定文本的所有元素。<br/><br/>在3.7版中新增。</td>
+<td>过滤文本值为2011的<code>year</code>元素<code>element.findall(&#39;.//year[.=&quot;2011&quot;]&#39;)</code></td>
+</tr>
+<tr>
+<td><code>[.!=&#39;text&#39;]</code></td>
+<td>选择其完整文本内容（包括子体）不等于给定文本的所有元素。<br/><br/>3.10版新增。</td>
+<td>过滤文本值不等于2011的<code>year</code>元素<code>element.findall(&#39;.//year[.!=&quot;2011&quot;]&#39;)</code></td>
+</tr>
+<tr>
+<td><code>[tag=&#39;text&#39;]</code></td>
+<td>选择所有元素，这些元素具有一个名为tag的子元素，该子元素的完整文本内容（包括子元素）等于给定的文本。</td>
+<td>过滤子元素为<code>year</code>且<code>year</code>的文本值为2011的元素<br><code>element.findall(&#39;*/[year=&quot;2011&quot;]&#39;)</code></td>
+</tr>
+<tr>
+<td><code>[tag!=&#39;text&#39;]</code></td>
+<td>选择所有具有名为tag的子元素且其完整文本内容（包括子元素）不等于给定文本的元素。<br/><br/>3.10版新增。</td>
+<td>过滤子元素为<code>year</code>且<code>year</code>的文本值不等于2011的元素<br/><code>element.findall(&#39;*/[year!=&quot;2011&quot;]&#39;)</code></td>
+</tr>
+<tr>
+<td><code>[position]</code></td>
+<td>选择位于给定位置的所有图元。位置可以是整数（1是第一个位置）、表达式last（）（表示最后一个位置）或相对于最后一个位置的位置（例如last（）-1）。</td>
+<td>查找当前元素下第二个元素<code>element.findall(&#39;*[2]&#39;)[0].get(&#39;name&#39;)</code></td>
+</tr>
+</tbody></table>
+<h3 id="三、修改XML文档"><a href="#三、修改XML文档" class="headerlink" title="三、修改XML文档"></a>三、修改XML文档</h3><p>初始文档：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=&#x27;1.0&#x27; encoding=&#x27;utf-8&#x27;?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">grandparent</span>&gt;</span><br>    <span class="hljs-comment">&lt;!--我是儿子a--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">parent</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;a&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">child</span>&gt;</span>my father is a<span class="hljs-tag">&lt;/<span class="hljs-name">child</span>&gt;</span> <span class="hljs-comment">&lt;!--我是儿子b--&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">parent</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">parent</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;b&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">child</span>&gt;</span>my father is b<span class="hljs-tag">&lt;/<span class="hljs-name">child</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">parent</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">grandparent</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="1、修改元素文本"><a href="#1、修改元素文本" class="headerlink" title="1、修改元素文本"></a>1、修改元素文本</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">first_child = root.find(<span class="hljs-string">&#x27;./parent/child&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;修改前：&#x27;</span>, first_child.text)<br>first_child.text = <span class="hljs-string">&#x27;我的父节点是a&#x27;</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;修改后：&#x27;</span>, first_child.text)<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2、修改已有元素属性"><a href="#2、修改已有元素属性" class="headerlink" title="2、修改已有元素属性"></a>2、修改已有元素属性</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">first_parent = root.find(<span class="hljs-string">&#x27;./parent&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;修改前name：&#x27;</span>, first_parent.get(<span class="hljs-string">&#x27;name&#x27;</span>))<br>first_parent.<span class="hljs-built_in">set</span>(<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;A&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;修改后name：&#x27;</span>, first_parent.get(<span class="hljs-string">&#x27;name&#x27;</span>))<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="3、新增属性"><a href="#3、新增属性" class="headerlink" title="3、新增属性"></a>3、新增属性</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">first_parent = root.find(<span class="hljs-string">&#x27;./parent&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;新增age前：&#x27;</span>, first_parent.get(<span class="hljs-string">&#x27;age&#x27;</span>))<br>first_parent.<span class="hljs-built_in">set</span>(<span class="hljs-string">&#x27;age&#x27;</span>, <span class="hljs-string">&#x27;18&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;新增age后：&#x27;</span>, first_parent.get(<span class="hljs-string">&#x27;age&#x27;</span>))<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="4、删除元素"><a href="#4、删除元素" class="headerlink" title="4、删除元素"></a>4、删除元素</h4><p>删除元素使用<code>remove()</code>方法需要传入一个 <code>Element</code>对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">first_parent.remove(first_parent.find(<span class="hljs-string">&#x27;./child&#x27;</span>))<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="四、构建XML文档"><a href="#四、构建XML文档" class="headerlink" title="四、构建XML文档"></a>四、构建XML文档</h3><p>使用<code>Element</code>构建根节点元素，不断使用<code>SubElement</code>组合构建子元素</p>
+<p>所有的元素构建完成以后需要使用<code>ElementTree</code>创建一颗文档树，用于<code>XML</code>文件的生成</p>
+<p>使用<code>Comment</code>生成文档注释，并使用<code>Element.append()</code>方法追加在想要的位置</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python">root = Element(<span class="hljs-string">&#x27;grandparent&#x27;</span>)<br>comment_a = Comment(<span class="hljs-string">&#x27;我是儿子a&#x27;</span>)<br>root.append(comment_a)<br>parent = SubElement(root, <span class="hljs-string">&#x27;parent&#x27;</span>, attrib=&#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;a&quot;</span>&#125;)<br>child = SubElement(parent, <span class="hljs-string">&#x27;child&#x27;</span>)<br>child.text = <span class="hljs-string">&#x27;my father is a&#x27;</span><br>comment_b = Comment(<span class="hljs-string">&#x27;我是儿子b&#x27;</span>)<br>parent.append(comment_b)<br>parent_brother = SubElement(root, <span class="hljs-string">&#x27;parent&#x27;</span>, attrib=&#123;<span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;b&quot;</span>&#125;)<br>child_brother = SubElement(parent_brother, <span class="hljs-string">&#x27;child&#x27;</span>)<br>child_brother.text = <span class="hljs-string">&#x27;my father is b&#x27;</span><br><span class="hljs-comment"># 临时xml结构查看</span><br><span class="hljs-comment"># ET.dump(root)</span><br><br>tree = ET.ElementTree(root)<br><span class="hljs-comment"># xml_declaration 用于生成xml文档声明</span><br><span class="hljs-comment"># 将xml文档写入文件</span><br>tree.write(<span class="hljs-string">&#x27;test.xml&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>, xml_declaration=<span class="hljs-literal">True</span>, short_empty_elements=<span class="hljs-literal">True</span>)<br><br></code></pre></td></tr></table></figure>
+
+
+
+<p>写入xml文档有两种方法：</p>
+<ul>
+<li><pre><code class="python">tree = ET.ElementTree(root)
+tree.write(&#39;test.xml&#39;, encoding=&#39;utf-8&#39;, xml_declaration=True, short_empty_elements=True)
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs autohotkey"><br>* `ET.canonicalize(ET.dump(root))`<br><br>格式化输出XML对象到字符串：<br>默认输出的是一个`byte`类型字符串，可以修改`encoding=&#x27;unicode&#x27;`指定输出格式为字符串，`unicode`对应的字符编码为`cp936`;如果设置`encoding`非`unicode`都按照`byte`处理。<br>```python<br>ElementTree.tostring(element, encoding=&#x27;us-ascii&#x27;, method=&#x27;xml&#x27;, xml_declaration=None, default_namespace=None)<br></code></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ul>
+<h4 id="五、附录"><a href="#五、附录" class="headerlink" title="五、附录"></a>五、附录</h4><p><strong>Python3</strong>文档：<a target="_blank" rel="noopener" href="https://docs.python.org/3/library/xml.etree.elementtree.html">https://docs.python.org/3/library/xml.etree.elementtree.html</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ElementTree/" class="print-no-link">#ElementTree</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Python使用ElementTree操作XML</div>
+      <div>https://probiecoder.cn/python/elementtree.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/python/ipaddress.html" title="Python获取本机IP地址和Mac地址">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python获取本机IP地址和Mac地址</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/python/pycryptodome.html" title="PyCryptodome使用笔记">
+                        <span class="hidden-mobile">PyCryptodome使用笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

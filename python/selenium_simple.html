@@ -1,0 +1,802 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="部分测试基于百度首页 本地html读取方式driver.get(&#39;file:&#x2F;&#x2F;&#x2F;Workspace&#x2F;static-web&#x2F;selenium.html&#39;)    以下内容基于:Python 3.7.4selenium 3.141.0Chrome 80.0.3987.132 64bit 一、安装准备 python模块安装 12pip install seleniumconda ins">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Selenium简单使用介绍">
+<meta property="og:url" content="https://probiecoder.cn/python/selenium_simple.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="部分测试基于百度首页 本地html读取方式driver.get(&#39;file:&#x2F;&#x2F;&#x2F;Workspace&#x2F;static-web&#x2F;selenium.html&#39;)    以下内容基于:Python 3.7.4selenium 3.141.0Chrome 80.0.3987.132 64bit 一、安装准备 python模块安装 12pip install seleniumconda ins">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.766Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.767Z">
+<meta property="article:author" content="duwei">
+<meta property="article:tag" content="Selenium">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Selenium简单使用介绍 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Selenium简单使用介绍"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Selenium简单使用介绍</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>部分测试基于百度首页</p>
+<p>本地html读取方式<code>driver.get(&#39;file:///Workspace/static-web/selenium.html&#39;) </code>  </p>
+<p>以下内容基于:<br><code>Python 3.7.4</code><br><code>selenium 3.141.0</code><br><code>Chrome 80.0.3987.132 64bit</code></p>
+<h3 id="一、安装准备"><a href="#一、安装准备" class="headerlink" title="一、安装准备"></a>一、安装准备</h3><ul>
+<li><code>python</code>模块安装<blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">pip install selenium<br>conda install selenium<br></code></pre></td></tr></table></figure></blockquote>
+</li>
+<li><code>WebDriver</code>下载安装<blockquote>
+<p><a href="https://chromedriver.storage.googleapis.com/index.html" target="_blank">Google</a> 驱动版本需要与浏览器版本对应<br><a href="https://github.com/mozilla/geckodriver/releases" target="_blank">Firefox</a></p>
+</blockquote>
+</li>
+<li>驱动识别引入<blockquote>
+<p>将文件路径添加到系统环境变量 <code>PATH</code>中<br>直接将驱动文件放置到python安装目录下的 <code>bin</code> 目录中</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="二、使用"><a href="#二、使用" class="headerlink" title="二、使用"></a>二、使用</h3><h4 id="1、控制并打开浏览器窗口"><a href="#1、控制并打开浏览器窗口" class="headerlink" title="1、控制并打开浏览器窗口"></a>1、控制并打开浏览器窗口</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver<br><br><span class="hljs-number">1</span>、selenium版本较高时，推荐使用，避免测试结束忘记关闭<br><span class="hljs-keyword">with</span> webdriver.Chrome() <span class="hljs-keyword">as</span> driver:<br>    driver.get(<span class="hljs-string">&quot;http://www.baidu.com&quot;</span>)<br><br><span class="hljs-number">2</span>、学习阶段建议使用，可以观察到某些变化<br>driver = webdriver.Chrome()<br>driver.get(<span class="hljs-string">&quot;htttp://www.baidu.com&quot;</span>)<br>driver.close()<br></code></pre></td></tr></table></figure>
+
+<h4 id="2、元素定位"><a href="#2、元素定位" class="headerlink" title="2、元素定位"></a>2、元素定位</h4><p>推荐顺序 id &gt; css 选择器<br><code>XPATH</code>定位准确编写复杂且不利于<code>debug</code><br>链接文本(部分)只适用于 <code>a</code> 链接元素</p>
+<p>以下内容返回第一个匹配的元素，适用<code>find_elements_xx</code>可返回多个元素</p>
+<table>
+<thead>
+<tr>
+<th>定位元素</th>
+<th>示例</th>
+<th>使用方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>class名称</td>
+<td><code>class=&quot;index-logo-src&quot;</code></td>
+<td><code>driver.find_element_by_class_name(&#39;index-logo-src&#39;)</code></td>
+</tr>
+<tr>
+<td>css选择器</td>
+<td><code>#lg .index-logo-src</code></td>
+<td><code>driver.find_element_by_css_selector(&#39;#lg .index-logo-src&#39;)</code></td>
+</tr>
+<tr>
+<td>id</td>
+<td><code>#lg</code></td>
+<td><code>driver.find_element_by_id(&#39;#lg&#39;)</code></td>
+</tr>
+<tr>
+<td>name</td>
+<td><code>name=&quot;mp&quot;</code></td>
+<td><code>driver.find_element_by_name(&#39;mp&#39;)</code></td>
+</tr>
+<tr>
+<td>链接部分显示不符</td>
+<td><code>&lt;a&gt;更多产品&lt;/a&gt;</code></td>
+<td><code>driver.find_element_by_link_text(&#39;更多产品&#39;)</code></td>
+</tr>
+<tr>
+<td>链接文本部分</td>
+<td><code>&lt;a&gt;更多产品&lt;/a&gt;</code></td>
+<td><code>driver.find_element_by_partial_link_text(&#39;更多&#39;)</code></td>
+</tr>
+<tr>
+<td>tag标签</td>
+<td><code>&lt;map&gt;&lt;/map&gt;</code></td>
+<td><code>driver.find_element_by_tag_name(&#39;map&#39;)</code></td>
+</tr>
+<tr>
+<td>xpath选择</td>
+<td><code>class=&quot;index-logo-src&quot;</code></td>
+<td><code>driver.find_element_by_xpath(&#39;//div//img[@class=&quot;index-logo-src&quot;]&#39;)</code></td>
+</tr>
+</tbody></table>
+<h4 id="3、控制浏览器"><a href="#3、控制浏览器" class="headerlink" title="3、控制浏览器"></a>3、控制浏览器</h4><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>打开浏览器</td>
+<td><code>driver.get(&#39;http://www.baidu.com&#39;)</code></td>
+</tr>
+<tr>
+<td>当前地址</td>
+<td><code>driver.current_url</code></td>
+</tr>
+<tr>
+<td>前进</td>
+<td><code>driver.forward()</code></td>
+</tr>
+<tr>
+<td>后退</td>
+<td><code>driver.back()</code></td>
+</tr>
+<tr>
+<td>刷新</td>
+<td><code>driver.refresh()</code></td>
+</tr>
+<tr>
+<td>标题</td>
+<td><code>driver.title</code></td>
+</tr>
+<tr>
+<td>当前窗口<code>handle</code></td>
+<td><code>driver.current_window_handle</code></td>
+</tr>
+<tr>
+<td>退出</td>
+<td><code>driver.quit()</code></td>
+</tr>
+<tr>
+<td>窗口大小</td>
+<td><code>driver.get_window_size().get(&quot;width&quot;)</code> <code>height</code></td>
+</tr>
+<tr>
+<td>重置窗口</td>
+<td><code>driver.set_window_size(1024, 768)</code></td>
+</tr>
+<tr>
+<td>窗口位置</td>
+<td><code>driver.get_window_position().get(&#39;x&#39;)</code></td>
+</tr>
+<tr>
+<td>设置窗口位置</td>
+<td><code>driver.set_window_position(0, 0)</code></td>
+</tr>
+<tr>
+<td>窗口最大化</td>
+<td><code>driver.maximize_window()</code></td>
+</tr>
+<tr>
+<td>全屏</td>
+<td><code>driver.fullscreen_window()</code></td>
+</tr>
+</tbody></table>
+<p>切换窗口 – 官网示例<br>如果点击链接后会打开新的<code>tab</code>窗口，必须要切换窗口，<code>driver</code>才会跟着切换到新的窗口</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs python"><br><span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver<br><span class="hljs-keyword">from</span> selenium.webdriver.support.ui <span class="hljs-keyword">import</span> WebDriverWait<br><span class="hljs-keyword">from</span> selenium.webdriver.support <span class="hljs-keyword">import</span> expected_conditions <span class="hljs-keyword">as</span> EC<br><br><span class="hljs-comment"># Start the driver</span><br><span class="hljs-keyword">with</span> webdriver.Firefox() <span class="hljs-keyword">as</span> driver:<br>    <span class="hljs-comment"># Open URL</span><br>    driver.get(<span class="hljs-string">&quot;https://seleniumhq.github.io&quot;</span>)<br><br>    <span class="hljs-comment"># Setup wait for later</span><br>    wait = WebDriverWait(driver, <span class="hljs-number">10</span>)<br><br>    <span class="hljs-comment"># Store the ID of the original window</span><br>    original_window = driver.current_window_handle<br><br>    <span class="hljs-comment"># Check we don&#x27;t have other windows open already</span><br>    <span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(driver.window_handles) == <span class="hljs-number">1</span><br><br>    <span class="hljs-comment"># Click the link which opens in a new window</span><br>    driver.find_element_by_link_text(<span class="hljs-string">&quot;new window&quot;</span>).click()<br><br>    <span class="hljs-comment"># Wait for the new window or tab</span><br>    wait.until(EC.number_of_windows_to_be(<span class="hljs-number">2</span>))<br><br>    <span class="hljs-comment"># Loop through until we find a new window handle</span><br>    <span class="hljs-keyword">for</span> window_handle <span class="hljs-keyword">in</span> driver.window_handles:<br>        <span class="hljs-keyword">if</span> window_handle != original_window:<br>            driver.switch_to.window(window_handle)<br>            <span class="hljs-keyword">break</span><br><br>    <span class="hljs-comment"># Wait for the new tab to finish loading content</span><br>    wait.until(EC.title_is(<span class="hljs-string">&quot;SeleniumHQ Browser Automation&quot;</span>))<br>  <br></code></pre></td></tr></table></figure>
+
+<h4 id="4、等待"><a href="#4、等待" class="headerlink" title="4、等待"></a>4、等待</h4><p>等待期望元素加载完成。默认等待策略检测<code>document.readyState</code>状态变为<code>complete</code>，此时如果有<code>script</code>脚本创建元素，可能会出现无法定位到的情况</p>
+<ul>
+<li><p>显示等待</p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-number">10</span>:等待时间 秒<br>WebDriverWait(driver, timeout=<span class="hljs-number">10</span>).until(<span class="hljs-keyword">lambda</span> d: d.find_element_by_class_name(<span class="hljs-string">&#x27;index-logo-src&#x27;</span>))<br></code></pre></td></tr></table></figure>
+<p>  等待条件<br>  详情见<code>from selenium.webdriver.support import expected_conditions</code></p>
+<blockquote>
+<p>弹窗 - 警告 提示 确认<br>元素存在<br>元素可见<br>标题包含<br>标题是  </p>
+</blockquote>
+</li>
+<li><p>隐式等待<br>适合于明确页面元素加载需要一定时间</p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">driver = webdriver.Chrome()<br>driver.implicitly_wait(<span class="hljs-number">10</span>)<br></code></pre></td></tr></table></figure></li>
+<li><p>FluentWait<br>可以配置等待时间，检查频率以及对某些异常的忽略  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">wait = WebDriverWait(driver, timeout=<span class="hljs-number">10</span>, poll_frequency=<span class="hljs-number">1</span>, ignored_exceptions=NoSuchElementException)<br>wait.until(EC.element_to_be_clickable(By.XPATH, <span class="hljs-string">&quot;//div&quot;</span>))<br></code></pre></td></tr></table></figure>
+
+<h4 id="5、JavaScript弹窗"><a href="#5、JavaScript弹窗" class="headerlink" title="5、JavaScript弹窗"></a>5、<code>JavaScript</code>弹窗</h4><p>识别<code>JavaScript</code>弹出的<code>警告、确认、提示</code></p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python">alert = wait.until(EC.alert_is_present())<br>// 警告 alert()<br>text = alert.text  <span class="hljs-comment"># 弹窗文本</span><br>alert.accept()  <span class="hljs-comment"># 确认</span><br><br>// 确认 confirm()<br>text = alert.text  <span class="hljs-comment"># 弹窗文本</span><br>alert.accept()  <span class="hljs-comment"># 确认</span><br>alert.dismiss()  <span class="hljs-comment"># 取消</span><br><br>// 提示框 prompt() 需要输入文本<br>alert = Alert(driver)<br>alert.send_keys(<span class="hljs-string">&quot;Selenium&quot;</span>)  <span class="hljs-comment"># 测试时在chrome未生效</span><br>alert.accept()<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="6、系统键"><a href="#6、系统键" class="headerlink" title="6、系统键"></a>6、系统键</h4><p><code>ActionChains</code>需要使用<code>perform()</code>才会生效<br><strong>send_keys:</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver<br><span class="hljs-keyword">from</span> selenium.webdriver.common.keys <span class="hljs-keyword">import</span> Keys<br><br>driver = webdriver.Chrome()<br>driver.get(<span class="hljs-string">&#x27;http://www.baidu.com&#x27;</span>)<br>driver.find_element_by_id(<span class="hljs-string">&#x27;kw&#x27;</span>).send_keys(<span class="hljs-string">&#x27;selenium&#x27;</span> + Keys.ENTER)<br></code></pre></td></tr></table></figure>
+<p><strong>keyDown:模拟按下修改键（CONTROL，SHIFT，ALT）的动作</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">action = webdriver.ActionChains(driver)<br><br>action.key_down(Keys.CONTROL).send_keys(<span class="hljs-string">&quot;a&quot;</span>).perform()<br></code></pre></td></tr></table></figure>
+
+<p><strong>keyUp:模拟修改键（CONTROL，SHIFT，ALT）的向上（或）释放操作</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python">search = driver.find_element_by_id(<span class="hljs-string">&#x27;kw&#x27;</span>)<br>action.key_down(Keys.SHIFT)\<br>    .send_keys_to_element(search, <span class="hljs-string">&#x27;qwerty&#x27;</span>)\<br>    .key_up(Keys.SHIFT)\<br>    .send_keys(<span class="hljs-string">&#x27;qwerty&#x27;</span>)\<br>    .perform()<br><br>传入内容：QWERTYqwerty<br></code></pre></td></tr></table></figure>
+
+<p><strong>clear:清空文本</strong>  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">search.clear()<br></code></pre></td></tr></table></figure>
+
+<h4 id="7、示例"><a href="#7、示例" class="headerlink" title="7、示例"></a>7、示例</h4><p>以百度搜索，进入百度翻译，并修改翻译内容为例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver<br><span class="hljs-keyword">from</span> selenium.webdriver.common.keys <span class="hljs-keyword">import</span> Keys<br><span class="hljs-keyword">from</span> selenium.webdriver.support.ui <span class="hljs-keyword">import</span> WebDriverWait<br><span class="hljs-keyword">from</span> selenium.webdriver.support <span class="hljs-keyword">import</span> expected_conditions <span class="hljs-keyword">as</span> EC<br><span class="hljs-keyword">from</span> selenium.webdriver.common.action_chains <span class="hljs-keyword">import</span> ActionChains<br><br>driver = webdriver.Chrome()<br><br>driver.get(<span class="hljs-string">&#x27;http://www.baidu.com&#x27;</span>)<br>driver.maximize_window()<br><span class="hljs-comment"># driver.implicitly_wait(5)  # 隐式等待 不要和显示等待混用</span><br><br><span class="hljs-comment"># 返回单个元素</span><br>driver.find_element_by_id(<span class="hljs-string">&#x27;kw&#x27;</span>)\<br>    .send_keys(<span class="hljs-string">&#x27;qwerty&#x27;</span> + Keys.ENTER)<br><br>wait = WebDriverWait(driver, timeout=<span class="hljs-number">10</span>)  <span class="hljs-comment"># 显示等待 超时10秒</span><br><br>wait.until(EC.title_contains(<span class="hljs-string">&#x27;qwerty&#x27;</span>))<br><br>divs = driver.find_elements_by_css_selector(<span class="hljs-string">&#x27;#content_left div&#x27;</span>)  <span class="hljs-comment"># 返回list</span><br><br>ele = <span class="hljs-literal">None</span><br><span class="hljs-keyword">for</span> div <span class="hljs-keyword">in</span> divs:<br>    text = div.text<br>    <span class="hljs-comment"># 匹配需要的元素</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;Qwerty_百度翻译&#x27;</span> <span class="hljs-keyword">in</span> text:<br>        ele = div<br>        <span class="hljs-keyword">break</span><br><br>a = ele.find_element_by_partial_link_text(<span class="hljs-string">&#x27;百度翻译&#x27;</span>)<br><span class="hljs-built_in">print</span>(a.get_attribute(<span class="hljs-string">&#x27;href&#x27;</span>))<br><br>origin_window = driver.current_window_handle  <span class="hljs-comment"># 获取当前窗口</span><br>a.click()<br><br><span class="hljs-comment"># 迭代所有窗口,窗口切换,切换driver指向, 按需求保存窗口</span><br><span class="hljs-keyword">for</span> win <span class="hljs-keyword">in</span> driver.window_handles:<br>    <span class="hljs-built_in">print</span>(win)  <br>    <span class="hljs-keyword">if</span> win != origin_window:<br>        driver.switch_to.window(win)<br><br>wait.until(EC.title_is(<span class="hljs-string">&#x27;百度翻译&#x27;</span>))<br><br><span class="hljs-comment"># 如果不做窗口切换,driver指向的还是上一个窗口</span><br><span class="hljs-built_in">input</span> = driver.find_element_by_id(<span class="hljs-string">&#x27;baidu_translate_input&#x27;</span>)<br><span class="hljs-built_in">input</span>.clear()  <span class="hljs-comment"># 清空</span><br><span class="hljs-comment"># input.send_keys(&#x27;baidu&#x27;)</span><br><br><span class="hljs-comment"># 此处需要使用perform后才会生效</span><br>action = ActionChains(driver)<br>action.key_down(Keys.SHIFT).send_keys_to_element(<span class="hljs-built_in">input</span>, <span class="hljs-string">&#x27;baidu&#x27;</span>).perform()<br><br>driver.close()  <span class="hljs-comment"># 关闭翻译链接新创建窗口,如果需要继续使用旧的窗口,需要进行switch_to</span><br>driver.switch_to.window(origin_window)<br>driver.close()  <span class="hljs-comment"># 关闭初始创建窗口</span><br>driver.quit() <span class="hljs-comment"># 观察效果的时候需要注释   关闭窗口并且推出webdriver execute</span><br><br></code></pre></td></tr></table></figure>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Selenium/" class="print-no-link">#Selenium</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Selenium简单使用介绍</div>
+      <div>https://probiecoder.cn/python/selenium_simple.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/python/pymysql.html" title="使用Python操作MySql">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">使用Python操作MySql</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/java/class.html" title="Java类文件解析">
+                        <span class="hidden-mobile">Java类文件解析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

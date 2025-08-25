@@ -1,0 +1,1215 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1、 jps：虚拟机进程状况工具JVM Process Status Tool可以列出正在运行的虚拟机进程，并显示虚拟机执行主类(Main Class，main()函数所在的类)名称以及这些进程的本地虚拟机唯一ID(LVMID, Local Virtual Machine Identifier)。 语法： 1jps [options]  options选项：    选项 作用    -q 只输出L">
+<meta property="og:type" content="article">
+<meta property="og:title" content="虚拟机性能监控与故障处理基础工具">
+<meta property="og:url" content="https://probiecoder.cn/java/jvm/base-tool.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="1、 jps：虚拟机进程状况工具JVM Process Status Tool可以列出正在运行的虚拟机进程，并显示虚拟机执行主类(Main Class，main()函数所在的类)名称以及这些进程的本地虚拟机唯一ID(LVMID, Local Virtual Machine Identifier)。 语法： 1jps [options]  options选项：    选项 作用    -q 只输出L">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.765Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.765Z">
+<meta property="article:author" content="duwei">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>虚拟机性能监控与故障处理基础工具 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="虚拟机性能监控与故障处理基础工具"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">虚拟机性能监控与故障处理基础工具</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="1、-jps：虚拟机进程状况工具"><a href="#1、-jps：虚拟机进程状况工具" class="headerlink" title="1、 jps：虚拟机进程状况工具"></a>1、<code> jps</code>：虚拟机进程状况工具</h3><p><code>JVM Process Status Tool</code>可以列出正在运行的虚拟机进程，并显示虚拟机执行主类(<code>Main Class</code>，<code>main()</code>函数所在的类)名称以及这些进程的本地虚拟机唯一ID(<code>LVMID, Local Virtual Machine Identifier</code>)。</p>
+<p>语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">jps [options]<br></code></pre></td></tr></table></figure>
+
+<p><code>options</code>选项：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-q</code></td>
+<td>只输出<code>LVMID</code>，省略主类的名称</td>
+</tr>
+<tr>
+<td><code>-m</code></td>
+<td>输出虚拟机进程启动时传递给主类<code>main()</code>函数的参数</td>
+</tr>
+<tr>
+<td><code>-l</code></td>
+<td>输出主类的全名，如果进程执行的是<code>jar</code>包，则输出<code>JAR</code>路径</td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td>输出虚拟机经常启动时的<code>JVM</code>参数</td>
+</tr>
+</tbody></table>
+<h3 id="2、jstat：虚拟机统计信息监视工具"><a href="#2、jstat：虚拟机统计信息监视工具" class="headerlink" title="2、jstat：虚拟机统计信息监视工具"></a>2、<code>jstat</code>：虚拟机统计信息监视工具</h3><p><code>JVM statistics Monitoring Tool</code>是用于监视虚拟机各种运行状态信息的命令行工具。可以显示虚拟机进程中的类加载、内存、垃圾收集、即时编译等运行时数据。</p>
+<p>语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">jstat -&lt;option&gt; [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]]<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>interval</code>：查询时间间隔，单位支持<code>ms</code>和<code>s</code>，默认为<code>ms</code></li>
+<li><code>count</code>：查询次数</li>
+<li><code>vmid</code>：<code>LVMID</code>，通过<code>jps</code>获取</li>
+<li><code>lines</code></li>
+</ul>
+<p><code>option</code>选项：使用<code>jstat -options</code>获取完整选项列表</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-class</code></td>
+<td>监视类加载、卸载数量、总空间及类装载所耗费的时间</td>
+</tr>
+<tr>
+<td><code>-compiler</code></td>
+<td>输出即时编译器编译过的方法、耗时等信息</td>
+</tr>
+<tr>
+<td><code>-gc</code></td>
+<td>监视<code>Java</code>堆情况，包括<code>Eden</code>区、2个<code>Survivor</code>区、老年代、元空间等的容量，已用空间，垃圾收集时间合计等信息</td>
+</tr>
+<tr>
+<td><code>-gccapacity</code></td>
+<td>内容与<code>-gc</code>基本相同，但输出主要关注<code>Java</code>堆各个区域使用到的最大、最小空间</td>
+</tr>
+<tr>
+<td><code>-gccause</code></td>
+<td>与<code>-gcutil</code>功能一样，但是会额外输出导致上一次垃圾收集产生的原因</td>
+</tr>
+<tr>
+<td><code>-gcmetacapacity</code></td>
+<td>输出元空间使用的最最小空间</td>
+</tr>
+<tr>
+<td><code>-gcnew</code></td>
+<td>监视新生代垃圾收集情况</td>
+</tr>
+<tr>
+<td><code>-gcnewcapacity</code></td>
+<td>监视内容与<code>-gcnew</code>基本相同，输出主要关注使用到的最大、最小空间</td>
+</tr>
+<tr>
+<td><code>-gcold</code></td>
+<td>监视老生代垃圾收集情况</td>
+</tr>
+<tr>
+<td><code>-gcoldcapacity</code></td>
+<td>监视内容与<code>-gcold</code>基本相同，输出主要关注使用到的最大、最小空间</td>
+</tr>
+<tr>
+<td><code>-gcutil</code></td>
+<td>内容与<code>-gc</code>基本相同，但输出主要关注已使用空间占总空间的百分比</td>
+</tr>
+<tr>
+<td><code>printcompilation</code></td>
+<td>输出已经被即时编译的方法</td>
+</tr>
+</tbody></table>
+<h3 id="3、jinfo：Java配置信息工具"><a href="#3、jinfo：Java配置信息工具" class="headerlink" title="3、jinfo：Java配置信息工具"></a>3、<code>jinfo</code>：<code>Java</code>配置信息工具</h3><p><code>Configuration Info for Java</code>用于实时查看和调整虚拟机各项参数。</p>
+<p>语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">jinfo &lt;option&gt; &lt;pid&gt;<br></code></pre></td></tr></table></figure>
+
+<p>选项<code>option</code>为可选参数，无值时输出<code>VM flags</code>和系统属性。</p>
+<p><code>option</code>选项：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-flag &lt;name&gt;</code></td>
+<td>输出<code>VM flag</code>值</td>
+</tr>
+<tr>
+<td><code>-flag [+|-]&lt;name&gt;</code></td>
+<td>启用或禁用<code>VM flag</code></td>
+</tr>
+<tr>
+<td><code>-flag &lt;name&gt;=&lt;value&gt;</code></td>
+<td>设置<code>VM flag</code>为指定值</td>
+</tr>
+<tr>
+<td><code>-flags</code></td>
+<td>输出当前虚拟机支持的所有<code>flags</code>，可以查看显示指定的<code>flag</code>默认值</td>
+</tr>
+<tr>
+<td><code>-sysprops</code></td>
+<td>输出<code>Java</code>系统属性，即<code>System.getProperties()</code></td>
+</tr>
+</tbody></table>
+<h3 id="4、jmap：Java内存映射工具"><a href="#4、jmap：Java内存映射工具" class="headerlink" title="4、jmap：Java内存映射工具"></a>4、<code>jmap</code>：<code>Java</code>内存映射工具</h3><p><code>Memory Map for Java</code>用于生成堆转储快照（一般称为<code>heapdump</code>或<code>dump</code>文件），还可以查询<code>finalize</code>执行队列、<code>Java</code>堆和方法区的详细信息，如空间利用率、当前使用的是哪种收集器等。</p>
+<p>语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">jmap -&lt;option&gt; &lt;pid&gt;<br></code></pre></td></tr></table></figure>
+
+<p><code>option</code>选项：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-clstats</code></td>
+<td>输出<code>class loader</code>统计信息</td>
+</tr>
+<tr>
+<td><code>-finalizerinfo</code></td>
+<td>显示等待<code>Finalizer</code>执行<code>finalize</code>方法的对象</td>
+</tr>
+<tr>
+<td><code>-histo</code></td>
+<td>显示堆中对象统计信息，包括类、实例数量、合计容量</td>
+</tr>
+<tr>
+<td><code>-dump</code></td>
+<td>生成<code>Java</code>堆转储快照</td>
+</tr>
+<tr>
+<td><code>-heap</code></td>
+<td>显示<code>Java</code>堆详细信息，如使用哪种回收器、参数配置，分代情况等。从<code>JDK 9</code>开始选项废弃</td>
+</tr>
+</tbody></table>
+<p><code>dump-options</code>选项：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>live</code></td>
+<td>只转储<code>live</code>状态的对象</td>
+</tr>
+<tr>
+<td><code>all</code></td>
+<td>转储所有的对象</td>
+</tr>
+<tr>
+<td><code>format=b</code></td>
+<td>二进制格式</td>
+</tr>
+<tr>
+<td><code>file=&lt;file&gt;</code></td>
+<td>转储对象存储文件路径</td>
+</tr>
+</tbody></table>
+<p><code>histo-options</code>选项：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>live</code></td>
+<td>只统计<code>live</code>状态的对象</td>
+</tr>
+<tr>
+<td><code>all</code></td>
+<td>统计所有的对象</td>
+</tr>
+<tr>
+<td><code>file=&lt;file&gt;</code></td>
+<td>存储文件路径</td>
+</tr>
+</tbody></table>
+<h3 id="6、jstack：Java堆栈跟踪工具"><a href="#6、jstack：Java堆栈跟踪工具" class="headerlink" title="6、jstack：Java堆栈跟踪工具"></a>6、<code>jstack</code>：<code>Java</code>堆栈跟踪工具</h3><p><code>Stack Trace for Java</code>用于生成虚拟机当前时刻的线程快照（一般称为<code>threaddump</code>或<code>javacore</code>文件）。线程快照是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成线程快照的目的通常是定位线程出现长时间停顿的原因，如线程间死锁、死循环、请求外部资源导致的长时间挂起等，都是导致线程长时间停顿的原因。</p>
+<p>语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">jstack &lt;option&gt; &lt;pid&gt;<br></code></pre></td></tr></table></figure>
+
+<p><code>option</code>选项：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-l</code></td>
+<td>额外显示关于锁的附加信息</td>
+</tr>
+<tr>
+<td><code>-e</code></td>
+<td>额外显示关于线程的附加信息，例如内存分配</td>
+</tr>
+</tbody></table>
+<h3 id="7、jcmd：虚拟机诊断命令工具"><a href="#7、jcmd：虚拟机诊断命令工具" class="headerlink" title="7、jcmd：虚拟机诊断命令工具"></a>7、<code>jcmd</code>：虚拟机诊断命令工具</h3><p><code>JVM Command</code>虚拟机诊断命令工具，集成 <code>jmap</code>、<code>jstack</code>、<code>jinfo</code> 等传统工具的核心功能，支持动态获取 JVM 状态、生成诊断文件、修改运行时参数等。</p>
+<p>语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">jcmd &lt;pid&gt; &lt;command&gt; &lt;argument&gt;<br></code></pre></td></tr></table></figure>
+
+<p><code>command</code>诊断命令可以通过 <code>jcmd &lt;pid&gt; help</code>获取当前虚拟机支持的完整命令列表。</p>
+<h4 id="7-1-内存与垃圾回收（GC）"><a href="#7-1-内存与垃圾回收（GC）" class="headerlink" title="7.1 内存与垃圾回收（GC）"></a>7.1 内存与垃圾回收（GC）</h4><p> <strong><code>GC.class_histogram</code></strong></p>
+<ul>
+<li><strong>功能</strong>：生成堆内存中类的实例数量和内存占用的直方图（按内存降序排序）。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>-all</code>：包含所有对象（包括不可达对象）。</li>
+<li>默认输出存活对象</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; GC.class_histogram -all<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>GC.heap_dump</code></strong></p>
+<ul>
+<li><strong>功能</strong>：生成堆转储文件（HPROF 格式），用于分析内存泄漏。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>&lt;filename&gt;</code>：输出文件路径（必填）。</li>
+<li><code>-overwrite</code>：覆盖已有文件。</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; GC.heap_dump /tmp/heap.hprof -overwrite<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>GC.heap_info</code></strong></p>
+<ul>
+<li><strong>功能</strong>：显示堆内存各分区（<code>Eden、Survivor、Old Gen、Metaspace</code>）的使用情况。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; GC.heap_info<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>GC.run</code> &#x2F; <code>GC.run_finalization</code></strong></p>
+<ul>
+<li><strong>功能</strong>：显式触发 <code>Full GC</code> &#x2F; 强制执行 <code>finalize()</code> 方法。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; GC.run  <span class="hljs-comment"># 强制 Full GC</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>GC.finalizer_info</code></strong></p>
+<ul>
+<li><strong>功能</strong>：显示等待执行 <code>finalize()</code> 方法的对象队列。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; GC.finalizer_info<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>VM.metaspace</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：显示 <code>Metaspace</code>使用情况。</p>
+</li>
+<li><p><strong>参数</strong>：无。</p>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.metaspace<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="7-2、编译器与-JIT-优化"><a href="#7-2、编译器与-JIT-优化" class="headerlink" title="7.2、编译器与 JIT 优化"></a>7.2、编译器与 JIT 优化</h4><p><strong><code>Compiler.codecache</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：显示 JIT 编译代码缓存（<code>CodeCache</code>）的容量和使用情况。</p>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; Compiler.codecache<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>Compiler.CodeHeap_Analytics</code></strong></p>
+<ul>
+<li><strong>功能</strong>：分析 JIT 编译器的代码堆（<code>CodeHeap</code>）内存使用情况。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; Compiler.CodeHeap_Analytics <br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>Compiler.codelist</code></strong></p>
+<ul>
+<li><strong>功能</strong>：列出所有 JIT 编译的代码块（方法）。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; Compiler.codelist <br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>Compiler.queue</code></strong></p>
+<ul>
+<li><strong>功能</strong>：显示 JIT 编译队列中的待编译方法。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; Compiler.queue<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="7-3、Java-Flight-Recorder-JFR"><a href="#7-3、Java-Flight-Recorder-JFR" class="headerlink" title="7.3、Java Flight Recorder (JFR)"></a>7.3、Java Flight Recorder (JFR)</h4><p> <strong><code>JFR.start</code></strong></p>
+<ul>
+<li><strong>功能</strong>：启动 JFR 性能记录。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>name=</code>：记录名称（必填）。</li>
+<li><code>settings=</code>：配置文件（如 <code>profile</code>、<code>default</code>）。</li>
+<li><code>delay=</code>：延迟启动时间（如 <code>60s</code>）。</li>
+<li><code>duration=</code>：记录时长（如 <code>5m</code>）。</li>
+<li><code>filename=</code>：直接保存记录文件。</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; JFR.start name=myrec settings=profile duration=30m<br><br>jcmd 140112 JFR.start name=hello settings=profile delay=3s duration=10s filename=hello.txt<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>JFR.stop</code></strong></p>
+<ul>
+<li><strong>功能</strong>：停止 JFR 记录。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>name=</code>：记录名称（必填）。</li>
+<li><code>filename=</code>：导出记录文件路径。</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; JFR.stop name=myrec filename=rec.jfr<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>JFR.dump</code></strong></p>
+<ul>
+<li><strong>功能</strong>：导出 JFR 记录文件。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>name=</code>：记录名称（必填）。</li>
+<li><code>filename=</code>：导出文件路径（必填）。</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; JFR.dump name=myrec filename=rec.jfr<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>JFR.check</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：检查 JFR 记录状态。</p>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; JFR.check<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>JFR.configure</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：配置 <code>JFR</code> 参数（如阈值、事件类型）。</p>
+</li>
+<li><p><strong>参数</strong>：</p>
+<ul>
+<li><code>repositorypath=</code>：事件存储路径。</li>
+</ul>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; JFR.configure repositorypath=/tmp/jfr<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>JFR.view</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：实时查看正在进行的 JFR 记录数据（需配合 <code>JFR.start</code>）。</p>
+</li>
+<li><p>参数：</p>
+<ul>
+<li><code>maxage</code>：事件事件窗，单位支持<code>s</code>、<code>m</code>、<code>h</code>，默认为<code>10m</code></li>
+<li><code>maxsize</code>：事件允许的最大字节数，单位支持<code>m</code>、<code>M</code>、<code>g</code>、<code>G</code>，默认为<code>32MB</code></li>
+</ul>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">jcmd </span>&lt;PID&gt; <span class="hljs-keyword">JFR.view </span>event事件<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p>可以使用<code>jcmd &lt;PID&gt; JFR.view</code>查看内置<code>event</code>事件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs shell">Java virtual machine views:<br> class-modifications       gc-concurrent-phases longest-compilations   <br> compiler-configuration    gc-configuration     native-memory-committed<br> compiler-phases           gc-cpu-time          native-memory-reserved <br> compiler-statistics       gc-pause-phases      safepoints             <br> deoptimizations-by-reason gc-pauses            tlabs                  <br> deoptimizations-by-site   gc-references        vm-operations          <br> gc                        heap-configuration  <br><br>Environment views:<br> active-recordings        cpu-information       jvm-flags          <br> active-settings          cpu-load              native-libraries   <br> container-configuration  cpu-load-samples      network-utilization<br> container-cpu-throttling cpu-tsc               recording          <br> container-cpu-usage      environment-variables system-information <br> container-io-usage       events-by-count       system-processes   <br> container-memory-usage   events-by-name        system-properties  <br><br>Application views:<br> allocation-by-class   exception-count       native-methods       <br> allocation-by-site    file-reads-by-path    object-statistics    <br> allocation-by-thread  file-writes-by-path   pinned-threads       <br> class-loaders         finalizers            socket-reads-by-host <br> contention-by-address hot-methods           socket-writes-by-host<br> contention-by-class   latencies-by-type     thread-allocation    <br> contention-by-site    longest-class-loading thread-count         <br> contention-by-thread  memory-leaks-by-class thread-cpu-load      <br> exception-by-message  memory-leaks-by-site  thread-start         <br> exception-by-site     modules          <br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="7-4、线程管理"><a href="#7-4、线程管理" class="headerlink" title="7.4、线程管理"></a>7.4、线程管理</h4><p> <strong><code>Thread.print</code></strong></p>
+<ul>
+<li><strong>功能</strong>：生成线程转储（含锁信息），替代 <code>jstack</code>。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>-l</code>：显示锁信息（默认包含）。</li>
+<li><code>-e</code>：显示线程额外信息，分配内存之类</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; Thread.<span class="hljs-built_in">print</span> -l &gt; thread_dump.txt<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>Thread.dump_to_file</code></strong></p>
+<ul>
+<li><strong>功能</strong>：将线程转储直接写入文件。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>&lt;filename&gt;</code>：输出文件路径（必填）。</li>
+<li><code>-overwrite</code>：覆盖已有文件。</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; Thread.dump_to_file -overwrite /tmp/thread_dump.txt<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="7-5、本地内存与-Native-分析"><a href="#7-5、本地内存与-Native-分析" class="headerlink" title="7.5、本地内存与 Native 分析"></a>7.5、本地内存与 Native 分析</h4><p> <strong><code>System.native_heap_info</code></strong></p>
+<ul>
+<li><strong>功能</strong>：显示 <code>Native</code> 堆内存分配情况。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; System.native_heap_info<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>VM.native_memory</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：显示 Native 内存分配详情（需启用 <code>-XX:NativeMemoryTracking=summary/detail</code>）。</p>
+</li>
+<li><p><strong>参数</strong>：</p>
+<ul>
+<li><code>summary</code>：摘要模式。</li>
+<li><code>detail</code>：详细模式。</li>
+</ul>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.native_memory detail<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="7-6、JVM-诊断与参数管理"><a href="#7-6、JVM-诊断与参数管理" class="headerlink" title="7.6、JVM 诊断与参数管理"></a>7.6、JVM 诊断与参数管理</h4><p> <strong><code>VM.flags</code></strong></p>
+<ul>
+<li><strong>功能</strong>：查看所有 JVM 启动参数（含默认值）。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>-all</code>：显示所有参数（包括默认值）。</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.flags -all<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>VM.set_flag</code></strong></p>
+<ul>
+<li><strong>功能</strong>：动态修改可写的 JVM 参数（需参数标记为 <code>manageable</code>）。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>&lt;flag&gt;</code>：参数名（如 <code>PrintGCDetails</code>）。</li>
+<li><code>&lt;value&gt;</code>：参数值（如 <code>true</code>）。</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.set_flag PrintGCDetails <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>VM.log</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：管理 JVM 日志输出。</p>
+</li>
+<li><p><strong>参数</strong>：</p>
+<ul>
+<li><code>output=</code>：日志文件路径。</li>
+<li><code>what=</code>：配置日志输出<code>tag</code></li>
+<li><code>decorators</code>：日志输出内容装饰<code>decorators</code></li>
+<li><code>list</code>：列出当前日志配置信息</li>
+<li><code>rotate</code>：滚动所有日志文件</li>
+</ul>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.<span class="hljs-built_in">log</span> output=gc.log what=gc* decorators=<span class="hljs-keyword">time</span>,hostname<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>VM.command_line</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：显示 JVM 启动时的完整命令行参数。  </p>
+</li>
+<li><p><strong>示例</strong>：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.command_line<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>VM.dynlibs</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：列出所有动态加载的本地库（<code>.so</code> 或 <code>.dll</code> 文件）。  </p>
+</li>
+<li><p><strong>示例</strong>：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.dynlibs<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>VM.events</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：显示 <code>JVM</code> 事件日志（如 GC、编译事件）。  </p>
+</li>
+<li><p><strong>示例</strong>：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.events<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>VM.stringtable</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：显示字符串常量池（String Table）的内容。  </p>
+</li>
+<li><p><code>-verbose</code>：显示详细信息（如哈希值、引用计数）。  </p>
+</li>
+<li><p><strong>示例</strong>：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.stringtable -verbose<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>VM.symboltable</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：显示符号表（Symbol Table）的内容（类名、方法名等符号）。  </p>
+</li>
+<li><p><strong>示例</strong>：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.symboltable<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>VM.systemdictionary</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：显示系统字典中的类信息（类加载器与类的映射关系）。  </p>
+</li>
+<li><p><strong>示例</strong>：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.systemdictionary<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="7-7、类与类加载器"><a href="#7-7、类与类加载器" class="headerlink" title="7.7、类与类加载器"></a>7.7、类与类加载器</h4><h4 id="VM-classloaders"><a href="#VM-classloaders" class="headerlink" title="VM.classloaders"></a><strong><code>VM.classloaders</code></strong></h4><ul>
+<li><p><strong>功能</strong>：显示所有类加载器及其层级关系。</p>
+</li>
+<li><p><strong>示例</strong>：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml">jcmd <span class="hljs-tag">&lt;<span class="hljs-name">PID</span>&gt;</span> VM.classloaders<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>VM.class_hierarchy</code></strong></p>
+<ul>
+<li><strong>功能</strong>：显示类的继承层次。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>&lt;className&gt;</code>：目标类名（支持通配符 <code>*</code>）。</li>
+<li><code>-i</code>：忽略大小写。</li>
+<li><code>-s</code>：显示子类。</li>
+</ul>
+</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.class_hierarchy java.lang.String -i<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>VM.classes</code></strong></p>
+<ul>
+<li><strong>功能</strong>：列出所有已加载的类。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.classes<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>VM.classloader_stats</code></strong></p>
+<ul>
+<li><strong>功能</strong>：统计类加载器的活动。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.classloader_stats<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="7-8、系统信息与工具"><a href="#7-8、系统信息与工具" class="headerlink" title="7.8、系统信息与工具"></a>7.8、系统信息与工具</h4><p> <strong><code>VM.uptime</code></strong></p>
+<ul>
+<li><strong>功能</strong>：显示 JVM 运行时间（毫秒）。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.<span class="hljs-built_in">uptime</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>VM.version</code></strong></p>
+<ul>
+<li><strong>功能</strong>：显示 JVM 版本信息。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.version<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p> <strong><code>VM.system_properties</code></strong></p>
+<ul>
+<li><strong>功能</strong>：输出所有系统属性（<code>System.getProperties()</code>）。</li>
+<li><strong>示例</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.system_properties<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong><code>VM.info</code></strong></p>
+<ul>
+<li><p><strong>功能</strong>：显示 JVM 基本信息（版本、运行模式、PID 等）。  </p>
+</li>
+<li><p><strong>示例</strong>：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jcmd &lt;PID&gt; VM.info<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="8、jhsdb：虚拟机诊断Debugger"><a href="#8、jhsdb：虚拟机诊断Debugger" class="headerlink" title="8、jhsdb：虚拟机诊断Debugger"></a>8、<code>jhsdb</code>：虚拟机诊断Debugger</h3><p><code>Java HotSpot Debugger</code>是 JDK 提供的诊断工具，支持 <strong>实时进程调试</strong> 和 <strong>核心转储分析</strong>。它整合了 <code>jstack</code>、<code>jmap</code>、<code>jinfo</code> 等传统命令的功能，并扩展了底层调试能力，适用于内存泄漏、死锁、JVM 崩溃等复杂问题分析</p>
+<p>​									<strong><code>JCMD</code>、<code>JHSDB</code>和基础工具的对比</strong></p>
+<table>
+<thead>
+<tr>
+<th>基础工具</th>
+<th>JCMD 命令</th>
+<th>JHSDB 命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jps -lm</code></td>
+<td><code>jcmd</code></td>
+<td><code>N/A    </code></td>
+</tr>
+<tr>
+<td><code>jmap -dump &lt;pid&gt;</code></td>
+<td><code>jcmd &lt;pid&gt; GC.heap_dump</code></td>
+<td><code>jhsdb jmap --binaryheap --pid &lt;pid&gt;</code></td>
+</tr>
+<tr>
+<td><code>jmap -histo &lt;pid&gt;</code></td>
+<td><code>jcmd &lt;pid&gt; GC.class_histogram</code></td>
+<td><code>jhsdb jmap --histo --pid &lt;pid&gt;</code></td>
+</tr>
+<tr>
+<td><code>jstack &lt;pid&gt;</code></td>
+<td><code>jcmd &lt;pid&gt; Thread.print</code></td>
+<td><code>jhsdb jstack --locks --pid &lt;pid&gt;</code></td>
+</tr>
+<tr>
+<td><code>jinfo -sysprops &lt;pid&gt;</code></td>
+<td><code>jcmd &lt;pid&gt; VM.system_properties</code></td>
+<td><code>jhsdb jinfo --sysprops --pid &lt;pid&gt;</code></td>
+</tr>
+<tr>
+<td><code>jinfo -flags &lt;pid&gt;</code></td>
+<td><code>jcmd &lt;pid&gt; VM.flags</code></td>
+<td><code>jhsdb jinfo --flags --pid &lt;pid&gt;</code></td>
+</tr>
+</tbody></table>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java/" class="category-chain-item">Java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/JVM/" class="print-no-link">#JVM</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>虚拟机性能监控与故障处理基础工具</div>
+      <div>https://probiecoder.cn/java/jvm/base-tool.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/mybatis/typehandler.html" title="MyBatis自定义TypeHandler">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MyBatis自定义TypeHandler</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/java/date_localdatetime.html" title="Date与LocalDateTime互相转换">
+                        <span class="hidden-mobile">Date与LocalDateTime互相转换</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

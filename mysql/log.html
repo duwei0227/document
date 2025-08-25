@@ -1,0 +1,773 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Log Type Information Written to Log    Error log Problems encountered starting, running, or stopping          mysqld   General query log 客户端执行的所有(成功)SQL记录   Binary log Statements that change data (">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL日志">
+<meta property="og:url" content="https://probiecoder.cn/mysql/log.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="Log Type Information Written to Log    Error log Problems encountered starting, running, or stopping          mysqld   General query log 客户端执行的所有(成功)SQL记录   Binary log Statements that change data (">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.766Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.766Z">
+<meta property="article:author" content="duwei">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>MySQL日志 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MySQL日志"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          846 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          8 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">MySQL日志</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <table>
+<thead>
+<tr>
+<th>Log Type</th>
+<th>Information Written to Log</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Error log</td>
+<td>Problems encountered starting, running, or stopping          <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.4/en/mysqld.html"><strong>mysqld</strong></a></td>
+</tr>
+<tr>
+<td>General query log</td>
+<td>客户端执行的所有(成功)SQL记录</td>
+</tr>
+<tr>
+<td>Binary log</td>
+<td>Statements that change data (also used for replication)</td>
+</tr>
+<tr>
+<td>Relay log</td>
+<td>Data changes received from a replication source server</td>
+</tr>
+<tr>
+<td>Slow query log</td>
+<td>慢SQL记录，取决于 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_long_query_time"><code>long_query_time</code></a> 系统变量</td>
+</tr>
+<tr>
+<td>DDL logs</td>
+<td>Atomic DDL operations performed by DDL statements</td>
+</tr>
+</tbody></table>
+<h3 id="一、General-log-和-Slow-log"><a href="#一、General-log-和-Slow-log" class="headerlink" title="一、General log 和 Slow log"></a>一、General log 和 Slow log</h3><h3 id="1、日志存储位置"><a href="#1、日志存储位置" class="headerlink" title="1、日志存储位置"></a>1、日志存储位置</h3><p>支持如下存储方式：</p>
+<ul>
+<li><code>FILE</code>：文件，默认存储方式</li>
+<li><code>TABLE</code>: 数据表 </li>
+<li><code>NONE</code>：不存储</li>
+</ul>
+<h3 id="1-1-查看当前日志存储方式"><a href="#1-1-查看当前日志存储方式" class="headerlink" title="1.1 查看当前日志存储方式"></a>1.1 查看当前日志存储方式</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">show variable like &#x27;log_output&#x27;;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; show variables like &#x27;log_output&#x27;;<br>+---------------+------------+<br>| Variable_name | Value      |<br>+---------------+------------+<br>| log_output    | FILE       |<br>+---------------+------------+<br>1 row in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-2-全局修改日志存储方式"><a href="#1-2-全局修改日志存储方式" class="headerlink" title="1.2 全局修改日志存储方式"></a>1.2 全局修改日志存储方式</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">set global log_output = &#x27;TABLE,FILE&#x27;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-3-设置持久化"><a href="#1-3-设置持久化" class="headerlink" title="1.3 设置持久化"></a>1.3 设置持久化</h3><p>通过<code>global</code>设置的系统变量，在<code>mysql</code>服务重启后会重新还原为默认值，需要在<code>my.cnf</code>中修改进行持久化</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cnf">[mysqld]<br>log_output=TABLE,FILE<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2、General-Log"><a href="#2、General-Log" class="headerlink" title="2、General Log"></a>2、General Log</h3><p>记录客户端执行的所有SQL</p>
+<h3 id="2-1-查看当前日志记录开启以及文件保存位置"><a href="#2-1-查看当前日志记录开启以及文件保存位置" class="headerlink" title="2.1 查看当前日志记录开启以及文件保存位置"></a>2.1 查看当前日志记录开启以及文件保存位置</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">show variables like &#x27;general_log%&#x27;;<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>如果<code>log_output</code>支持<code>TABLE</code>时，日志信息会记录在 <code>mysql.general_log</code>数据表中</strong></p>
+<h3 id="2-2-日志文件日志内容"><a href="#2-2-日志文件日志内容" class="headerlink" title="2.2 日志文件日志内容"></a>2.2 日志文件日志内容</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-type">Time</span>                 Id Command    Argument<br><span class="hljs-number">2024</span><span class="hljs-number">-11</span><span class="hljs-number">-08</span>T00:<span class="hljs-number">42</span>:<span class="hljs-number">06.651126</span>Z	   <span class="hljs-number">11</span> Query	<span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> learn.shop<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-3-数据表日志内容"><a href="#2-3-数据表日志内容" class="headerlink" title="2.3 数据表日志内容"></a>2.3 数据表日志内容</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; select *, convert(argument using utf8) args from mysql.general_log \G<br><br>*************************** 1. row ***************************<br>  event_time: 2024-11-08 08:42:06.651126<br>   user_host: root[root] @ localhost []<br>   thread_id: 11<br>   server_id: 1<br>command_type: Query<br>    argument: 0x73656C656374202A2066726F6D206C6561726E2E73686F70<br>		args: select * from learn.shop<br><br></code></pre></td></tr></table></figure>
+
+<p>默认情况下，<code>general_log</code>数据表中存储<code>SQL</code>语句的字段(<code>argument</code>)进行了编码，需要通过<code>convert(argument using utf8)</code>函数进行解码</p>
+<h3 id="2-4-设置持久化"><a href="#2-4-设置持久化" class="headerlink" title="2.4 设置持久化"></a>2.4 设置持久化</h3><p>通过<code>global</code>设置的系统变量，在<code>mysql</code>服务重启后会重新还原为默认值，需要在<code>my.cnf</code>中修改进行持久化</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cnf">[mysqld]<br>general_log=ON<br>general_log_file=/var/lib/mysql/general_08.log<br></code></pre></td></tr></table></figure>
+
+<p>修改完成后通过<code>sudo systemctl restart mysqld</code>重启<code>mysql</code>服务让配置生效</p>
+<h3 id="3、Slow-Query-Log"><a href="#3、Slow-Query-Log" class="headerlink" title="3、Slow Query Log"></a>3、Slow Query Log</h3><p>记录执行时间超过<code>long_query_time</code>变量定义的值时会记录慢<code>SQL</code>日志</p>
+<h3 id="3-1-查看慢SQL日志开启以及文件保存位置"><a href="#3-1-查看慢SQL日志开启以及文件保存位置" class="headerlink" title="3.1 查看慢SQL日志开启以及文件保存位置"></a>3.1 查看慢SQL日志开启以及文件保存位置</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">show variables like &#x27;slow_query_log%&#x27;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-2-查看慢SQL时间阈值"><a href="#3-2-查看慢SQL时间阈值" class="headerlink" title="3.2 查看慢SQL时间阈值"></a>3.2 查看慢SQL时间阈值</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">show variables like &#x27;long_query_time&#x27;;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; show variables like &#x27;long_query_time&#x27;;<br>+-----------------+-----------+<br>| Variable_name   | Value     |<br>+-----------------+-----------+<br>| long_query_time | 10.000000 |<br>+-----------------+-----------+<br>1 row in set (0.01 sec)<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-3-修改慢SQL时间阈值"><a href="#3-3-修改慢SQL时间阈值" class="headerlink" title="3.3 修改慢SQL时间阈值"></a>3.3 修改慢SQL时间阈值</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">set global long_query_time=1;<br></code></pre></td></tr></table></figure>
+
+<p><font color="red">通过<code>global</code>修改慢SQL阈值的需要连接重新建立后才生效</font></p>
+<table>
+<thead>
+<tr>
+<th>System Variable</th>
+<th><code>long_query_time</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>生效范围</td>
+<td>Global, Session</td>
+</tr>
+<tr>
+<td>动态修改</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>数据类型</td>
+<td>Numeric</td>
+</tr>
+<tr>
+<td>默认值</td>
+<td><code>10</code></td>
+</tr>
+<tr>
+<td>最小值</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td>最大值</td>
+<td><code>31536000</code>(365天)</td>
+</tr>
+<tr>
+<td>单位</td>
+<td>秒</td>
+</tr>
+</tbody></table>
+<p>如果<code>log_output</code>支持<code>TABLE</code>时，日志信息会记录在 <code>mysql.slow_log</code>数据表中</p>
+<h3 id="3-4-慢SQL日志文件内容"><a href="#3-4-慢SQL日志文件内容" class="headerlink" title="3.4 慢SQL日志文件内容"></a>3.4 慢SQL日志文件内容</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"># <span class="hljs-type">Time</span>: <span class="hljs-number">2024</span><span class="hljs-number">-11</span><span class="hljs-number">-08</span>T00:<span class="hljs-number">34</span>:<span class="hljs-number">07.522426</span>Z<br># <span class="hljs-keyword">User</span><span class="hljs-variable">@Host</span>: root[root] @ localhost []  Id:    <span class="hljs-number">11</span><br># Query_time: <span class="hljs-number">0.000312</span>  Lock_time: <span class="hljs-number">0.000004</span> Rows_sent: <span class="hljs-number">7</span>  Rows_examined: <span class="hljs-number">7</span><br><span class="hljs-keyword">SET</span> <span class="hljs-type">timestamp</span><span class="hljs-operator">=</span><span class="hljs-number">1731026047</span>;<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> learn.shop;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-5-慢SQL数据表日志内容"><a href="#3-5-慢SQL数据表日志内容" class="headerlink" title="3.5 慢SQL数据表日志内容"></a>3.5 慢SQL数据表日志内容</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; select *, convert(sql_text using utf8) sql_detail from slow_log \G<br>*************************** 1. row ***************************<br>    start_time: 2024-11-08 08:35:50.723019<br>     user_host: root[root] @ localhost []<br>    query_time: 00:00:00.000302<br>     lock_time: 00:00:00.000004<br>     rows_sent: 7<br> rows_examined: 7<br>            db: mysql<br>last_insert_id: 0<br>     insert_id: 0<br>     server_id: 1<br>      sql_text: 0x73656C656374202A2066726F6D206C6561726E2E73686F70<br>     thread_id: 11<br>    sql_detail: select * from learn.shop<br><br></code></pre></td></tr></table></figure>
+
+
+
+<p>默认情况下，<code>slow_log</code>数据表中存储<code>SQL</code>语句的字段(<code>sql_text</code>)进行了编码，需要通过<code>convert(sql_text using utf8)</code>函数进行解码</p>
+<h3 id="3-6-设置持久化"><a href="#3-6-设置持久化" class="headerlink" title="3.6 设置持久化"></a>3.6 设置持久化</h3><p>通过<code>global</code>设置的系统变量，在<code>mysql</code>服务重启后会重新还原为默认值，需要在<code>my.cnf</code>中修改进行持久化</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cnf">[mysqld]<br>slow_query_log=ON<br>slow_query_log_file=/var/lib/mysql/slow_08.log<br>long_query_time=0<br><br></code></pre></td></tr></table></figure>
+
+<p>修改完成后通过<code>sudo systemctl restart mysqld</code>重启<code>mysql</code>服务让配置生效</p>
+<h2 id="二、Bin-Log"><a href="#二、Bin-Log" class="headerlink" title="二、Bin Log"></a>二、Bin Log</h2><p>默认启用 <code>log_bin=[base_name]</code>系统变量，不指定默认为<code>binlog</code></p>
+<p>新文件创建：</p>
+<ul>
+<li>服务启动或者重启</li>
+<li>服务刷新日志</li>
+<li>日志文件达到<code>max_binlog_size</code>设置（采用大事物时，文件大小可能会超过<code>max_binlog_size</code>的限制）</li>
+</ul>
+<p><code>mysqld</code>采用索引文件记录当前使用的<code>binlog</code>文件，默认情况和<code>binlog</code>保持一直的文件名(扩展名为<code>.index</code>)，可以通过 <code>--log-bin-index=[file_name]</code>命令选项修改</p>
+<p><code>binlog</code>文件和<code>binlog</code>索引文件默认存储在数据目录中，可以通过<code>--log-bin</code>选项指定为其他目录</p>
+<p>文件加密</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/MySQL/" class="category-chain-item">MySQL</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MySQL日志</div>
+      <div>https://probiecoder.cn/mysql/log.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/mysql/load_data.html" title="MySQL使用LOAD DATA导入数据">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MySQL使用LOAD DATA导入数据</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/other/jemeter.html" title="Jmeter简单使用介绍">
+                        <span class="hidden-mobile">Jmeter简单使用介绍</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

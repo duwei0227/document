@@ -1,0 +1,678 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="虚拟线程是一种比传统 Java 线程（OS线程）更轻量的线程实现。与传统线程由操作系统管理不同，虚拟线程由 JVM 管理，多个虚拟线程可以在少量的操作系统线程（平台线程）上运行。虚拟线程的创建、切换和销毁的开销远小于传统线程，同时虚拟线程可以和普通线程一样的使用。 1、虚拟线程的创建1.1 构建 Thread.Builder1Thread.Builder builder &#x3D; Thread.ofVi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="虚拟线程Virtual threads">
+<meta property="og:url" content="https://probiecoder.cn/java/virtual_thread.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="虚拟线程是一种比传统 Java 线程（OS线程）更轻量的线程实现。与传统线程由操作系统管理不同，虚拟线程由 JVM 管理，多个虚拟线程可以在少量的操作系统线程（平台线程）上运行。虚拟线程的创建、切换和销毁的开销远小于传统线程，同时虚拟线程可以和普通线程一样的使用。 1、虚拟线程的创建1.1 构建 Thread.Builder1Thread.Builder builder &#x3D; Thread.ofVi">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-25T02:14:15.765Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.765Z">
+<meta property="article:author" content="duwei">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>虚拟线程Virtual threads - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="虚拟线程Virtual threads"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          753 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          7 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">虚拟线程Virtual threads</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>虚拟线程是一种比传统 Java 线程（OS线程）更轻量的线程实现。与传统线程由操作系统管理不同，虚拟线程由 JVM 管理，多个虚拟线程可以在少量的操作系统线程（平台线程）上运行。虚拟线程的创建、切换和销毁的开销远小于传统线程，同时虚拟线程可以和普通线程一样的使用。</p>
+<h4 id="1、虚拟线程的创建"><a href="#1、虚拟线程的创建" class="headerlink" title="1、虚拟线程的创建"></a>1、虚拟线程的创建</h4><h5 id="1-1-构建-Thread-Builder"><a href="#1-1-构建-Thread-Builder" class="headerlink" title="1.1 构建 Thread.Builder"></a>1.1 构建 Thread.Builder</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">Thread.<span class="hljs-type">Builder</span> <span class="hljs-variable">builder</span> <span class="hljs-operator">=</span> Thread.ofVirtual().name(<span class="hljs-string">&quot;worker-&quot;</span>, <span class="hljs-number">0</span>);    <br></code></pre></td></tr></table></figure>
+
+<p><code>name</code>有2个不同参数列表的实现</p>
+<ul>
+<li><code>name(String *name*)</code>指定虚拟线程的名称，后期通过<code>builder</code>启动的虚拟线程名称都是相同的</li>
+<li><code>name(String *prefix*, long *start*)</code>指定虚拟线程的<code>prefix</code>和开始线程的索引</li>
+</ul>
+<h5 id="1-2-使用Builder启动虚拟线程"><a href="#1-2-使用Builder启动虚拟线程" class="headerlink" title="1.2 使用Builder启动虚拟线程"></a>1.2 使用Builder启动虚拟线程</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Thread</span> <span class="hljs-variable">thread</span> <span class="hljs-operator">=</span> builder.start();<br></code></pre></td></tr></table></figure>
+
+<p>由于虚拟线程也是通过<code>Thread</code>创建产生，当<code>Thread</code>实例创建以后，后续的使用和普通线程是相同的</p>
+<h5 id="1-3-未捕获异常处理"><a href="#1-3-未捕获异常处理" class="headerlink" title="1.3 未捕获异常处理"></a>1.3 未捕获异常处理</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">builder.uncaughtExceptionHandler((t, e) -&gt; &#123;<br>            System.out.println(t.getName() + <span class="hljs-string">&quot;抛出了异常&quot;</span> + e.getMessage());<br>        &#125;);<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2、虚拟线程栈查看"><a href="#2、虚拟线程栈查看" class="headerlink" title="2、虚拟线程栈查看"></a>2、虚拟线程栈查看</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">jcmd &lt;PID&gt; Thread.dump_to_file -format=text &lt;file&gt;<br>jcmd &lt;PID&gt; Thread.dump_to_file -format=json &lt;file&gt;<br></code></pre></td></tr></table></figure>
+
+<p>输出示例</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>   <span class="hljs-attr">&quot;tid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;20&quot;</span><span class="hljs-punctuation">,</span><br>   <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;vt-worker-0&quot;</span><span class="hljs-punctuation">,</span><br>   <span class="hljs-attr">&quot;stack&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>      <span class="hljs-string">&quot;java.base\/java.lang.VirtualThread.parkNanos(VirtualThread.java:635)&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-string">&quot;java.base\/java.lang.VirtualThread.sleepNanos(VirtualThread.java:807)&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-string">&quot;java.base\/java.lang.Thread.sleep(Thread.java:556)&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-string">&quot;java.base\/java.util.concurrent.TimeUnit.sleep(TimeUnit.java:446)&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-string">&quot;cn.probiecoder.concurrency.VirtualThread.lambda$0(VirtualThread.java:15)&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-string">&quot;java.base\/java.lang.VirtualThread.run(VirtualThread.java:329)&quot;</span><br>   <span class="hljs-punctuation">]</span><br> <span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>使用<code>jcmd &lt;PID&gt; Thread.print</code>直接输出线程栈信息时无详细的虚拟线程信息</strong></p>
+<h4 id="3、线程数的设置"><a href="#3、线程数的设置" class="headerlink" title="3、线程数的设置"></a>3、线程数的设置</h4><p>可以通过如下 <code>System.property</code>设置<code>ForkJoinPool</code>的参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">jdk.virtualThreadScheduler.parallelism<br>jdk.virtualThreadScheduler.maxPoolSize<br>jdk.virtualThreadScheduler.minRunnable<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h4 id="4、底层实现"><a href="#4、底层实现" class="headerlink" title="4、底层实现"></a>4、底层实现</h4><p>在执行<code>start()</code>方法时会创建正式的虚拟线程，并指定虚拟线程名称，所依托的普通线程调度器<code>scheduler</code></p>
+<p><code>ThreadBuilder.VirtualThreadBuilder</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Thread <span class="hljs-title function_">unstarted</span><span class="hljs-params">(Runnable task)</span> &#123;<br>    Objects.requireNonNull(task);<br>    <span class="hljs-type">var</span> <span class="hljs-variable">thread</span> <span class="hljs-operator">=</span> newVirtualThread(scheduler, nextThreadName(), characteristics(), task);<br>    <span class="hljs-type">UncaughtExceptionHandler</span> <span class="hljs-variable">uhe</span> <span class="hljs-operator">=</span> uncaughtExceptionHandler();<br>    <span class="hljs-keyword">if</span> (uhe != <span class="hljs-literal">null</span>)<br>        thread.uncaughtExceptionHandler(uhe);<br>    <span class="hljs-keyword">return</span> thread;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p><code>VirtualThread</code>继承<code>sealed</code>类<code>BaseVirtualThread</code>，继承<code>Thread</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java">VirtualThread(Executor scheduler, String name, <span class="hljs-type">int</span> characteristics, Runnable task) &#123;<br>    <span class="hljs-built_in">super</span>(name, characteristics, <span class="hljs-comment">/*bound*/</span> <span class="hljs-literal">false</span>);<br>    Objects.requireNonNull(task);<br><br>    <span class="hljs-comment">// choose scheduler if not specified</span><br>    <span class="hljs-keyword">if</span> (scheduler == <span class="hljs-literal">null</span>) &#123;<br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">parent</span> <span class="hljs-operator">=</span> Thread.currentThread();<br>        <span class="hljs-keyword">if</span> (parent <span class="hljs-keyword">instanceof</span> VirtualThread vparent) &#123;<br>            scheduler = vparent.scheduler;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            scheduler = DEFAULT_SCHEDULER;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-built_in">this</span>.scheduler = scheduler;<br>    <span class="hljs-built_in">this</span>.cont = <span class="hljs-keyword">new</span> <span class="hljs-title class_">VThreadContinuation</span>(<span class="hljs-built_in">this</span>, task);<br>    <span class="hljs-built_in">this</span>.runContinuation = <span class="hljs-built_in">this</span>::runContinuation;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>默认的调度器为<code>ForkJoinPool</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">ForkJoinPool</span> <span class="hljs-variable">DEFAULT_SCHEDULER</span> <span class="hljs-operator">=</span> createDefaultScheduler();<br><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> ForkJoinPool <span class="hljs-title function_">createDefaultScheduler</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">ForkJoinWorkerThreadFactory</span> <span class="hljs-variable">factory</span> <span class="hljs-operator">=</span> pool -&gt; &#123;<br>        PrivilegedAction&lt;ForkJoinWorkerThread&gt; pa = () -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">CarrierThread</span>(pool);<br>        <span class="hljs-keyword">return</span> AccessController.doPrivileged(pa);<br>    &#125;;<br>    PrivilegedAction&lt;ForkJoinPool&gt; pa = () -&gt; &#123;<br>        <span class="hljs-type">int</span> parallelism, maxPoolSize, minRunnable;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">parallelismValue</span> <span class="hljs-operator">=</span> System.getProperty(<span class="hljs-string">&quot;jdk.virtualThreadScheduler.parallelism&quot;</span>);<br>        <span class="hljs-type">String</span> <span class="hljs-variable">maxPoolSizeValue</span> <span class="hljs-operator">=</span> System.getProperty(<span class="hljs-string">&quot;jdk.virtualThreadScheduler.maxPoolSize&quot;</span>);<br>        <span class="hljs-type">String</span> <span class="hljs-variable">minRunnableValue</span> <span class="hljs-operator">=</span> System.getProperty(<span class="hljs-string">&quot;jdk.virtualThreadScheduler.minRunnable&quot;</span>);<br>        <span class="hljs-keyword">if</span> (parallelismValue != <span class="hljs-literal">null</span>) &#123;<br>            parallelism = Integer.parseInt(parallelismValue);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            parallelism = Runtime.getRuntime().availableProcessors();<br>        &#125;<br>        <span class="hljs-keyword">if</span> (maxPoolSizeValue != <span class="hljs-literal">null</span>) &#123;<br>            maxPoolSize = Integer.parseInt(maxPoolSizeValue);<br>            parallelism = Integer.min(parallelism, maxPoolSize);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            maxPoolSize = Integer.max(parallelism, <span class="hljs-number">256</span>);<br>        &#125;<br>        <span class="hljs-keyword">if</span> (minRunnableValue != <span class="hljs-literal">null</span>) &#123;<br>            minRunnable = Integer.parseInt(minRunnableValue);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            minRunnable = Integer.max(parallelism / <span class="hljs-number">2</span>, <span class="hljs-number">1</span>);<br>        &#125;<br>        Thread.<span class="hljs-type">UncaughtExceptionHandler</span> <span class="hljs-variable">handler</span> <span class="hljs-operator">=</span> (t, e) -&gt; &#123; &#125;;<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">asyncMode</span> <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>; <span class="hljs-comment">// FIFO</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ForkJoinPool</span>(parallelism, factory, handler, asyncMode,<br>                     <span class="hljs-number">0</span>, maxPoolSize, minRunnable, pool -&gt; <span class="hljs-literal">true</span>, <span class="hljs-number">30</span>, SECONDS);<br>    &#125;;<br>    <span class="hljs-keyword">return</span> AccessController.doPrivileged(pa);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>将虚拟线程绑定到<code>PlatformThread</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@ChangesCurrentThread</span><br><span class="hljs-meta">@ReservedStackAccess</span><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">mount</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// notify JVMTI before mount</span><br>    notifyJvmtiMount(<span class="hljs-comment">/*hide*/</span><span class="hljs-literal">true</span>);<br><br>    <span class="hljs-comment">// sets the carrier thread</span><br>    <span class="hljs-type">Thread</span> <span class="hljs-variable">carrier</span> <span class="hljs-operator">=</span> Thread.currentCarrierThread();<br>    setCarrierThread(carrier);<br><br>    <span class="hljs-comment">// sync up carrier thread interrupt status if needed</span><br>    <span class="hljs-keyword">if</span> (interrupted) &#123;<br>        carrier.setInterrupt();<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (carrier.isInterrupted()) &#123;<br>        <span class="hljs-keyword">synchronized</span> (interruptLock) &#123;<br>            <span class="hljs-comment">// need to recheck interrupt status</span><br>            <span class="hljs-keyword">if</span> (!interrupted) &#123;<br>                carrier.clearInterrupt();<br>            &#125;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// set Thread.currentThread() to return this virtual thread</span><br>    carrier.setCurrentThread(<span class="hljs-built_in">this</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Java/" class="category-chain-item">Java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>虚拟线程Virtual threads</div>
+      <div>https://probiecoder.cn/java/virtual_thread.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/java/data_valid_by_annotation.html" title="自定义注解实现数据验证">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">自定义注解实现数据验证</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/mybatis/typehandler.html" title="MyBatis自定义TypeHandler">
+                        <span class="hidden-mobile">MyBatis自定义TypeHandler</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

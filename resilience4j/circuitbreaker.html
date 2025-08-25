@@ -1,0 +1,826 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="duwei">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="断路器CircitBreaker是 Resilience4j 的核心机制，通过有限状态机和环形位缓冲区（Ring Bit Buffer） 实现故障检测与熔断 CircitBreaker采用装饰器模式对原有请求进行装饰，同时会增加方法执行时间的计算，方法执行结束后发生状态的流转。 一、基础概念滑动窗口滑动窗口可以类比为一个环形的圆圈，这个圆圈存储的元素上限就是slidingWindowSize。对于">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Resilience4j CircuitBreaker实现服务调用熔断">
+<meta property="og:url" content="https://probiecoder.cn/resilience4j/circuitbreaker.html">
+<meta property="og:site_name" content="probie&#39;s blog">
+<meta property="og:description" content="断路器CircitBreaker是 Resilience4j 的核心机制，通过有限状态机和环形位缓冲区（Ring Bit Buffer） 实现故障检测与熔断 CircitBreaker采用装饰器模式对原有请求进行装饰，同时会增加方法执行时间的计算，方法执行结束后发生状态的流转。 一、基础概念滑动窗口滑动窗口可以类比为一个环形的圆圈，这个圆圈存储的元素上限就是slidingWindowSize。对于">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/duwei0227/picbed/main/39cdd54-state_machine.jpg">
+<meta property="article:published_time" content="2025-08-25T02:14:15.767Z">
+<meta property="article:modified_time" content="2025-08-25T02:14:15.767Z">
+<meta property="article:author" content="duwei">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/duwei0227/picbed/main/39cdd54-state_machine.jpg">
+  
+  
+  
+  <title>使用Resilience4j CircuitBreaker实现服务调用熔断 - probie&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"probiecoder.cn","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":150,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 40vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>probie&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/bg/page.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="使用Resilience4j CircuitBreaker实现服务调用熔断"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-25 10:14" pubdate>
+          2025年8月25日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          17 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">使用Resilience4j CircuitBreaker实现服务调用熔断</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>断路器<code>CircitBreaker</code>是 Resilience4j 的核心机制，通过<strong>有限状态机</strong>和<strong>环形位缓冲区（Ring Bit Buffer）</strong> 实现故障检测与熔断</p>
+<p><code>CircitBreaker</code>采用装饰器模式对原有请求进行装饰，同时会增加方法执行时间的计算，方法执行结束后发生状态的流转。</p>
+<h2 id="一、基础概念"><a href="#一、基础概念" class="headerlink" title="一、基础概念"></a>一、基础概念</h2><h3 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h3><p>滑动窗口可以类比为一个环形的圆圈，这个圆圈存储的元素上限就是<code>slidingWindowSize</code>。对于时间计数而言，这个圆圈代表的就是<code>slidingWindowSize</code>秒内接受处理的请求，对这些请求进行聚合计算，超过滑动窗口的调用会被丢弃；对于次数计数而言，这个圆圈代表的就是最近<code>slidingWindowSize</code>次调用，对最近的这些请求进行聚合计算。</p>
+<h3 id="状态流转"><a href="#状态流转" class="headerlink" title="状态流转"></a>状态流转</h3><p><code>Resilience4j</code>支持的状态包含三个普通状态：<code>CLOSED</code>、<code>OPEN</code>和<code>HALF_OPEN</code>以及三个特殊状态：<code>METRICS_ONLY</code>、<code>DISABLED</code>和<code>FORCED_OPEN</code>；熔断主要使用前三个状态。</p>
+<p><img src="https://raw.githubusercontent.com/duwei0227/picbed/main/39cdd54-state_machine.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><code>CLOSED --&gt; OPEN</code>状态变更：</p>
+<p>前提：调用次数需要达到最小调用次数<code>minimumNumberOfCalls</code>要求</p>
+<ul>
+<li>失败调用（默认所有异常都算作失败）比例超过阈值<code>ailureRateThreshold</code></li>
+<li>慢调用比例超过阈值<code>slowCallRateThreshold</code></li>
+</ul>
+<p><code>OPEN --&gt; HALF_OPEN</code>状态变更：</p>
+<p>状态处于<code>OPEN</code>时，所有的请求会字节被熔断并抛出 <code>CallNotPermittedException</code> 异常。</p>
+<p>前提：等待时间已经达到<code>OPEN</code>状态最大等待时间<code>waitDurationInOpenState</code>，熔断器尝试开始接受请求</p>
+<ul>
+<li>启用自动状态转换配置<code>automaticTransitionFromOpenToHalfOpenEnabled</code>，会由监控线程将状态变更为<code>HALF_OPEN</code>接受请求</li>
+<li>超过最大等待时间后，在尝试获取凭证时，会将状态变更为<code>HALF_OPEN</code></li>
+</ul>
+<p><code>HALF_OPEN --&gt; OPEN</code>状态变更：</p>
+<ul>
+<li>允许执行请求的授权凭证<code>permittedNumberOfCallsInHalfOpenState</code>聚合计算后，失败比例或者慢调用还是超过阈值</li>
+<li>设置<code>HALF_OPEN</code>状态最大等待时间<code>maxWaitDurationInHalfOpenState</code>非0时，超过等待时间，请请求记录无法计算阈值比较时，会将状态变更为<code>OPEN</code></li>
+</ul>
+<p><code>HALF_OPEN --&gt; CLOSED</code>状态变更：</p>
+<ul>
+<li>失败比例和慢调用比例低于失败阈值和慢调用阈值</li>
+</ul>
+<h2 id="二、配置属性"><a href="#二、配置属性" class="headerlink" title="二、配置属性"></a>二、配置属性</h2><h3 id="1、滑动窗口定义"><a href="#1、滑动窗口定义" class="headerlink" title="1、滑动窗口定义"></a>1、滑动窗口定义</h3><table>
+<thead>
+<tr>
+<th>配置属性</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>slidingWindowType</code></td>
+<td><code>count_based</code></td>
+<td>滑动窗口类型，支持<code>count_based</code>和<code>time_based</code>，如果类型为<code>count_based</code>，最近的<code>slidingWindowSize</code>会记录和聚合，如果类型为<code>time_based</code>，最近的<code>slidingWindowSize</code>秒的请求会记录和聚合</td>
+</tr>
+<tr>
+<td><code>slidingWindowSize</code></td>
+<td>100</td>
+<td>滑动窗口的大小，当状态为<code>CLOSED</code>时记录请求结果</td>
+</tr>
+<tr>
+<td><code>minimumNumberOfCalls</code></td>
+<td>100</td>
+<td>每个窗口周期最小调用次数，达到最小调用次数时才会用于失败率和慢调用。例如，配置值为10时，调用次数必须到达10次，才会进行结果计算，如果在窗口周期内只调用了9次，即使全部失败也不会触发熔断器计算</td>
+</tr>
+</tbody></table>
+<h3 id="2、失败、超时阈值"><a href="#2、失败、超时阈值" class="headerlink" title="2、失败、超时阈值"></a>2、失败、超时阈值</h3><table>
+<thead>
+<tr>
+<th>配置属性</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>failureRateThreshold</code></td>
+<td>50</td>
+<td>失败阈值，百分比；如果失败比例大于等与阈值时，状态由<code>CLOSED</code>变为<code>OPEN</code></td>
+</tr>
+<tr>
+<td><code>slowCallRateThreshold</code></td>
+<td>100</td>
+<td>慢调用阈值，百分比；如果调用执行事件大于 <code>slowCallDurationThreshold</code>时认为是慢调用</td>
+</tr>
+<tr>
+<td><code>slowCallDurationThreshold</code></td>
+<td>60s</td>
+<td>慢调用阈值，超过当前值考虑为慢调用</td>
+</tr>
+</tbody></table>
+<h3 id="3、状态轮转"><a href="#3、状态轮转" class="headerlink" title="3、状态轮转"></a>3、状态轮转</h3><table>
+<thead>
+<tr>
+<th>配置属性</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>permittedNumberOfCallsInHalfOpenState</code></td>
+<td>10</td>
+<td>状态为<code>HALF_OPEN</code>时允许通过的调用凭证数</td>
+</tr>
+<tr>
+<td><code>maxWaitDurationInHalfOpenState</code></td>
+<td>0[ms]</td>
+<td><code>HALF_OPEN</code>状态保持的最大时间，超过该时间状态会变为<code>OPEN</code>；如果配置为0时会等待所有的凭证完成请求</td>
+</tr>
+<tr>
+<td><code>automaticTransitionFromOpenToHalfOpenEnabled</code></td>
+<td><code>false</code></td>
+<td><code>true</code>:状态会自动由<code>OPEN</code>变为<code>HALF_OPEN</code>,不需要由请求触发，同时会创建一个线程监控实例是否已经达到<code>waitDurationInOpenState</code>时间<br/><code>false</code>:状态不会自动发生转换，需要有请求发生触发状态变更为<code>HALF_OPEN</code>，同时也不会启动一个监控线程检查</td>
+</tr>
+<tr>
+<td><code>waitDurationInOpenState</code></td>
+<td>60s</td>
+<td><code>OPEN</code>状态时，状态变为<code>HALF_OPEN</code>的最大等待时间，启用状态自动变化时才生效</td>
+</tr>
+<tr>
+<td><code>enableExponentialBackoff</code></td>
+<td></td>
+<td>采用指数增长计算<code>OPEN</code>状态等待时间<br/><code>wait_time = initial_interval * (multiplier ^ (retry_attempt - 1))</code></td>
+</tr>
+<tr>
+<td><code>exponentialBackoffMultiplier</code></td>
+<td></td>
+<td>指数增长因子</td>
+</tr>
+<tr>
+<td><code>exponentialMaxWaitDurationInOpenState</code></td>
+<td></td>
+<td>指数增长方式允许的最大值</td>
+</tr>
+<tr>
+<td><code>enableRandomizedWait</code></td>
+<td></td>
+<td>是否采用随即时间等待，随机值：当前值 * 随机因子</td>
+</tr>
+<tr>
+<td><code>randomizedWaitFactor</code></td>
+<td></td>
+<td>随机因子</td>
+</tr>
+</tbody></table>
+<h3 id="4、失败异常"><a href="#4、失败异常" class="headerlink" title="4、失败异常"></a>4、失败异常</h3><table>
+<thead>
+<tr>
+<th>配置属性</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>recordExceptions</code></td>
+<td><code>null</code>默认记录所有异常</td>
+<td>需要作为失败记录的异常列表，和列表匹配或者时继承列表中的异常都会算作失败；如果指定了异常列表，默认其他异常都作为成功，除非明确在<code>ignoreException</code>列出</td>
+</tr>
+<tr>
+<td><code>ignoreExceptions</code></td>
+<td><code>null</code></td>
+<td>一个异常列表，即不作为成功也不作为失败，不会导致成功和失败数目增加</td>
+</tr>
+<tr>
+<td><code>recordFailurePredicate</code></td>
+<td><code>throwable -&gt; true</code> 默认记录所有异常</td>
+<td>一个自定义的<code>Predicate</code>，用于判断异常是否作为失败异常记录</td>
+</tr>
+<tr>
+<td><code>ignoreExceptionPredicate</code></td>
+<td><code>throwable -&gt; false</code></td>
+<td>一个自定义的<code>Predicate</code>，用于判断异常是否需要被忽略</td>
+</tr>
+<tr>
+<td><code>writableStackTraceEnabled</code></td>
+<td><code>true</code></td>
+<td>是否打印详细日志堆栈，此配置只针对断路器处于<code>OPEN</code>状态时熔断请求时抛出异常<code>CallNotPermittedException</code></td>
+</tr>
+</tbody></table>
+<h3 id="5、检测指标"><a href="#5、检测指标" class="headerlink" title="5、检测指标"></a>5、检测指标</h3><ul>
+<li><code>resilience4j.circuitbreaker.metrics.enabled = true</code></li>
+<li><code>resilience4j.circuitbreaker.configs.defaults.register-health-indicator = true</code></li>
+<li><code>management.health.circuitbreakers.enabled = true</code></li>
+</ul>
+<h2 id="三、使用示例"><a href="#三、使用示例" class="headerlink" title="三、使用示例"></a>三、使用示例</h2><h3 id="1、基础置"><a href="#1、基础置" class="headerlink" title="1、基础置"></a>1、基础置</h3><h4 id="1-1-pom依赖"><a href="#1-1-pom依赖" class="headerlink" title="1.1 pom依赖"></a>1.1 <code>pom</code>依赖</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>io.github.resilience4j<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>resilience4j-spring-boot3<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>io.vavr<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>vavr<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>0.10.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="1-2-yaml配置"><a href="#1-2-yaml配置" class="headerlink" title="1.2 yaml配置"></a>1.2 yaml配置</h4><ul>
+<li><code>resilience4j.circuitbreaker.configs</code>：定义<code>CircuitBreaker</code>配置信息</li>
+<li><code>resilience4j.circuitbreaker.instances</code>：定义<code>CircuitBreaker</code>实例信息</li>
+<li><code>resilience4j.circuitbreaker.metrics</code>：定义<code>CircuitBreaker</code>指标信息</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">management:</span><br>  <span class="hljs-attr">endpoints:</span><br>    <span class="hljs-attr">web:</span><br>      <span class="hljs-attr">exposure:</span><br>        <span class="hljs-attr">include:</span> <span class="hljs-string">&#x27;*&#x27;</span>  <span class="hljs-comment"># 暴露所有端口，可以根据需要暴露</span><br>  <span class="hljs-attr">endpoint:</span><br>    <span class="hljs-attr">health:</span><br>      <span class="hljs-attr">show-details:</span> <span class="hljs-string">always</span><br><br>  <span class="hljs-attr">health:</span><br>    <span class="hljs-attr">circuitbreakers:</span><br>      <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span>  <span class="hljs-comment"># 将 circuitbreaker 注册到 /actuator/health  </span><br><br><span class="hljs-attr">resilience4j:</span><br>  <span class="hljs-attr">circuitbreaker:</span><br>    <span class="hljs-attr">configs:</span>	<span class="hljs-comment"># 定义配置信息，可以在instance配置或者代码中引用</span><br>      <span class="hljs-attr">default:</span>   <span class="hljs-comment"># 命名为 default 可以作为全局默认配置</span><br>        <span class="hljs-attr">register-health-indicator:</span> <span class="hljs-literal">true</span><br>        <span class="hljs-attr">sliding-window-size:</span> <span class="hljs-number">10</span>  <span class="hljs-comment"># 基于时间时，单位为秒，统计数据会随着时间窗口滚动丢弃超过10秒的数据</span><br>        <span class="hljs-attr">sliding-window-type:</span> <span class="hljs-string">time_based</span><br>        <span class="hljs-attr">minimum-number-of-calls:</span> <span class="hljs-number">5</span><br>        <span class="hljs-attr">slow-call-duration-threshold:</span> <span class="hljs-string">1s</span><br>        <span class="hljs-attr">slow-call-rate-threshold:</span> <span class="hljs-number">50</span><br>        <span class="hljs-attr">permitted-number-of-calls-in-half-open-state:</span> <span class="hljs-number">3</span>  <span class="hljs-comment"># 半打开状态时，也会计算比例</span><br>        <span class="hljs-attr">automatic-transition-from-open-to-half-open-enabled:</span> <span class="hljs-literal">true</span>   <span class="hljs-comment"># 为true时，等待一定时间后自动变更状态为 half_open</span><br>        <span class="hljs-attr">wait-duration-in-open-state:</span> <span class="hljs-string">15s</span><br>        <span class="hljs-attr">enable-exponential-backoff:</span> <span class="hljs-literal">false</span> <span class="hljs-comment"># 是否开启指数递增失败等待</span><br>        <span class="hljs-attr">exponential-backoff-multiplier:</span> <span class="hljs-number">2</span>   <span class="hljs-comment"># 乘数，当失败率超过阈值时，等待时间会乘以这个乘数，直到达到最大等待时间</span><br>        <span class="hljs-attr">exponential-max-wait-duration-in-open-state:</span> <span class="hljs-string">5m</span><br>        <span class="hljs-attr">enable-randomized-wait:</span> <span class="hljs-literal">false</span><br>        <span class="hljs-attr">randomized-wait-factor:</span> <span class="hljs-number">0.5</span><br>        <span class="hljs-attr">max-wait-duration-in-half-open-state:</span> <span class="hljs-string">0ms</span> <span class="hljs-comment"># 0ms 表示一直等待，直到所有的 permitted 调用完成，非0时达到最大等待时间后，会将状态变更为 open</span><br>        <span class="hljs-attr">failure-rate-threshold:</span> <span class="hljs-number">50</span><br>        <span class="hljs-attr">event-consumer-buffer-size:</span> <span class="hljs-number">10</span><br><span class="hljs-comment">#        writable-stack-trace-enabled: true   # 是否记录 CallNotPermittedException 异常完整堆栈信息</span><br><br>        <span class="hljs-attr">record-exceptions:</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">org.springframework.web.client.HttpServerErrorException</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">java.util.concurrent.TimeoutException</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">java.io.IOException</span><br>        <span class="hljs-attr">ignore-exceptions:</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">cn.probiecoder.spring_boot_resilience4j_demo.exception.BusinessException</span><br><br>      <span class="hljs-attr">shared:</span><br>        <span class="hljs-attr">sliding-window-type:</span> <span class="hljs-string">count_based</span><br>        <span class="hljs-attr">sliding-window-size:</span> <span class="hljs-number">8</span><br>        <span class="hljs-attr">minimum-number-of-calls:</span> <span class="hljs-number">4</span><br>        <span class="hljs-attr">automatic-transition-from-open-to-half-open-enabled:</span> <span class="hljs-literal">true</span><br>        <span class="hljs-attr">permitted-number-of-calls-in-half-open-state:</span> <span class="hljs-number">2</span><br>        <span class="hljs-attr">wait-duration-in-open-state:</span> <span class="hljs-string">3s</span><br>        <span class="hljs-attr">failure-rate-threshold:</span> <span class="hljs-number">50</span><br>        <span class="hljs-attr">event-consumer-buffer-size:</span> <span class="hljs-number">10</span><br>        <span class="hljs-attr">ignore-exceptions:</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">cn.probiecoder.spring_boot_resilience4j_demo.exception.BusinessException</span><br>    <span class="hljs-attr">instances:</span>  <span class="hljs-comment"># 定义 CircuitBreaker 实例</span><br>      <span class="hljs-attr">backendA:</span><br>        <span class="hljs-attr">base-config:</span> <span class="hljs-string">default</span> <span class="hljs-comment"># 引用config配置</span><br>      <span class="hljs-attr">backendB:</span><br>        <span class="hljs-attr">register-health-indicator:</span> <span class="hljs-literal">true</span><br>        <span class="hljs-attr">sliding-window-size:</span> <span class="hljs-number">10</span><br>        <span class="hljs-attr">minimum-number-of-calls:</span> <span class="hljs-number">10</span><br>        <span class="hljs-attr">permitted-number-of-calls-in-half-open-state:</span> <span class="hljs-number">3</span><br>        <span class="hljs-attr">wait-duration-in-open-state:</span><br>          <span class="hljs-attr">seconds:</span> <span class="hljs-number">5</span><br>        <span class="hljs-attr">failure-rate-threshold:</span> <span class="hljs-number">50</span><br>        <span class="hljs-attr">event-consumer-buffer-size:</span> <span class="hljs-number">10</span><br>        <span class="hljs-attr">record-failure-predicate:</span> <span class="hljs-string">cn.probiecoder.spring_boot_resilience4j_demo.exception.RecordFailurePredicate</span><br>    <span class="hljs-attr">metrics:</span><br>      <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span>  <span class="hljs-comment"># 启用指标数据监控</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2、使用注解"><a href="#2、使用注解" class="headerlink" title="2、使用注解"></a>2、使用注解</h3><h4 id="2-1-使用固定名称并指定fallback"><a href="#2-1-使用固定名称并指定fallback" class="headerlink" title="2.1 使用固定名称并指定fallback"></a>2.1 使用固定名称并指定fallback</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">BACKEND_A</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;backendA&quot;</span>;<br><br><span class="hljs-meta">@CircuitBreaker(name = BACKEND_A, fallbackMethod = &quot;fallback&quot;)</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-使用方法名作为CircuitBreaker名称"><a href="#2-2-使用方法名作为CircuitBreaker名称" class="headerlink" title="2.2 使用方法名作为CircuitBreaker名称"></a>2.2 使用方法名作为CircuitBreaker名称</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@CircuitBreaker(name = &quot;#root.methodName&quot;)</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-3-使用Spel表达时动态获取参数作为CircuitBreaker名称"><a href="#2-3-使用Spel表达时动态获取参数作为CircuitBreaker名称" class="headerlink" title="2.3 使用Spel表达时动态获取参数作为CircuitBreaker名称"></a>2.3 使用Spel表达时动态获取参数作为CircuitBreaker名称</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@CircuitBreaker(name = &quot;#p0&quot;)</span><br><br><span class="hljs-meta">@CircuitBreaker(name = &quot;#root.args[0]&quot;)</span><br><br><span class="hljs-meta">@CircuitBreaker(name = &quot;#a0&quot;)</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3、代码自定义装饰"><a href="#3、代码自定义装饰" class="headerlink" title="3、代码自定义装饰"></a>3、代码自定义装饰</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> CircuitBreakerRegistry circuitBreakerRegistry;  <span class="hljs-comment">// 使用全局的registry</span><br><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">BackendAServiceImpl</span><span class="hljs-params">(CircuitBreakerRegistry circuitBreakerRegistry)</span> &#123;<br>    <span class="hljs-built_in">this</span>.circuitBreakerRegistry = circuitBreakerRegistry;<br>&#125;<br><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">customConfigFailure</span><span class="hljs-params">()</span> &#123;<br>    io.github.resilience4j.circuitbreaker.<span class="hljs-type">CircuitBreaker</span> <span class="hljs-variable">circuitBreaker</span> <span class="hljs-operator">=</span> circuitBreakerRegistry.circuitBreaker(<span class="hljs-string">&quot;customConfig&quot;</span>, <span class="hljs-string">&quot;shared&quot;</span>);<br><br><br>    Supplier&lt;String&gt; supplier = io.github.resilience4j.circuitbreaker.CircuitBreaker.decorateSupplier(circuitBreaker, () -&gt;&#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpServerErrorException</span>(HttpStatus.INTERNAL_SERVER_ERROR, <span class="hljs-string">&quot;This is a remote exception&quot;</span>);<br>    &#125;);<br><br>    <span class="hljs-comment">// 此处使用 Try 需要引入 vavr 包</span><br>    <span class="hljs-keyword">return</span> Try.ofSupplier(supplier).recover(th -&gt; <span class="hljs-string">&quot;Recovered: &quot;</span> + th.toString()).get();<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="四、附录"><a href="#四、附录" class="headerlink" title="四、附录"></a>四、附录</h2><p><a target="_blank" rel="noopener" href="https://github.com/resilience4j/resilience4j-spring-boot3-demo/tree/master">https://github.com/resilience4j/resilience4j-spring-boot3-demo/tree/master</a></p>
+<p><a target="_blank" rel="noopener" href="https://resilience4j.readme.io/docs/circuitbreaker">https://resilience4j.readme.io/docs/circuitbreaker</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Resilience4j/" class="category-chain-item">Resilience4j</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>使用Resilience4j CircuitBreaker实现服务调用熔断</div>
+      <div>https://probiecoder.cn/resilience4j/circuitbreaker.html</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>duwei</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/vue/primevue_tailwindcss.html" title="Primevue+Tailwind CSS使用配置">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Primevue+Tailwind CSS使用配置</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/mysql/common.html" title="SQL知识点">
+                        <span class="hidden-mobile">SQL知识点</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      @probiecoder 2025
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
