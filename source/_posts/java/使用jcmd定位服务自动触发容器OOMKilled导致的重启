@@ -1,0 +1,102 @@
+---
+layout: post
+title: 使用jcmd定位服务自动触发容器OOMKilled导致的重启
+categories: [Java]
+tags: 性能分析
+permalink: java/jcmd_memory.html
+
+---
+
+
+
+### 一、资源现状
+
+1、使用k8s容器化部署
+
+2、资源限额：2C4G
+
+3、JVM配置：
+
+```Plain
+-Xms2g -Xmx2g -XX:NativeMemoryTracking=detail -XX:MetaspaceSize=125m -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8
+```
+
+### 二、问题现象
+
+每隔45分左右，服务会自动触发重启，容器监控内存使用率会超过98%以上，重启事件原因为`OOMKilled`。
+
+![img](https://raw.githubusercontent.com/duwei0227/picbed/main/document/asynccode)
+
+### 二、问题定位
+
+#### 1、调整资源限额和JVM配置参数
+
+- 调整限额为: 4C8G
+- 调整JVM参数配置为：-Xms4g -Xmx4g
+
+结果：增大堆配置和资源限额只是缓解了服务自动重启的时间
+
+#### 2、使用Arthas分析堆内存使用
+
+![arthas](https://raw.githubusercontent.com/duwei0227/picbed/main/document/arthas.png)
+
+使用`Arthas`监控进程堆内存使用发现，当容器被触发`OOMKilled`时，堆内存使用率无明显增高，此时考虑是否为对外内存引起
+
+#### 3、使用jcmd分析jvm进程内存使用
+
+**添加配置项** **`-XX:NativeMemoryTracking=summary `** **,如果需要更详细的结果输出，可以将****`summary`****更改为****`detail`**
+
+##### 3.1、服务刚重启时，建立baseline
+
+```Shell
+jcmd pid VM.native_memory baseline
+```
+
+创建baseline的目的是用于后期比较各项变化情况，明确是由哪一项引起进程内存异常增高
+
+##### 3.2、 循环进行diff比较，确定异常变化项
+
+```Shell
+#!/bin/bash
+
+interval=1   # 时间间隔 1 秒
+count=3600   # 循环次数，可以根据应用自动触发重启的事件进行调整
+
+for ((i=1;i<=count;i++));do
+    usage_in_bytes=$(cat /sys/fs/cgroup/memory/memory.usage_in_bytes)
+    echo "usage_in_bytes: $usage_in_bytes B"
+    cache=$(cat /sys/fs/cgroup/memory/memory.stat | grep cache |awk 'NR==1 {print $2}')
+    echo "cache: $cache B"
+
+    real_memory=$((usage_in_bytes - cache))
+    echo "real_memory = $real_memory B"
+    real_memory_mb=$((real_memory / 1024 / 1024))
+    echo "real_memory_mb: $real_memory_mb MB"
+
+    printf "real_memory_mb: %.2f GB \n" $(echo "scale=4; $real_memory/1024/1024/1024" | bc)
+
+    jcmd 1 VM.native_memory summary.diff | awk 'NR>4'  # 此处比较native_memory变化
+
+    if [ $i -lt $count ]; then
+        sleep $interval
+    fi
+done
+```
+
+![native_memory](https://raw.githubusercontent.com/duwei0227/picbed/main/document/native_memory.png)
+
+通过监控发现，服务在自动触发重启的时候，`Internal`内存异常增加，容器使用的总内存接近资源限额，触发容器`OOMKilled`，进一步确认可能是对外内存引擎
+
+##### 3.3 使用MAT间接分析
+
+当使用率达到85%以上时，导出堆文件
+
+```Shell
+jmap -dump:format=b,file=dump.hprof 1
+```
+
+![memory_leak](https://raw.githubusercontent.com/duwei0227/picbed/main/document/memory_leak.png)
+
+![memory_stack](https://raw.githubusercontent.com/duwei0227/picbed/main/document/memory_stack.png)
+
+根据分析可以确定是`Redis`连接池`lettuce` 引起的对外内存泄漏
