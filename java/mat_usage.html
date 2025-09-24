@@ -21,21 +21,27 @@
   <meta name="author" content="duwei">
   <meta name="keywords" content="">
   
-    <meta name="description" content="1、Hibernate框架mysql数据库id主键自增12@GeneratedValue(strategy &#x3D; GenerationType.IDENTITY)@GenericGenerator(name &#x3D; &quot;mySeq&quot;, strategy &#x3D; &quot;increment&quot; )  2、Spring Security去掉默认认证12# spring boot 2">
+    <meta name="description" content="一、巧用OBJECTS获取Map对象中的key和每个key使用的retainedHeapSizeOBJECTS是一个关键字，用来“扁平化”（flatten）一个对象数组 &#x2F; 引用数组 &#x2F;对象集合，使得你可以把“一个数组 &#x2F; 列表 &#x2F;子查询返回的集合”中的每一个元素当作单独一行来处理 举例： 现在想要获取Camunda的instanceCache中存储了哪些k">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java知识点">
-<meta property="og:url" content="https://probiecoder.cn/java/common.html">
+<meta property="og:title" content="Eclipse Memory Analyzer分析堆文件技巧">
+<meta property="og:url" content="https://probiecoder.cn/java/mat_usage.html">
 <meta property="og:site_name" content="probie&#39;s blog">
-<meta property="og:description" content="1、Hibernate框架mysql数据库id主键自增12@GeneratedValue(strategy &#x3D; GenerationType.IDENTITY)@GenericGenerator(name &#x3D; &quot;mySeq&quot;, strategy &#x3D; &quot;increment&quot; )  2、Spring Security去掉默认认证12# spring boot 2">
+<meta property="og:description" content="一、巧用OBJECTS获取Map对象中的key和每个key使用的retainedHeapSizeOBJECTS是一个关键字，用来“扁平化”（flatten）一个对象数组 &#x2F; 引用数组 &#x2F;对象集合，使得你可以把“一个数组 &#x2F; 列表 &#x2F;子查询返回的集合”中的每一个元素当作单独一行来处理 举例： 现在想要获取Camunda的instanceCache中存储了哪些k">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-08-25T02:14:15.760Z">
-<meta property="article:modified_time" content="2025-08-25T02:14:15.760Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/duwei0227/picbed/main/document/image-20250924165742046.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/duwei0227/picbed/main/document/image-20250924170004006.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/duwei0227/picbed/main/document/image-20250924170214350.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/duwei0227/picbed/main/document/image-20250924171124031.png">
+<meta property="article:published_time" content="2025-09-24T08:54:38.788Z">
+<meta property="article:modified_time" content="2025-09-24T09:28:33.867Z">
 <meta property="article:author" content="duwei">
+<meta property="article:tag" content="MAT">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/duwei0227/picbed/main/document/image-20250924165742046.png">
   
   
   
-  <title>Java知识点 - probie&#39;s blog</title>
+  <title>Eclipse Memory Analyzer分析堆文件技巧 - probie&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -189,7 +195,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java知识点"></span>
+            <span id="subtitle" data-typed-text="Eclipse Memory Analyzer分析堆文件技巧"></span>
           
         </div>
 
@@ -200,8 +206,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-08-25 10:14" pubdate>
-          2025年8月25日 上午
+        <time datetime="2025-09-24 16:54" pubdate>
+          2025年9月24日 下午
         </time>
       </span>
     
@@ -212,7 +218,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          359 字
+          498 字
         
       </span>
     
@@ -223,7 +229,7 @@
         
         
         
-          3 分钟
+          5 分钟
         
       </span>
     
@@ -260,26 +266,44 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java知识点</h1>
+            <h1 id="seo-header">Eclipse Memory Analyzer分析堆文件技巧</h1>
             
             
               <div class="markdown-body">
                 
-                <h3 id="1、Hibernate框架mysql数据库id主键自增"><a href="#1、Hibernate框架mysql数据库id主键自增" class="headerlink" title="1、Hibernate框架mysql数据库id主键自增"></a>1、Hibernate框架mysql数据库id主键自增</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GeneratedValue(strategy = GenerationType.IDENTITY)</span><br><span class="hljs-meta">@GenericGenerator(name = &quot;mySeq&quot;, strategy = &quot;increment&quot; )</span><br></code></pre></td></tr></table></figure>
+                <h3 id="一、巧用OBJECTS获取Map对象中的key和每个key使用的retainedHeapSize"><a href="#一、巧用OBJECTS获取Map对象中的key和每个key使用的retainedHeapSize" class="headerlink" title="一、巧用OBJECTS获取Map对象中的key和每个key使用的retainedHeapSize"></a>一、巧用OBJECTS获取Map对象中的key和每个key使用的retainedHeapSize</h3><p><code>OBJECTS</code>是一个关键字，用来“扁平化”（<code>flatten</code>）一个对象数组 &#x2F; 引用数组 &#x2F;对象集合，使得你可以把“一个数组 &#x2F; 列表 &#x2F;子查询返回的集合”中的每一个元素当作单独一行来处理</p>
+<p>举例：</p>
+<p>现在想要获取<code>Camunda</code>的<code>instanceCache</code>中存储了哪些<code>key</code>，且每一个<code>key</code>的<code>retainedHeapSize</code>应该如何获取？</p>
+<p><img src="https://raw.githubusercontent.com/duwei0227/picbed/main/document/image-20250924165742046.png" srcset="/img/loading.gif" lazyload alt="image-20250924165742046"></p>
+<h4 id="1、选中cache行执行OQL"><a href="#1、选中cache行执行OQL" class="headerlink" title="1、选中cache行执行OQL"></a>1、选中cache行执行OQL</h4><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">SELECT</span> * <span class="hljs-selector-tag">FROM</span> OBJECTS <span class="hljs-number">1529719</span><br></code></pre></td></tr></table></figure>
 
-<h3 id="2、Spring-Security去掉默认认证"><a href="#2、Spring-Security去掉默认认证" class="headerlink" title="2、Spring Security去掉默认认证"></a>2、Spring Security去掉默认认证</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"># spring boot <span class="hljs-number">2.</span>x<br><span class="hljs-meta">@SpringBootApplication(exclude = &#123;SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class&#125;)</span><br></code></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/duwei0227/picbed/main/document/image-20250924170004006.png" srcset="/img/loading.gif" lazyload alt="image-20250924170004006"></p>
+<p>从执行结果来说，返回了<code>ConcurrentHashMap</code>实例本身以及所保留的内存</p>
+<h4 id="2、调整select结果，获取map中的元素项"><a href="#2、调整select结果，获取map中的元素项" class="headerlink" title="2、调整select结果，获取map中的元素项"></a>2、调整select结果，获取map中的元素项</h4><p>在获取<code>map</code>实例中具体的元素项的时候，就需要使用<code>OBJECTS</code>进行扁平化展开</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> objects o.<span class="hljs-keyword">table</span>.@referenceArray <span class="hljs-keyword">FROM</span> OBJECTS <span class="hljs-number">1529719</span> o <br></code></pre></td></tr></table></figure>
 
-<h3 id="3、字符串替换-或者"><a href="#3、字符串替换-或者" class="headerlink" title="3、字符串替换 $ 或者 \"></a>3、字符串替换 $ 或者 \</h3><h4 id="3-1-单个-符号-使用replace替换-–-能实现替换"><a href="#3-1-单个-符号-使用replace替换-–-能实现替换" class="headerlink" title="3.1 单个 $ 符号, 使用replace替换 – 能实现替换"></a>3.1 单个 $ 符号, 使用<code>replace</code>替换 – <strong>能实现替换</strong></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">singleDollar</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;abc$sef&quot;</span>;<br>System.out.println(singleDollar.replace(<span class="hljs-string">&quot;$&quot;</span>, <span class="hljs-string">&quot;\\$\\&quot;</span>));<br>System.out.println(singleDollar.replace(<span class="hljs-string">&quot;$&quot;</span>, <span class="hljs-string">&quot;_&quot;</span>));<br><br><span class="hljs-comment">// 输出结果</span><br>abc\$\sef<br>abc_sef<br></code></pre></td></tr></table></figure>
+<ul>
+<li>通过<code>.</code>获取对象属性，此处<code>table</code>为<code>ConcurrentHashMap</code>的一个属性</li>
+<li><code>@referenceArray</code> 是一个用于访问 <strong>对象引用数组</strong> 的内建属性</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/duwei0227/picbed/main/document/image-20250924170214350.png" srcset="/img/loading.gif" lazyload alt="image-20250924170214350"></p>
+<p>此时已经获取到<code>map</code>实例中存储的每个<code>key</code>以及所保留的内存，但是由于<code>key</code>本身还是存储在<code>Node</code>中无法直观查看，需要进一步调整语句获取<code>Node</code>对象中的具体属性</p>
+<h4 id="3、使用嵌套查询获取Node对象中的属性"><a href="#3、使用嵌套查询获取Node对象中的属性" class="headerlink" title="3、使用嵌套查询获取Node对象中的属性"></a>3、使用嵌套查询获取<code>Node</code>对象中的属性</h4><p>嵌套查询结果也是一个列表，需要使用<code>OBJECTS</code>平铺展开</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">SELECT</span> <span class="hljs-selector-tag">toString</span>(s.key) <span class="hljs-selector-tag">AS</span> <span class="hljs-selector-tag">key</span>, <span class="hljs-selector-tag">s</span>.@<span class="hljs-selector-tag">retainedHeapSize</span> <span class="hljs-selector-tag">FROM</span> <span class="hljs-selector-tag">OBJECTS</span> ( SELECT OBJECTS o.table.<span class="hljs-variable">@referenceArray</span> FROM OBJECTS <span class="hljs-number">1529719</span> o  ) <span class="hljs-selector-tag">s</span> <br></code></pre></td></tr></table></figure>
 
-<h4 id="3-2-多个-符号，使用replaceAll替换-–-未能完成替换"><a href="#3-2-多个-符号，使用replaceAll替换-–-未能完成替换" class="headerlink" title="3.2 多个 $ 符号，使用replaceAll替换 – 未能完成替换"></a>3.2 多个 $ 符号，使用<code>replaceAll</code>替换 – <strong>未能完成替换</strong></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">multiDollar</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;abc$edf$mgl&quot;</span>;<br>System.out.println(multiDollar.replaceAll(<span class="hljs-string">&quot;\\\\$&quot;</span>, <span class="hljs-string">&quot;\\\\$\\\\&quot;</span>));<br>System.out.println(multiDollar.replaceAll(<span class="hljs-string">&quot;\\\\$&quot;</span>, <span class="hljs-string">&quot;_&quot;</span>));<br><br><span class="hljs-comment">// 输出结果</span><br>abc$edf$mgl<br>abc$edf$mgl<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>@retainedHeapSize</code> 是一个 <strong>内建属性（Bean 属性 &#x2F; OQL attribute）</strong>，用来表示某个对象的 <strong>Retained Heap 大小</strong></li>
+<li><code>toString</code>是用来将key的结果转为字符串输出</li>
+<li><code>s.key</code>中的<code>key</code>是<code>Node</code>对象的属性，也可以用来获取<code>Node</code>中的<code>val</code>，<code>hash</code>等属性</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/duwei0227/picbed/main/document/image-20250924171124031.png" srcset="/img/loading.gif" lazyload alt="image-20250924171124031"></p>
+<p><strong>Shallow Heap Size vs Retained Heap Size</strong></p>
+<ul>
+<li><em>Shallow Heap</em>（也叫 <em>usedHeapSize</em> &#x2F; <code>@usedHeapSize</code>）是对象自身在内存中占用的大小，不包括它引用子对象的那部分。</li>
+<li><em>Retained Heap</em>（<code>@retainedHeapSize</code>）则包括这个对象及其控制／支配（如果这个对象被回收时，子对象也可回收）的子对象占用的内存。</li>
+<li>举例来说，如果对象 A 引用 B 和 C，且 B 和 C 没有被别的对象引用，那么 A 的 <code>@retainedHeapSize</code> &#x3D; A 的 shallow + B 的 shallow + C 的 shallow</li>
+</ul>
 
-<h4 id="3-3-多个-符号，使用Matcher-quoteReplacement替换-–-完成替换且不需要太多的转义，推荐"><a href="#3-3-多个-符号，使用Matcher-quoteReplacement替换-–-完成替换且不需要太多的转义，推荐" class="headerlink" title="3.3 多个 $ 符号，使用Matcher.quoteReplacement替换  – 完成替换且不需要太多的转义，推荐"></a>3.3 多个 $ 符号，使用<code>Matcher.quoteReplacement</code>替换  – <strong>完成替换且不需要太多的转义，推荐</strong></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">multiDollar</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;abc$edf$mgl&quot;</span>;<br>System.out.println(multiDollar.replaceAll(Matcher.quoteReplacement(<span class="hljs-string">&quot;$&quot;</span>), Matcher.quoteReplacement(<span class="hljs-string">&quot;\\$\\&quot;</span>)));<br>System.out.println(multiDollar.replaceAll(Matcher.quoteReplacement(<span class="hljs-string">&quot;$&quot;</span>), Matcher.quoteReplacement(<span class="hljs-string">&quot;_&quot;</span>)));<br><br><span class="hljs-comment">// 输出结果</span><br>abc\$\edf\$\mgl<br>abc_edf_mgl<br></code></pre></td></tr></table></figure>
-
-<h4 id="3-4-单个-符号，使用replace替换-–-完成替换"><a href="#3-4-单个-符号，使用replace替换-–-完成替换" class="headerlink" title="3.4 单个 $ 符号，使用replace替换 – 完成替换"></a>3.4 单个 $ 符号，使用<code>replace</code>替换 – <strong>完成替换</strong></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">singleSlash</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;abc\\abc&quot;</span>;<br>System.out.println(singleSlash.replace(<span class="hljs-string">&quot;\\&quot;</span>, <span class="hljs-string">&quot;\\\\&quot;</span>));<br>System.out.println(singleSlash.replace(<span class="hljs-string">&quot;\\&quot;</span>, <span class="hljs-string">&quot;_&quot;</span>));<br><br><span class="hljs-comment">// 输出结果</span><br>abc\\abc<br>abc_abc<br></code></pre></td></tr></table></figure>
-
-<h4 id="3-5-多个-符号，使用replaceAll替换-–-可以替换"><a href="#3-5-多个-符号，使用replaceAll替换-–-可以替换" class="headerlink" title="3.5 多个 $ 符号，使用replaceAll替换 – 可以替换"></a>3.5 多个 $ 符号，使用<code>replaceAll</code>替换 – <strong>可以替换</strong></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">multiSlash</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;abc\\edf\\mgl&quot;</span>;<br>System.out.println(multiSlash.replaceAll(<span class="hljs-string">&quot;\\\\&quot;</span>, <span class="hljs-string">&quot;\\\\\\\\&quot;</span>));<br>System.out.println(multiSlash.replaceAll(<span class="hljs-string">&quot;\\\\&quot;</span>, <span class="hljs-string">&quot;_&quot;</span>));<br><br><span class="hljs-comment">// 输出结果</span><br>abc\\edf\\mgl<br>abc_edf_mgl<br></code></pre></td></tr></table></figure>
-
-<h4 id="3-6-多个-符号，使用Matcher-quoteReplacement替换-–-可以替换-推荐"><a href="#3-6-多个-符号，使用Matcher-quoteReplacement替换-–-可以替换-推荐" class="headerlink" title="3.6 多个 $ 符号，使用Matcher.quoteReplacement替换 – 可以替换,推荐"></a>3.6 多个 $ 符号，使用<code>Matcher.quoteReplacement</code>替换 – <strong>可以替换,推荐</strong></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">multiSlash</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;abc\\edf\\mgl&quot;</span>;<br>System.out.println(multiSlash.replaceAll(Matcher.quoteReplacement(<span class="hljs-string">&quot;\\&quot;</span>), Matcher.quoteReplacement(<span class="hljs-string">&quot;\\\\&quot;</span>)));<br>System.out.println(multiSlash.replaceAll(Matcher.quoteReplacement(<span class="hljs-string">&quot;\\&quot;</span>), Matcher.quoteReplacement(<span class="hljs-string">&quot;_&quot;</span>)));<br><br><span class="hljs-comment">// 输出结果</span><br>abc\\edf\\mgl<br>abc_edf_mgl<br></code></pre></td></tr></table></figure>
                 
               </div>
             
@@ -309,6 +333,13 @@
     </div>
   
   
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MAT/" class="print-no-link">#MAT</a>
+      
+    </div>
+  
 </div>
 
 
@@ -317,8 +348,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java知识点</div>
-      <div>https://probiecoder.cn/java/common.html</div>
+      <div>Eclipse Memory Analyzer分析堆文件技巧</div>
+      <div>https://probiecoder.cn/java/mat_usage.html</div>
     </div>
     <div class="license-meta">
       
@@ -330,7 +361,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2025年8月25日</div>
+          <div>2025年9月24日</div>
         </div>
       
       
@@ -362,18 +393,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/java/test.html" title="Java单元测试">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java单元测试</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/java/bufferedreader.html" title="BufferedReader使用记录">
-                        <span class="hidden-mobile">BufferedReader使用记录</span>
+                      <a href="/2025/09/09/rust/Sea-Orm%E4%BD%BF%E7%94%A8%E5%AE%9E%E6%93%8D/" title="">
+                        <span class="hidden-mobile"></span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
